@@ -33,10 +33,10 @@ export const Route = createFileRoute("/")({
   component: Index,
 });
 
-const profileQueryOptions = (slug: string) =>
+const profileQueryOptions = (params: { slug: string }) =>
   queryOptions({
-    queryKey: ["profile", slug],
-    queryFn: () => getPublicProfile({ slug }),
+    queryKey: ["profile", params.slug],
+    queryFn: () => getPublicProfile({ data: { slug: params.slug } }),
   });
 
 function formatNumber(value: number | null | undefined, digits = 0): string {
