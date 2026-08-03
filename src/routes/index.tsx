@@ -18,7 +18,7 @@ import playerPhoto from "@/assets/player-photo.jpg";
 
 export const Route = createFileRoute("/")({
   loader: async ({ context }) => {
-    await context.queryClient.ensureQueryData(profileQueryOptions("demo-athlete"));
+    await context.queryClient.ensureQueryData(profileQueryOptions({ slug: "demo-athlete" }));
   },
   head: () => ({
     meta: [
@@ -53,7 +53,7 @@ function formatAverage(value: number | null | undefined): string {
 }
 
 function Index() {
-  const { data } = useSuspenseQuery(profileQueryOptions("demo-athlete"));
+  const { data } = useSuspenseQuery(profileQueryOptions({ slug: "demo-athlete" }));
   const { profile, stats, achievements } = data as PublicProfile;
   const season = stats[0];
 
@@ -63,7 +63,7 @@ function Index() {
         <div className="mx-auto flex max-w-6xl items-center justify-between px-6 py-4">
           <div className="flex items-center gap-3">
             <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-primary text-primary-foreground">
-              <Baseball className="h-6 w-6" />
+              <BaseballIcon className="h-6 w-6" />
             </div>
             <span className="font-display text-2xl tracking-wide text-foreground">ATHLETEFOLIO</span>
           </div>
