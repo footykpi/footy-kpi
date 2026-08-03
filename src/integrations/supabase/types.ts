@@ -14,7 +14,169 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      achievements: {
+        Row: {
+          created_at: string
+          date: string | null
+          description: string | null
+          id: string
+          profile_id: string
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          date?: string | null
+          description?: string | null
+          id?: string
+          profile_id: string
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          date?: string | null
+          description?: string | null
+          id?: string
+          profile_id?: string
+          title?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "achievements_profile_id_fkey"
+            columns: ["profile_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      profiles: {
+        Row: {
+          bio: string | null
+          created_at: string
+          dominant_hand: string | null
+          first_name: string
+          gpa: string | null
+          graduation_year: string | null
+          height: string | null
+          id: string
+          jersey_number: string | null
+          last_name: string
+          photo_url: string | null
+          position: string | null
+          slug: string
+          sport: string
+          team: string | null
+          updated_at: string
+          weight: string | null
+        }
+        Insert: {
+          bio?: string | null
+          created_at?: string
+          dominant_hand?: string | null
+          first_name: string
+          gpa?: string | null
+          graduation_year?: string | null
+          height?: string | null
+          id?: string
+          jersey_number?: string | null
+          last_name: string
+          photo_url?: string | null
+          position?: string | null
+          slug: string
+          sport?: string
+          team?: string | null
+          updated_at?: string
+          weight?: string | null
+        }
+        Update: {
+          bio?: string | null
+          created_at?: string
+          dominant_hand?: string | null
+          first_name?: string
+          gpa?: string | null
+          graduation_year?: string | null
+          height?: string | null
+          id?: string
+          jersey_number?: string | null
+          last_name?: string
+          photo_url?: string | null
+          position?: string | null
+          slug?: string
+          sport?: string
+          team?: string | null
+          updated_at?: string
+          weight?: string | null
+        }
+        Relationships: []
+      }
+      season_stats: {
+        Row: {
+          batting_average: number | null
+          created_at: string
+          era: number | null
+          games_played: number | null
+          hits: number | null
+          home_runs: number | null
+          id: string
+          profile_id: string
+          rbi: number | null
+          saves: number | null
+          season: string
+          sport: string
+          stolen_bases: number | null
+          strikeouts: number | null
+          updated_at: string
+          wins: number | null
+        }
+        Insert: {
+          batting_average?: number | null
+          created_at?: string
+          era?: number | null
+          games_played?: number | null
+          hits?: number | null
+          home_runs?: number | null
+          id?: string
+          profile_id: string
+          rbi?: number | null
+          saves?: number | null
+          season: string
+          sport?: string
+          stolen_bases?: number | null
+          strikeouts?: number | null
+          updated_at?: string
+          wins?: number | null
+        }
+        Update: {
+          batting_average?: number | null
+          created_at?: string
+          era?: number | null
+          games_played?: number | null
+          hits?: number | null
+          home_runs?: number | null
+          id?: string
+          profile_id?: string
+          rbi?: number | null
+          saves?: number | null
+          season?: string
+          sport?: string
+          stolen_bases?: number | null
+          strikeouts?: number | null
+          updated_at?: string
+          wins?: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "season_stats_profile_id_fkey"
+            columns: ["profile_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
     }
     Views: {
       [_ in never]: never
