@@ -59,7 +59,7 @@ function formatAverage(value: number | null | undefined): string {
 function Index() {
   const fetchProfile = useServerFn(getPublicProfile);
   const { data } = useSuspenseQuery(
-    profileQueryOptions({ slug: "demo-athlete", fetchProfile })
+    profileQueryOptions({ slug: "demo-athlete" }, fetchProfile)
   );
   const { profile, stats, achievements } = data as PublicProfile;
   const season = stats[0];
