@@ -11,7 +11,6 @@ import {
   Share2,
   TrendingUp,
   Shield,
-  Baseball,
 } from "lucide-react";
 
 import { getPublicProfile, type PublicProfile } from "@/lib/profile.functions";
