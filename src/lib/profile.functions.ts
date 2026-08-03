@@ -69,7 +69,7 @@ function createPublishableClient() {
 }
 
 export const getPublicProfile = createServerFn({ method: "GET" })
-  .inputValidator((data) => profileInputSchema.parse(data))
+  .validator(z.object({ slug: z.string() }))
   .handler(async ({ data }): Promise<PublicProfile> => {
     const supabase = createPublishableClient();
 
