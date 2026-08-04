@@ -16,6 +16,7 @@ import {
 } from "lucide-react";
 
 import { getPublicProfile, type PublicProfile } from "@/lib/profile.functions";
+import { GameLog } from "@/components/GameLog";
 import playerPhoto from "@/assets/player-photo.jpg";
 
 export const Route = createFileRoute("/")({
