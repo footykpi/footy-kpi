@@ -28,17 +28,35 @@ export interface SeasonStats {
   id: string;
   profile_id: string;
   season: string;
-  hits: number;
-  rbi: number;
+  sport: string;
+  hits: number | null;
+  rbi: number | null;
   batting_average: number | null;
-  home_runs: number;
-  strikeouts: number;
+  home_runs: number | null;
+  strikeouts: number | null;
   era: number | null;
-  wins: number;
-  saves: number;
-  stolen_bases: number;
-  games_played: number;
+  wins: number | null;
+  saves: number | null;
+  stolen_bases: number | null;
+  games_played: number | null;
+  goals: number | null;
+  assists: number | null;
+  shots: number | null;
+  shots_on_goal: number | null;
+  minutes_played: number | null;
+  yellow_cards: number | null;
+  red_cards: number | null;
+  penalty_kicks: number | null;
+  pk_saves: number | null;
+  clean_sheets: number | null;
+  fouls: number | null;
+  tackles: number | null;
+  interceptions: number | null;
+  headers_won: number | null;
+  pass_completion: number | null;
+  mvp_awards: number | null;
 }
+
 
 export interface Achievement {
   id: string;
