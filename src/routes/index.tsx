@@ -238,6 +238,8 @@ function Index() {
               )}
             </div>
 
+            <GameLog games={games.filter((g) => g.sport === sport)} />
+
 
             {achievements.length > 0 && (
               <div className="rounded-2xl border border-border bg-card p-6">
