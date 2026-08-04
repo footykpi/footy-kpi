@@ -58,7 +58,7 @@ type Sport = "baseball" | "soccer";
 
 function Index() {
   const { data } = useSuspenseQuery(profileQueryOptions({ slug: "demo-athlete" }));
-  const { profile, stats, achievements } = data as PublicProfile;
+  const { profile, stats, achievements, games } = data as PublicProfile;
   const [sport, setSport] = useState<Sport>("baseball");
   const season = stats.find((s) => s.sport === sport);
 
