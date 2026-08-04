@@ -1,6 +1,8 @@
 import { createFileRoute } from "@tanstack/react-router";
+import { useState } from "react";
 import { useSuspenseQuery } from "@tanstack/react-query";
 import { queryOptions } from "@tanstack/react-query";
+
 import {
   Trophy,
   Calendar,
@@ -52,10 +54,14 @@ function formatAverage(value: number | null | undefined): string {
   return value.toFixed(3).replace(/^0/, "");
 }
 
+type Sport = "baseball" | "soccer";
+
 function Index() {
   const { data } = useSuspenseQuery(profileQueryOptions({ slug: "demo-athlete" }));
   const { profile, stats, achievements } = data as PublicProfile;
-  const season = stats[0];
+  const [sport, setSport] = useState<Sport>("baseball");
+  const season = stats.find((s) => s.sport === sport);
+
 
   return (
     <div className="min-h-screen bg-background">
@@ -162,15 +168,40 @@ function Index() {
               </div>
             )}
 
-            {season && (
-              <div className="rounded-2xl border border-border bg-card p-6">
-                <div className="flex items-center justify-between">
-                  <h2 className="font-display text-2xl text-foreground">Season Stats</h2>
-                  <span className="rounded-full bg-surface px-3 py-1 text-sm font-medium text-muted-foreground">
-                    {season.season}
-                  </span>
+            <div className="rounded-2xl border border-border bg-card p-6">
+              <div className="flex flex-wrap items-center justify-between gap-3">
+                <h2 className="font-display text-2xl text-foreground">Season Stats</h2>
+                <div className="flex items-center gap-3">
+                  <div className="inline-flex rounded-full border border-border bg-surface p-1">
+                    {(["baseball", "soccer"] as Sport[]).map((option) => (
+                      <button
+                        key={option}
+                        type="button"
+                        onClick={() => setSport(option)}
+                        aria-pressed={sport === option}
+                        className={`rounded-full px-4 py-1.5 text-sm font-semibold capitalize transition-colors ${
+                          sport === option
+                            ? "bg-primary text-primary-foreground"
+                            : "text-muted-foreground hover:text-foreground"
+                        }`}
+                      >
+                        {option}
+                      </button>
+                    ))}
+                  </div>
+                  {season && (
+                    <span className="rounded-full bg-surface px-3 py-1 text-sm font-medium text-muted-foreground">
+                      {season.season}
+                    </span>
+                  )}
                 </div>
+              </div>
 
+              {!season ? (
+                <p className="mt-6 text-muted-foreground">
+                  No {sport} season recorded yet for this athlete.
+                </p>
+              ) : sport === "baseball" ? (
                 <div className="mt-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
                   <StatCard label="Batting Average" value={formatAverage(season.batting_average)} />
                   <StatCard label="Hits" value={formatNumber(season.hits)} />
@@ -183,8 +214,30 @@ function Index() {
                   <StatCard label="ERA" value={formatNumber(season.era, 2)} />
                   <StatCard label="Games Played" value={formatNumber(season.games_played)} />
                 </div>
-              </div>
-            )}
+              ) : (
+                <div className="mt-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+                  <StatCard label="Goals" value={formatNumber(season.goals)} />
+                  <StatCard label="Assists" value={formatNumber(season.assists)} />
+                  <StatCard label="Shots" value={formatNumber(season.shots)} />
+                  <StatCard label="Shots on Goal" value={formatNumber(season.shots_on_goal)} />
+                  <StatCard label="Minutes Played" value={formatNumber(season.minutes_played)} />
+                  <StatCard label="Pass Completion" value={season.pass_completion === null || season.pass_completion === undefined ? "—" : `${formatNumber(season.pass_completion, 1)}%`} />
+                  <StatCard label="Tackles" value={formatNumber(season.tackles)} />
+                  <StatCard label="Interceptions" value={formatNumber(season.interceptions)} />
+                  <StatCard label="Headers Won" value={formatNumber(season.headers_won)} />
+                  <StatCard label="Penalty Kicks" value={formatNumber(season.penalty_kicks)} />
+                  <StatCard label="PK Saves" value={formatNumber(season.pk_saves)} />
+                  <StatCard label="Saves" value={formatNumber(season.saves)} />
+                  <StatCard label="Clean Sheets" value={formatNumber(season.clean_sheets)} />
+                  <StatCard label="Fouls" value={formatNumber(season.fouls)} />
+                  <StatCard label="Yellow Cards" value={formatNumber(season.yellow_cards)} />
+                  <StatCard label="Red Cards" value={formatNumber(season.red_cards)} />
+                  <StatCard label="MVP Awards" value={formatNumber(season.mvp_awards)} />
+                  <StatCard label="Games Played" value={formatNumber(season.games_played)} />
+                </div>
+              )}
+            </div>
+
 
             {achievements.length > 0 && (
               <div className="rounded-2xl border border-border bg-card p-6">

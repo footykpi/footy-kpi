@@ -1,0 +1,17 @@
+ALTER TABLE public.season_stats
+  ADD COLUMN IF NOT EXISTS goals integer,
+  ADD COLUMN IF NOT EXISTS assists integer,
+  ADD COLUMN IF NOT EXISTS shots integer,
+  ADD COLUMN IF NOT EXISTS shots_on_goal integer,
+  ADD COLUMN IF NOT EXISTS minutes_played integer,
+  ADD COLUMN IF NOT EXISTS yellow_cards integer,
+  ADD COLUMN IF NOT EXISTS red_cards integer,
+  ADD COLUMN IF NOT EXISTS penalty_kicks integer,
+  ADD COLUMN IF NOT EXISTS pk_saves integer,
+  ADD COLUMN IF NOT EXISTS clean_sheets integer,
+  ADD COLUMN IF NOT EXISTS fouls integer,
+  ADD COLUMN IF NOT EXISTS tackles integer,
+  ADD COLUMN IF NOT EXISTS interceptions integer,
+  ADD COLUMN IF NOT EXISTS headers_won integer,
+  ADD COLUMN IF NOT EXISTS pass_completion numeric,
+  ADD COLUMN IF NOT EXISTS mvp_awards integer;

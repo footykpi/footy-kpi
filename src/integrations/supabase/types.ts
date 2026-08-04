@@ -114,58 +114,106 @@ export type Database = {
       }
       season_stats: {
         Row: {
+          assists: number | null
           batting_average: number | null
+          clean_sheets: number | null
           created_at: string
           era: number | null
+          fouls: number | null
           games_played: number | null
+          goals: number | null
+          headers_won: number | null
           hits: number | null
           home_runs: number | null
           id: string
+          interceptions: number | null
+          minutes_played: number | null
+          mvp_awards: number | null
+          pass_completion: number | null
+          penalty_kicks: number | null
+          pk_saves: number | null
           profile_id: string
           rbi: number | null
+          red_cards: number | null
           saves: number | null
           season: string
+          shots: number | null
+          shots_on_goal: number | null
           sport: string
           stolen_bases: number | null
           strikeouts: number | null
+          tackles: number | null
           updated_at: string
           wins: number | null
+          yellow_cards: number | null
         }
         Insert: {
+          assists?: number | null
           batting_average?: number | null
+          clean_sheets?: number | null
           created_at?: string
           era?: number | null
+          fouls?: number | null
           games_played?: number | null
+          goals?: number | null
+          headers_won?: number | null
           hits?: number | null
           home_runs?: number | null
           id?: string
+          interceptions?: number | null
+          minutes_played?: number | null
+          mvp_awards?: number | null
+          pass_completion?: number | null
+          penalty_kicks?: number | null
+          pk_saves?: number | null
           profile_id: string
           rbi?: number | null
+          red_cards?: number | null
           saves?: number | null
           season: string
+          shots?: number | null
+          shots_on_goal?: number | null
           sport?: string
           stolen_bases?: number | null
           strikeouts?: number | null
+          tackles?: number | null
           updated_at?: string
           wins?: number | null
+          yellow_cards?: number | null
         }
         Update: {
+          assists?: number | null
           batting_average?: number | null
+          clean_sheets?: number | null
           created_at?: string
           era?: number | null
+          fouls?: number | null
           games_played?: number | null
+          goals?: number | null
+          headers_won?: number | null
           hits?: number | null
           home_runs?: number | null
           id?: string
+          interceptions?: number | null
+          minutes_played?: number | null
+          mvp_awards?: number | null
+          pass_completion?: number | null
+          penalty_kicks?: number | null
+          pk_saves?: number | null
           profile_id?: string
           rbi?: number | null
+          red_cards?: number | null
           saves?: number | null
           season?: string
+          shots?: number | null
+          shots_on_goal?: number | null
           sport?: string
           stolen_bases?: number | null
           strikeouts?: number | null
+          tackles?: number | null
           updated_at?: string
           wins?: number | null
+          yellow_cards?: number | null
         }
         Relationships: [
           {
