@@ -132,7 +132,7 @@ export const getPublicProfile = createServerFn({ method: "GET" })
       throw new Response("Profile not found", { status: 404 });
     }
 
-    const [{ data: stats }, { data: achievements }] = await Promise.all([
+    const [{ data: stats }, { data: achievements }, { data: games }] = await Promise.all([
       supabase
         .from("season_stats")
         .select("*")
@@ -143,11 +143,28 @@ export const getPublicProfile = createServerFn({ method: "GET" })
         .select("*")
         .eq("profile_id", profile.id)
         .order("date", { ascending: false }),
+      supabase
+        .from("games")
+        .select("*, game_media(*)")
+        .eq("profile_id", profile.id)
+        .order("game_date", { ascending: false }),
     ]);
+
+    const gameList: Game[] = (games ?? []).map((row: Record<string, unknown>) => {
+      const { game_media, ...game } = row as Record<string, unknown> & {
+        game_media?: GameMedia[];
+      };
+      return {
+        ...(game as unknown as Omit<Game, "media">),
+        media: [...(game_media ?? [])].sort((a, b) => a.sort_order - b.sort_order),
+      };
+    });
 
     return {
       profile: profile as Profile,
       stats: (stats ?? []) as SeasonStats[],
       achievements: (achievements ?? []) as Achievement[],
+      games: gameList,
+
     };
   });
