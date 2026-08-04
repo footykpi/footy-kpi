@@ -52,6 +52,118 @@ export type Database = {
           },
         ]
       }
+      game_media: {
+        Row: {
+          caption: string | null
+          created_at: string
+          game_id: string
+          id: string
+          media_type: string
+          sort_order: number
+          thumbnail_url: string | null
+          updated_at: string
+          url: string
+        }
+        Insert: {
+          caption?: string | null
+          created_at?: string
+          game_id: string
+          id?: string
+          media_type?: string
+          sort_order?: number
+          thumbnail_url?: string | null
+          updated_at?: string
+          url: string
+        }
+        Update: {
+          caption?: string | null
+          created_at?: string
+          game_id?: string
+          id?: string
+          media_type?: string
+          sort_order?: number
+          thumbnail_url?: string | null
+          updated_at?: string
+          url?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "game_media_game_id_fkey"
+            columns: ["game_id"]
+            isOneToOne: false
+            referencedRelation: "games"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      games: {
+        Row: {
+          coach_notes: string | null
+          created_at: string
+          game_date: string
+          id: string
+          location: string | null
+          mood: string | null
+          opponent: string
+          opponent_score: number | null
+          performance_rating: number | null
+          player_reflection: string | null
+          profile_id: string
+          result: string | null
+          season: string | null
+          sport: string
+          stats: Json
+          team_score: number | null
+          updated_at: string
+        }
+        Insert: {
+          coach_notes?: string | null
+          created_at?: string
+          game_date: string
+          id?: string
+          location?: string | null
+          mood?: string | null
+          opponent: string
+          opponent_score?: number | null
+          performance_rating?: number | null
+          player_reflection?: string | null
+          profile_id: string
+          result?: string | null
+          season?: string | null
+          sport?: string
+          stats?: Json
+          team_score?: number | null
+          updated_at?: string
+        }
+        Update: {
+          coach_notes?: string | null
+          created_at?: string
+          game_date?: string
+          id?: string
+          location?: string | null
+          mood?: string | null
+          opponent?: string
+          opponent_score?: number | null
+          performance_rating?: number | null
+          player_reflection?: string | null
+          profile_id?: string
+          result?: string | null
+          season?: string | null
+          sport?: string
+          stats?: Json
+          team_score?: number | null
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "games_profile_id_fkey"
+            columns: ["profile_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       profiles: {
         Row: {
           bio: string | null

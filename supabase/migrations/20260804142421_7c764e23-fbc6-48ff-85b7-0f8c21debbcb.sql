@@ -1,0 +1,1 @@
+REVOKE ALL ON FUNCTION public.validate_game() FROM PUBLIC, anon, authenticated;

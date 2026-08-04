@@ -16,6 +16,7 @@ import {
 } from "lucide-react";
 
 import { getPublicProfile, type PublicProfile } from "@/lib/profile.functions";
+import { GameLog } from "@/components/GameLog";
 import playerPhoto from "@/assets/player-photo.jpg";
 
 export const Route = createFileRoute("/")({
@@ -58,7 +59,7 @@ type Sport = "baseball" | "soccer";
 
 function Index() {
   const { data } = useSuspenseQuery(profileQueryOptions({ slug: "demo-athlete" }));
-  const { profile, stats, achievements } = data as PublicProfile;
+  const { profile, stats, achievements, games } = data as PublicProfile;
   const [sport, setSport] = useState<Sport>("baseball");
   const season = stats.find((s) => s.sport === sport);
 
@@ -237,6 +238,8 @@ function Index() {
                 </div>
               )}
             </div>
+
+            <GameLog games={games.filter((g) => g.sport === sport)} />
 
 
             {achievements.length > 0 && (

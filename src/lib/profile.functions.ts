@@ -66,11 +66,42 @@ export interface Achievement {
   description: string | null;
 }
 
+export interface GameMedia {
+  id: string;
+  game_id: string;
+  media_type: string;
+  url: string;
+  thumbnail_url: string | null;
+  caption: string | null;
+  sort_order: number;
+}
+
+export interface Game {
+  id: string;
+  profile_id: string;
+  sport: string;
+  season: string | null;
+  game_date: string;
+  opponent: string;
+  location: string | null;
+  team_score: number | null;
+  opponent_score: number | null;
+  result: string | null;
+  stats: Record<string, number | null>;
+  coach_notes: string | null;
+  player_reflection: string | null;
+  mood: string | null;
+  performance_rating: number | null;
+  media: GameMedia[];
+}
+
 export interface PublicProfile {
   profile: Profile;
   stats: SeasonStats[];
   achievements: Achievement[];
+  games: Game[];
 }
+
 
 function createPublishableClient() {
   return createClient(
@@ -101,7 +132,7 @@ export const getPublicProfile = createServerFn({ method: "GET" })
       throw new Response("Profile not found", { status: 404 });
     }
 
-    const [{ data: stats }, { data: achievements }] = await Promise.all([
+    const [{ data: stats }, { data: achievements }, { data: games }] = await Promise.all([
       supabase
         .from("season_stats")
         .select("*")
@@ -112,11 +143,28 @@ export const getPublicProfile = createServerFn({ method: "GET" })
         .select("*")
         .eq("profile_id", profile.id)
         .order("date", { ascending: false }),
+      supabase
+        .from("games")
+        .select("*, game_media(*)")
+        .eq("profile_id", profile.id)
+        .order("game_date", { ascending: false }),
     ]);
+
+    const gameList: Game[] = (games ?? []).map((row: Record<string, unknown>) => {
+      const { game_media, ...game } = row as Record<string, unknown> & {
+        game_media?: GameMedia[];
+      };
+      return {
+        ...(game as unknown as Omit<Game, "media">),
+        media: [...(game_media ?? [])].sort((a, b) => a.sort_order - b.sort_order),
+      };
+    });
 
     return {
       profile: profile as Profile,
       stats: (stats ?? []) as SeasonStats[],
       achievements: (achievements ?? []) as Achievement[],
+      games: gameList,
+
     };
   });
