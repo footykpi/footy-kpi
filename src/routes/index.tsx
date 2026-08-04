@@ -52,10 +52,14 @@ function formatAverage(value: number | null | undefined): string {
   return value.toFixed(3).replace(/^0/, "");
 }
 
+type Sport = "baseball" | "soccer";
+
 function Index() {
   const { data } = useSuspenseQuery(profileQueryOptions({ slug: "demo-athlete" }));
   const { profile, stats, achievements } = data as PublicProfile;
-  const season = stats[0];
+  const [sport, setSport] = useState<Sport>("baseball");
+  const season = stats.find((s) => s.sport === sport);
+
 
   return (
     <div className="min-h-screen bg-background">
