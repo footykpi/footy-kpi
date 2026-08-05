@@ -16,6 +16,7 @@ import {
 
 import { getPublicProfile, type PublicProfile } from "@/lib/profile.functions";
 import { GameLog } from "@/components/GameLog";
+import { ProgressCharts } from "@/components/ProgressCharts";
 import playerPhoto from "@/assets/player-photo.jpg";
 
 export const Route = createFileRoute("/")({
@@ -196,6 +197,8 @@ function Index() {
                 </div>
               )}
             </div>
+
+            <ProgressCharts games={games.filter((g) => g.sport === SPORT)} />
 
             <GameLog games={games.filter((g) => g.sport === SPORT)} />
 
