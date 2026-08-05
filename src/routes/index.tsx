@@ -1,5 +1,4 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { useState } from "react";
 import { useSuspenseQuery } from "@tanstack/react-query";
 import { queryOptions } from "@tanstack/react-query";
 
@@ -8,7 +7,7 @@ import {
   Calendar,
   Ruler,
   Weight,
-  Hand,
+  Footprints,
   GraduationCap,
   Share2,
   TrendingUp,
@@ -25,10 +24,10 @@ export const Route = createFileRoute("/")({
   },
   head: () => ({
     meta: [
-      { title: "Marcus Chen | Baseball Portfolio" },
-      { name: "description", content: "Season stats, achievements, and player profile for Marcus Chen — youth baseball athlete." },
-      { property: "og:title", content: "Marcus Chen | Baseball Portfolio" },
-      { property: "og:description", content: "Season stats, achievements, and player profile for Marcus Chen — youth baseball athlete." },
+      { title: "Marcus Chen | Soccer Portfolio" },
+      { name: "description", content: "Season stats, achievements, and game log for Marcus Chen — youth soccer athlete." },
+      { property: "og:title", content: "Marcus Chen | Soccer Portfolio" },
+      { property: "og:description", content: "Season stats, achievements, and game log for Marcus Chen — youth soccer athlete." },
       { property: "og:type", content: "profile" },
       { name: "twitter:card", content: "summary_large_image" },
     ],
@@ -50,19 +49,12 @@ function formatNumber(value: number | null | undefined, digits = 0): string {
   });
 }
 
-function formatAverage(value: number | null | undefined): string {
-  if (value === null || value === undefined) return ".000";
-  return value.toFixed(3).replace(/^0/, "");
-}
-
-type Sport = "baseball" | "soccer";
+const SPORT = "soccer";
 
 function Index() {
   const { data } = useSuspenseQuery(profileQueryOptions({ slug: "demo-athlete" }));
   const { profile, stats, achievements, games } = data as PublicProfile;
-  const [sport, setSport] = useState<Sport>("baseball");
-  const season = stats.find((s) => s.sport === sport);
-
+  const season = stats.find((s) => s.sport === SPORT);
 
   return (
     <div className="min-h-screen bg-background">
@@ -70,7 +62,7 @@ function Index() {
         <div className="mx-auto flex max-w-6xl items-center justify-between px-6 py-4">
           <div className="flex items-center gap-3">
             <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-primary text-primary-foreground">
-              <BaseballIcon className="h-6 w-6" />
+              <SoccerBallIcon className="h-6 w-6" />
             </div>
             <span className="font-display text-2xl tracking-wide text-foreground">ATHLETEFOLIO</span>
           </div>
@@ -139,8 +131,8 @@ function Index() {
                   </div>
                   <div className="rounded-xl bg-surface p-3">
                     <div className="flex items-center gap-2 text-muted-foreground">
-                      <Hand className="h-4 w-4" />
-                      Bats / Throws
+                      <Footprints className="h-4 w-4" />
+                      Dominant Foot
                     </div>
                     <div className="mt-1 font-display text-xl text-foreground">
                       {profile.dominant_hand ?? "—"}
@@ -172,49 +164,15 @@ function Index() {
             <div className="rounded-2xl border border-border bg-card p-6">
               <div className="flex flex-wrap items-center justify-between gap-3">
                 <h2 className="font-display text-2xl text-foreground">Season Stats</h2>
-                <div className="flex items-center gap-3">
-                  <div className="inline-flex rounded-full border border-border bg-surface p-1">
-                    {(["baseball", "soccer"] as Sport[]).map((option) => (
-                      <button
-                        key={option}
-                        type="button"
-                        onClick={() => setSport(option)}
-                        aria-pressed={sport === option}
-                        className={`rounded-full px-4 py-1.5 text-sm font-semibold capitalize transition-colors ${
-                          sport === option
-                            ? "bg-primary text-primary-foreground"
-                            : "text-muted-foreground hover:text-foreground"
-                        }`}
-                      >
-                        {option}
-                      </button>
-                    ))}
-                  </div>
-                  {season && (
-                    <span className="rounded-full bg-surface px-3 py-1 text-sm font-medium text-muted-foreground">
-                      {season.season}
-                    </span>
-                  )}
-                </div>
+                {season && (
+                  <span className="rounded-full bg-surface px-3 py-1 text-sm font-medium text-muted-foreground">
+                    {season.season}
+                  </span>
+                )}
               </div>
 
               {!season ? (
-                <p className="mt-6 text-muted-foreground">
-                  No {sport} season recorded yet for this athlete.
-                </p>
-              ) : sport === "baseball" ? (
-                <div className="mt-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-                  <StatCard label="Batting Average" value={formatAverage(season.batting_average)} />
-                  <StatCard label="Hits" value={formatNumber(season.hits)} />
-                  <StatCard label="Home Runs" value={formatNumber(season.home_runs)} />
-                  <StatCard label="RBI" value={formatNumber(season.rbi)} />
-                  <StatCard label="Strikeouts" value={formatNumber(season.strikeouts)} />
-                  <StatCard label="Stolen Bases" value={formatNumber(season.stolen_bases)} />
-                  <StatCard label="Wins" value={formatNumber(season.wins)} />
-                  <StatCard label="Saves" value={formatNumber(season.saves)} />
-                  <StatCard label="ERA" value={formatNumber(season.era, 2)} />
-                  <StatCard label="Games Played" value={formatNumber(season.games_played)} />
-                </div>
+                <p className="mt-6 text-muted-foreground">No soccer season recorded yet for this athlete.</p>
               ) : (
                 <div className="mt-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
                   <StatCard label="Goals" value={formatNumber(season.goals)} />
@@ -239,8 +197,7 @@ function Index() {
               )}
             </div>
 
-            <GameLog games={games.filter((g) => g.sport === sport)} />
-
+            <GameLog games={games.filter((g) => g.sport === SPORT)} />
 
             {achievements.length > 0 && (
               <div className="rounded-2xl border border-border bg-card p-6">
@@ -301,23 +258,21 @@ function StatCard({ label, value }: { label: string; value: string }) {
   );
 }
 
-function BaseballIcon({ className }: { className?: string }) {
+function SoccerBallIcon({ className }: { className?: string }) {
   return (
     <svg
       className={className}
       viewBox="0 0 24 24"
       fill="none"
       stroke="currentColor"
-      strokeWidth="2"
+      strokeWidth="1.8"
       strokeLinecap="round"
       strokeLinejoin="round"
       aria-hidden="true"
     >
       <circle cx="12" cy="12" r="9" />
-      <path d="M8.5 7.5c1.5 2.5 1.5 6.5 0 9" />
-      <path d="M15.5 7.5c-1.5 2.5-1.5 6.5 0 9" />
-      <path d="M5 12h2" />
-      <path d="M17 12h2" />
+      <path d="M12 7.2 9 9.4l1.1 3.6h3.8L15 9.4z" />
+      <path d="M12 3.2v4M5.2 8.8 9 9.4M18.8 8.8 15 9.4M8.2 20.2 10.1 13M15.8 20.2 13.9 13" />
     </svg>
   );
 }
