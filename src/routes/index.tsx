@@ -17,7 +17,6 @@ import {
   Globe,
   Users,
   Mail,
-  GraduationCap as CoachCap,
   Eye,
 } from "lucide-react";
 
