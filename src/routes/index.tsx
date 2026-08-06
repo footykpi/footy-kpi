@@ -23,6 +23,7 @@ import {
 import { getPublicProfile, type PublicProfile } from "@/lib/profile.functions";
 import { GameLog } from "@/components/GameLog";
 import { ProgressCharts } from "@/components/ProgressCharts";
+import { HighlightsReel } from "@/components/HighlightsReel";
 import playerPhoto from "@/assets/player-photo.jpg";
 
 export const Route = createFileRoute("/")({
@@ -60,7 +61,7 @@ const SPORT = "soccer";
 
 function Index() {
   const { data } = useSuspenseQuery(profileQueryOptions({ slug: "demo-athlete" }));
-  const { profile, stats, achievements, games, isPrivate } = data as PublicProfile;
+  const { profile, stats, achievements, games, highlights, isPrivate } = data as PublicProfile;
   const season = stats.find((s) => s.sport === SPORT);
   const [previewPrivate, setPreviewPrivate] = useState(isPrivate);
   const locked = isPrivate || previewPrivate;
@@ -233,6 +234,12 @@ function Index() {
                 </div>
               )}
             </div>
+
+            <HighlightsReel
+              profileId={profile.id}
+              profileSlug={profile.slug}
+              highlights={highlights}
+            />
 
             <ProgressCharts games={games.filter((g) => g.sport === SPORT)} />
 
