@@ -182,6 +182,7 @@ export type Database = {
           sport: string
           team: string | null
           updated_at: string
+          visibility: string
           weight: string | null
         }
         Insert: {
@@ -201,6 +202,7 @@ export type Database = {
           sport?: string
           team?: string | null
           updated_at?: string
+          visibility?: string
           weight?: string | null
         }
         Update: {
@@ -220,6 +222,7 @@ export type Database = {
           sport?: string
           team?: string | null
           updated_at?: string
+          visibility?: string
           weight?: string | null
         }
         Relationships: []

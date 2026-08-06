@@ -20,6 +20,7 @@ export interface Profile {
   gpa: number | null;
   bio: string | null;
   sport: string;
+  visibility: "public" | "private";
   created_at: string;
   updated_at: string;
 }
@@ -97,6 +98,8 @@ export interface Game {
 
 export interface PublicProfile {
   profile: Profile;
+  /** True when the athlete keeps the portfolio private: detailed data is withheld. */
+  isPrivate: boolean;
   stats: SeasonStats[];
   achievements: Achievement[];
   games: Game[];
@@ -132,6 +135,19 @@ export const getPublicProfile = createServerFn({ method: "GET" })
       throw new Response("Profile not found", { status: 404 });
     }
 
+    const isPrivate = (profile as { visibility?: string }).visibility === "private";
+
+    if (isPrivate) {
+      // Teaser only — no stats, games, media, or achievements leave the server.
+      return {
+        profile: profile as Profile,
+        isPrivate: true,
+        stats: [],
+        achievements: [],
+        games: [],
+      };
+    }
+
     const [{ data: stats }, { data: achievements }, { data: games }] = await Promise.all([
       supabase
         .from("season_stats")
@@ -162,6 +178,7 @@ export const getPublicProfile = createServerFn({ method: "GET" })
 
     return {
       profile: profile as Profile,
+      isPrivate: false,
       stats: (stats ?? []) as SeasonStats[],
       achievements: (achievements ?? []) as Achievement[],
       games: gameList,

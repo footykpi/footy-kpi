@@ -1,4 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
+import { useState } from "react";
 import { useSuspenseQuery } from "@tanstack/react-query";
 import { queryOptions } from "@tanstack/react-query";
 
@@ -12,6 +13,11 @@ import {
   Share2,
   TrendingUp,
   Shield,
+  Lock,
+  Globe,
+  Users,
+  Mail,
+  Eye,
 } from "lucide-react";
 
 import { getPublicProfile, type PublicProfile } from "@/lib/profile.functions";
@@ -54,8 +60,10 @@ const SPORT = "soccer";
 
 function Index() {
   const { data } = useSuspenseQuery(profileQueryOptions({ slug: "demo-athlete" }));
-  const { profile, stats, achievements, games } = data as PublicProfile;
+  const { profile, stats, achievements, games, isPrivate } = data as PublicProfile;
   const season = stats.find((s) => s.sport === SPORT);
+  const [previewPrivate, setPreviewPrivate] = useState(isPrivate);
+  const locked = isPrivate || previewPrivate;
 
   return (
     <div className="min-h-screen bg-background">
@@ -67,10 +75,34 @@ function Index() {
             </div>
             <span className="font-display text-2xl tracking-wide text-foreground">ATHLETEFOLIO</span>
           </div>
-          <button className="inline-flex items-center gap-2 rounded-full border border-border bg-background px-4 py-2 text-sm font-medium text-foreground transition-colors hover:bg-surface-elevated">
-            <Share2 className="h-4 w-4" />
-            Share Profile
-          </button>
+          <div className="flex items-center gap-3">
+            <div className="flex items-center gap-1 rounded-full border border-border bg-background p-1">
+              <button
+                type="button"
+                onClick={() => setPreviewPrivate(false)}
+                aria-pressed={!locked}
+                className={`inline-flex items-center gap-1.5 rounded-full px-3 py-1.5 text-sm font-medium transition-colors ${!locked ? "bg-primary text-primary-foreground" : "text-muted-foreground hover:text-foreground"}`}
+              >
+                <Globe className="h-4 w-4" />
+                Public
+              </button>
+              <button
+                type="button"
+                onClick={() => setPreviewPrivate(true)}
+                aria-pressed={locked}
+                className={`inline-flex items-center gap-1.5 rounded-full px-3 py-1.5 text-sm font-medium transition-colors ${locked ? "bg-primary text-primary-foreground" : "text-muted-foreground hover:text-foreground"}`}
+              >
+                <Lock className="h-4 w-4" />
+                Private
+              </button>
+            </div>
+            {!locked && (
+              <button className="inline-flex items-center gap-2 rounded-full border border-border bg-background px-4 py-2 text-sm font-medium text-foreground transition-colors hover:bg-surface-elevated">
+                <Share2 className="h-4 w-4" />
+                Share Profile
+              </button>
+            )}
+          </div>
         </div>
       </header>
 
@@ -155,6 +187,10 @@ function Index() {
           </div>
 
           <div className="space-y-8 lg:col-span-8">
+            {locked ? (
+              <PrivateTeaser firstName={profile.first_name} />
+            ) : (
+            <>
             {profile.bio && (
               <div className="rounded-2xl border border-border bg-card p-6">
                 <h2 className="font-display text-2xl text-foreground">About</h2>
@@ -231,6 +267,8 @@ function Index() {
                 </div>
               </div>
             )}
+            </>
+            )}
           </div>
         </section>
       </main>
@@ -248,6 +286,85 @@ function Index() {
           </p>
         </div>
       </footer>
+    </div>
+  );
+}
+
+function PrivateTeaser({ firstName }: { firstName: string }) {
+  return (
+    <div className="space-y-6">
+      <div className="rounded-2xl border border-border bg-card p-8 text-center">
+        <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-full bg-primary/10 text-primary">
+          <Lock className="h-7 w-7" />
+        </div>
+        <h2 className="mt-5 font-display text-3xl text-foreground">This Portfolio Is Private</h2>
+        <p className="mx-auto mt-3 max-w-md leading-relaxed text-muted-foreground">
+          {firstName}&apos;s verified stats, game log, media, and progress charts are visible only to
+          {" "}{firstName} and invited family. Coaches and recruiters can request access.
+        </p>
+        <div className="mt-6 flex flex-wrap items-center justify-center gap-3">
+          <button className="inline-flex items-center gap-2 rounded-full bg-primary px-5 py-2.5 text-sm font-semibold text-primary-foreground transition-opacity hover:opacity-90">
+            <Mail className="h-4 w-4" />
+            Request Access
+          </button>
+          <button className="inline-flex items-center gap-2 rounded-full border border-border bg-background px-5 py-2.5 text-sm font-medium text-foreground transition-colors hover:bg-surface-elevated">
+            <Users className="h-4 w-4" />
+            Invite Family
+          </button>
+        </div>
+      </div>
+
+      <div className="rounded-2xl border border-border bg-card p-6">
+        <h3 className="font-display text-2xl text-foreground">Who Can See What</h3>
+        <div className="mt-5 grid gap-4 sm:grid-cols-2">
+          <AccessCard
+            icon={<Lock className="h-5 w-5" />}
+            title="Private Mode"
+            items={["Player only", "Invited family", "Nothing shared publicly"]}
+          />
+          <AccessCard
+            icon={<Globe className="h-5 w-5" />}
+            title="Public Mode"
+            items={[
+              "Shareable profile link",
+              "Recruiters can view verified stats",
+              "College coaches can view",
+              "Friends can follow",
+            ]}
+          />
+        </div>
+        <p className="mt-5 flex items-center gap-2 text-sm text-muted-foreground">
+          <Eye className="h-4 w-4" />
+          Toggle the switch above to preview how each mode looks to visitors.
+        </p>
+      </div>
+    </div>
+  );
+}
+
+function AccessCard({
+  icon,
+  title,
+  items,
+}: {
+  icon: React.ReactNode;
+  title: string;
+  items: string[];
+}) {
+  return (
+    <div className="rounded-xl bg-surface p-5">
+      <div className="flex items-center gap-2 text-primary">
+        {icon}
+        <span className="font-semibold text-foreground">{title}</span>
+      </div>
+      <ul className="mt-3 space-y-2 text-sm text-muted-foreground">
+        {items.map((item) => (
+          <li key={item} className="flex items-start gap-2">
+            <span className="mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full bg-primary" />
+            {item}
+          </li>
+        ))}
+      </ul>
     </div>
   );
 }
