@@ -1,0 +1,325 @@
+import { useRef, useState } from "react";
+import { useQueryClient } from "@tanstack/react-query";
+import {
+  Trophy,
+  Medal,
+  ScrollText,
+  Sparkles,
+  Upload,
+  Play,
+  X,
+  Loader2,
+  ImagePlus,
+} from "lucide-react";
+
+import { supabase } from "@/integrations/supabase/client";
+import type { Highlight } from "@/lib/profile.functions";
+
+type Category = Highlight["category"];
+
+const CATEGORIES: { value: Category; label: string; icon: typeof Trophy }[] = [
+  { value: "moment", label: "Game-Winning Moments", icon: Sparkles },
+  { value: "award", label: "Awards", icon: Trophy },
+  { value: "certificate", label: "Certificates", icon: ScrollText },
+  { value: "medal", label: "Tournament Medals", icon: Medal },
+];
+
+const ACCEPT = "image/*,video/*";
+
+function categoryMeta(value: Category) {
+  return CATEGORIES.find((c) => c.value === value) ?? CATEGORIES[0]!;
+}
+
+export function HighlightsReel({
+  profileId,
+  profileSlug,
+  highlights,
+}: {
+  profileId: string;
+  profileSlug: string;
+  highlights: Highlight[];
+}) {
+  const queryClient = useQueryClient();
+  const fileInput = useRef<HTMLInputElement>(null);
+  const [filter, setFilter] = useState<Category | "all">("all");
+  const [uploadCategory, setUploadCategory] = useState<Category>("moment");
+  const [title, setTitle] = useState("");
+  const [uploading, setUploading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [lightbox, setLightbox] = useState<Highlight | null>(null);
+
+  const visible = filter === "all" ? highlights : highlights.filter((h) => h.category === filter);
+
+  async function handleFiles(files: FileList | null) {
+    if (!files || files.length === 0) return;
+    setUploading(true);
+    setError(null);
+
+    try {
+      for (const file of Array.from(files)) {
+        const isVideo = file.type.startsWith("video/");
+        const ext = file.name.split(".").pop() ?? "bin";
+        const path = `${profileSlug}/${crypto.randomUUID()}.${ext}`;
+
+        const { error: uploadError } = await supabase.storage
+          .from("highlights")
+          .upload(path, file, { contentType: file.type, upsert: false });
+        if (uploadError) throw uploadError;
+
+        const { error: insertError } = await supabase.from("highlights").insert({
+          profile_id: profileId,
+          media_type: isVideo ? "video" : "photo",
+          category: uploadCategory,
+          title: title.trim() || null,
+          url: path,
+          sort_order: highlights.length,
+        });
+        if (insertError) throw insertError;
+      }
+
+      setTitle("");
+      await queryClient.invalidateQueries({ queryKey: ["profile"] });
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Upload failed. Please try again.");
+    } finally {
+      setUploading(false);
+      if (fileInput.current) fileInput.current.value = "";
+    }
+  }
+
+  async function handleRemove(id: string) {
+    await supabase.from("highlights").delete().eq("id", id);
+    await queryClient.invalidateQueries({ queryKey: ["profile"] });
+  }
+
+  return (
+    <div className="rounded-2xl border border-border bg-card p-6">
+      <div className="flex flex-wrap items-center justify-between gap-3">
+        <h2 className="font-display text-2xl text-foreground">Highlights</h2>
+        <span className="rounded-full bg-surface px-3 py-1 text-sm font-medium text-muted-foreground">
+          {highlights.length} {highlights.length === 1 ? "item" : "items"}
+        </span>
+      </div>
+
+      {/* Upload panel */}
+      <div className="mt-5 rounded-xl border border-dashed border-border bg-surface p-5">
+        <div className="flex flex-wrap items-center gap-2">
+          {CATEGORIES.map((category) => {
+            const Icon = category.icon;
+            const active = uploadCategory === category.value;
+            return (
+              <button
+                key={category.value}
+                type="button"
+                onClick={() => setUploadCategory(category.value)}
+                aria-pressed={active}
+                className={`inline-flex items-center gap-1.5 rounded-full px-3 py-1.5 text-sm font-medium transition-colors ${
+                  active
+                    ? "bg-primary text-primary-foreground"
+                    : "border border-border bg-background text-muted-foreground hover:text-foreground"
+                }`}
+              >
+                <Icon className="h-4 w-4" />
+                {category.label}
+              </button>
+            );
+          })}
+        </div>
+
+        <div className="mt-4 flex flex-col gap-3 sm:flex-row sm:items-center">
+          <input
+            value={title}
+            onChange={(event) => setTitle(event.target.value)}
+            placeholder="Caption or moment title (optional)"
+            className="w-full flex-1 rounded-lg border border-border bg-background px-3 py-2 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/40"
+          />
+          <input
+            ref={fileInput}
+            type="file"
+            accept={ACCEPT}
+            multiple
+            className="hidden"
+            onChange={(event) => void handleFiles(event.target.files)}
+          />
+          <button
+            type="button"
+            disabled={uploading}
+            onClick={() => fileInput.current?.click()}
+            className="inline-flex shrink-0 items-center justify-center gap-2 rounded-full bg-primary px-5 py-2.5 text-sm font-semibold text-primary-foreground transition-opacity hover:opacity-90 disabled:opacity-60"
+          >
+            {uploading ? <Loader2 className="h-4 w-4 animate-spin" /> : <Upload className="h-4 w-4" />}
+            {uploading ? "Uploading…" : "Upload Photos or Videos"}
+          </button>
+        </div>
+
+        {error && <p className="mt-3 text-sm text-destructive">{error}</p>}
+      </div>
+
+      {/* Filters */}
+      {highlights.length > 0 && (
+        <div className="mt-6 flex flex-wrap items-center gap-2">
+          <FilterPill active={filter === "all"} onClick={() => setFilter("all")}>
+            All
+          </FilterPill>
+          {CATEGORIES.map((category) => (
+            <FilterPill
+              key={category.value}
+              active={filter === category.value}
+              onClick={() => setFilter(category.value)}
+            >
+              {category.label}
+            </FilterPill>
+          ))}
+        </div>
+      )}
+
+      {/* Grid */}
+      {visible.length === 0 ? (
+        <div className="mt-6 flex flex-col items-center gap-3 rounded-xl bg-surface p-10 text-center">
+          <ImagePlus className="h-8 w-8 text-muted-foreground" />
+          <p className="text-muted-foreground">
+            No highlights here yet — upload game-winning moments, awards, certificates, or
+            tournament medals.
+          </p>
+        </div>
+      ) : (
+        <div className="mt-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+          {visible.map((highlight) => {
+            const meta = categoryMeta(highlight.category);
+            const Icon = meta.icon;
+            return (
+              <div
+                key={highlight.id}
+                className="group relative overflow-hidden rounded-xl border border-border bg-surface"
+              >
+                <button
+                  type="button"
+                  onClick={() => setLightbox(highlight)}
+                  className="block w-full text-left"
+                >
+                  <div className="relative aspect-video bg-background">
+                    {highlight.media_type === "video" ? (
+                      <>
+                        <video
+                          src={highlight.url}
+                          className="h-full w-full object-cover"
+                          muted
+                          playsInline
+                          preload="metadata"
+                        />
+                        <span className="absolute inset-0 flex items-center justify-center">
+                          <span className="flex h-11 w-11 items-center justify-center rounded-full bg-primary/90 text-primary-foreground">
+                            <Play className="h-5 w-5" />
+                          </span>
+                        </span>
+                      </>
+                    ) : (
+                      <img
+                        src={highlight.url}
+                        alt={highlight.title ?? meta.label}
+                        loading="lazy"
+                        className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-105"
+                      />
+                    )}
+                  </div>
+                  <div className="p-4">
+                    <div className="flex items-center gap-1.5 text-xs font-medium uppercase tracking-wide text-primary">
+                      <Icon className="h-3.5 w-3.5" />
+                      {meta.label}
+                    </div>
+                    <div className="mt-1 font-semibold text-foreground">
+                      {highlight.title ?? "Untitled highlight"}
+                    </div>
+                    {highlight.caption && (
+                      <p className="mt-1 text-sm text-muted-foreground">{highlight.caption}</p>
+                    )}
+                  </div>
+                </button>
+                <button
+                  type="button"
+                  aria-label="Remove highlight"
+                  onClick={() => void handleRemove(highlight.id)}
+                  className="absolute right-2 top-2 rounded-full bg-background/80 p-1.5 text-muted-foreground opacity-0 transition-opacity hover:text-foreground group-hover:opacity-100"
+                >
+                  <X className="h-4 w-4" />
+                </button>
+              </div>
+            );
+          })}
+        </div>
+      )}
+
+      {lightbox && (
+        <div
+          role="dialog"
+          aria-modal="true"
+          className="fixed inset-0 z-50 flex items-center justify-center bg-background/90 p-6"
+          onClick={() => setLightbox(null)}
+        >
+          <div
+            className="max-h-full w-full max-w-4xl overflow-hidden rounded-2xl border border-border bg-card"
+            onClick={(event) => event.stopPropagation()}
+          >
+            <div className="bg-background">
+              {lightbox.media_type === "video" ? (
+                <video src={lightbox.url} controls autoPlay className="max-h-[70vh] w-full" />
+              ) : (
+                <img
+                  src={lightbox.url}
+                  alt={lightbox.title ?? "Highlight"}
+                  className="max-h-[70vh] w-full object-contain"
+                />
+              )}
+            </div>
+            <div className="flex items-start justify-between gap-4 p-5">
+              <div>
+                <div className="text-xs font-medium uppercase tracking-wide text-primary">
+                  {categoryMeta(lightbox.category).label}
+                </div>
+                <h3 className="mt-1 font-display text-2xl text-foreground">
+                  {lightbox.title ?? "Untitled highlight"}
+                </h3>
+                {lightbox.caption && (
+                  <p className="mt-1 text-sm text-muted-foreground">{lightbox.caption}</p>
+                )}
+              </div>
+              <button
+                type="button"
+                aria-label="Close"
+                onClick={() => setLightbox(null)}
+                className="rounded-full border border-border p-2 text-muted-foreground hover:text-foreground"
+              >
+                <X className="h-4 w-4" />
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
+
+function FilterPill({
+  active,
+  onClick,
+  children,
+}: {
+  active: boolean;
+  onClick: () => void;
+  children: React.ReactNode;
+}) {
+  return (
+    <button
+      type="button"
+      onClick={onClick}
+      aria-pressed={active}
+      className={`rounded-full px-3 py-1.5 text-sm font-medium transition-colors ${
+        active
+          ? "bg-primary text-primary-foreground"
+          : "bg-surface text-muted-foreground hover:text-foreground"
+      }`}
+    >
+      {children}
+    </button>
+  );
+}

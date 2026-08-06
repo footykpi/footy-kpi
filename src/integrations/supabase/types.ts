@@ -164,6 +164,59 @@ export type Database = {
           },
         ]
       }
+      highlights: {
+        Row: {
+          caption: string | null
+          category: string
+          created_at: string
+          highlight_date: string | null
+          id: string
+          media_type: string
+          profile_id: string
+          sort_order: number
+          thumbnail_url: string | null
+          title: string | null
+          updated_at: string
+          url: string
+        }
+        Insert: {
+          caption?: string | null
+          category?: string
+          created_at?: string
+          highlight_date?: string | null
+          id?: string
+          media_type?: string
+          profile_id: string
+          sort_order?: number
+          thumbnail_url?: string | null
+          title?: string | null
+          updated_at?: string
+          url: string
+        }
+        Update: {
+          caption?: string | null
+          category?: string
+          created_at?: string
+          highlight_date?: string | null
+          id?: string
+          media_type?: string
+          profile_id?: string
+          sort_order?: number
+          thumbnail_url?: string | null
+          title?: string | null
+          updated_at?: string
+          url?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "highlights_profile_id_fkey"
+            columns: ["profile_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       profiles: {
         Row: {
           bio: string | null
