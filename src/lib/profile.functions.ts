@@ -96,6 +96,19 @@ export interface Game {
   media: GameMedia[];
 }
 
+export interface Highlight {
+  id: string;
+  profile_id: string;
+  media_type: "photo" | "video";
+  category: "moment" | "award" | "certificate" | "medal";
+  title: string | null;
+  caption: string | null;
+  url: string;
+  thumbnail_url: string | null;
+  highlight_date: string | null;
+  sort_order: number;
+}
+
 export interface PublicProfile {
   profile: Profile;
   /** True when the athlete keeps the portfolio private: detailed data is withheld. */
@@ -103,6 +116,7 @@ export interface PublicProfile {
   stats: SeasonStats[];
   achievements: Achievement[];
   games: Game[];
+  highlights: Highlight[];
 }
 
 
@@ -118,6 +132,16 @@ function createPublishableClient() {
       },
     },
   );
+}
+
+type PublishableClient = ReturnType<typeof createPublishableClient>;
+
+async function signHighlightUrl(client: PublishableClient, path: string): Promise<string> {
+  if (/^https?:\/\//.test(path)) return path;
+  const { data } = await client.storage
+    .from("highlights")
+    .createSignedUrl(path, 60 * 60 * 24);
+  return data?.signedUrl ?? path;
 }
 
 export const getPublicProfile = createServerFn({ method: "GET" })
@@ -145,10 +169,11 @@ export const getPublicProfile = createServerFn({ method: "GET" })
         stats: [],
         achievements: [],
         games: [],
+        highlights: [],
       };
     }
 
-    const [{ data: stats }, { data: achievements }, { data: games }] = await Promise.all([
+    const [{ data: stats }, { data: achievements }, { data: games }, { data: highlightRows }] = await Promise.all([
       supabase
         .from("season_stats")
         .select("*")
@@ -164,7 +189,23 @@ export const getPublicProfile = createServerFn({ method: "GET" })
         .select("*, game_media(*)")
         .eq("profile_id", profile.id)
         .order("game_date", { ascending: false }),
+      supabase
+        .from("highlights")
+        .select("*")
+        .eq("profile_id", profile.id)
+        .order("sort_order", { ascending: true }),
     ]);
+
+    // Highlight media lives in a private bucket: hand out short-lived signed URLs.
+    const highlights: Highlight[] = await Promise.all(
+      ((highlightRows ?? []) as Highlight[]).map(async (row) => ({
+        ...row,
+        url: await signHighlightUrl(supabase, row.url),
+        thumbnail_url: row.thumbnail_url
+          ? await signHighlightUrl(supabase, row.thumbnail_url)
+          : null,
+      })),
+    );
 
     const gameList: Game[] = (games ?? []).map((row: Record<string, unknown>) => {
       const { game_media, ...game } = row as Record<string, unknown> & {
@@ -182,6 +223,6 @@ export const getPublicProfile = createServerFn({ method: "GET" })
       stats: (stats ?? []) as SeasonStats[],
       achievements: (achievements ?? []) as Achievement[],
       games: gameList,
-
+      highlights,
     };
   });
