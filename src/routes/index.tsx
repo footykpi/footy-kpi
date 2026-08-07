@@ -106,26 +106,30 @@ function Index() {
             <span className="font-display text-2xl tracking-wide text-foreground">ATHLETEFOLIO</span>
           </div>
           <div className="flex items-center gap-3">
-            <div className="flex items-center gap-1 rounded-full border border-border bg-background p-1">
-              <button
-                type="button"
-                onClick={() => setPreviewPrivate(false)}
-                aria-pressed={!locked}
-                className={`inline-flex items-center gap-1.5 rounded-full px-3 py-1.5 text-sm font-medium transition-colors ${!locked ? "bg-primary text-primary-foreground" : "text-muted-foreground hover:text-foreground"}`}
-              >
-                <Globe className="h-4 w-4" />
-                Public
-              </button>
-              <button
-                type="button"
-                onClick={() => setPreviewPrivate(true)}
-                aria-pressed={locked}
-                className={`inline-flex items-center gap-1.5 rounded-full px-3 py-1.5 text-sm font-medium transition-colors ${locked ? "bg-primary text-primary-foreground" : "text-muted-foreground hover:text-foreground"}`}
-              >
-                <Lock className="h-4 w-4" />
-                Private
-              </button>
-            </div>
+            {unlocked ? (
+              <RoleBadge access={access} />
+            ) : (
+              <div className="flex items-center gap-1 rounded-full border border-border bg-background p-1">
+                <button
+                  type="button"
+                  onClick={() => setPreviewPrivate(false)}
+                  aria-pressed={!locked}
+                  className={`inline-flex items-center gap-1.5 rounded-full px-3 py-1.5 text-sm font-medium transition-colors ${!locked ? "bg-primary text-primary-foreground" : "text-muted-foreground hover:text-foreground"}`}
+                >
+                  <Globe className="h-4 w-4" />
+                  Public
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setPreviewPrivate(true)}
+                  aria-pressed={locked}
+                  className={`inline-flex items-center gap-1.5 rounded-full px-3 py-1.5 text-sm font-medium transition-colors ${locked ? "bg-primary text-primary-foreground" : "text-muted-foreground hover:text-foreground"}`}
+                >
+                  <Lock className="h-4 w-4" />
+                  Private
+                </button>
+              </div>
+            )}
             {!locked && (
               <button className="inline-flex items-center gap-2 rounded-full border border-border bg-background px-4 py-2 text-sm font-medium text-foreground transition-colors hover:bg-surface-elevated">
                 <Share2 className="h-4 w-4" />
@@ -133,6 +137,7 @@ function Index() {
               </button>
             )}
           </div>
+
         </div>
       </header>
 
