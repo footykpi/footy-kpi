@@ -222,11 +222,28 @@ function Index() {
           </div>
 
           <div className="space-y-8 lg:col-span-8">
+            {access.invalidKey && (
+              <div className="flex items-start gap-3 rounded-2xl border border-destructive/40 bg-destructive/10 p-5">
+                <AlertTriangle className="mt-0.5 h-5 w-5 text-destructive" />
+                <div>
+                  <p className="font-semibold text-foreground">This unlock link is no longer valid</p>
+                  <p className="mt-1 text-sm text-muted-foreground">
+                    It may have expired or been revoked. You&apos;re seeing the standard public
+                    profile — ask the athlete for a fresh link.
+                  </p>
+                </div>
+              </div>
+            )}
             {locked ? (
               <PrivateTeaser firstName={profile.first_name} />
             ) : (
             <>
+            {unlocked && <UnlockedBanner access={access} />}
+
+            {privateDetails && <ContactCard details={privateDetails} profileGpa={profile.gpa} />}
+
             {profile.bio && (
+
               <div className="rounded-2xl border border-border bg-card p-6">
                 <h2 className="font-display text-2xl text-foreground">About</h2>
                 <p className="mt-3 leading-relaxed text-muted-foreground">{profile.bio}</p>
