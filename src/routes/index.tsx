@@ -342,7 +342,10 @@ function Index() {
             )}
             </>
             )}
+
+            {!unlocked && <AccessLinks slug={SLUG} />}
           </div>
+
         </section>
       </main>
 
