@@ -107,16 +107,47 @@ export interface Highlight {
   thumbnail_url: string | null;
   highlight_date: string | null;
   sort_order: number;
+  is_public: boolean;
 }
+
+export type ViewerRole = "public" | "recruiter" | "coach";
+
+/** What the current visitor is allowed to see, derived from their unlock link. */
+export interface ViewerAccess {
+  role: ViewerRole;
+  /** Label the athlete gave the unlock link, e.g. "College coaches — fall ID camp". */
+  linkLabel: string | null;
+  /** Invalid, expired, or revoked key was supplied. */
+  invalidKey: boolean;
+  contact: boolean;
+  gameLog: boolean;
+  highlights: boolean;
+}
+
+export interface PrivateDetails {
+  contact_email: string | null;
+  contact_phone: string | null;
+  guardian_name: string | null;
+  academic_notes: string | null;
+}
+
+/** Games shown to everyone without an unlock link. */
+const PUBLIC_GAME_LIMIT = 5;
 
 export interface PublicProfile {
   profile: Profile;
   /** True when the athlete keeps the portfolio private: detailed data is withheld. */
   isPrivate: boolean;
+  access: ViewerAccess;
+  privateDetails: PrivateDetails | null;
   stats: SeasonStats[];
   achievements: Achievement[];
   games: Game[];
+  /** Games withheld because the visitor has no game-log unlock. */
+  gamesLocked: number;
   highlights: Highlight[];
+  /** Highlights withheld because the visitor has no highlight-library unlock. */
+  highlightsLocked: number;
 }
 
 
@@ -144,10 +175,21 @@ async function signHighlightUrl(client: PublishableClient, path: string): Promis
   return data?.signedUrl ?? path;
 }
 
+const PUBLIC_ACCESS: ViewerAccess = {
+  role: "public",
+  linkLabel: null,
+  invalidKey: false,
+  contact: false,
+  gameLog: false,
+  highlights: false,
+};
+
 export const getPublicProfile = createServerFn({ method: "GET" })
-  .validator(z.object({ slug: z.string() }))
+  .validator(z.object({ slug: z.string(), key: z.string().trim().max(120).optional() }))
   .handler(async ({ data }): Promise<PublicProfile> => {
     const supabase = createPublishableClient();
+    // Game notes, private details, and unlock tokens are server-role only.
+    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
 
     const { data: profile, error: profileError } = await supabase
       .from("profiles")
@@ -159,46 +201,101 @@ export const getPublicProfile = createServerFn({ method: "GET" })
       throw new Response("Profile not found", { status: 404 });
     }
 
-    const isPrivate = (profile as { visibility?: string }).visibility === "private";
+    // Resolve the visitor's role from their unlock link.
+    let access: ViewerAccess = PUBLIC_ACCESS;
+    if (data.key) {
+      const { data: link } = await supabaseAdmin
+        .from("profile_unlock_links")
+        .select("*")
+        .eq("token", data.key)
+        .eq("profile_id", profile.id)
+        .maybeSingle();
 
-    if (isPrivate) {
+      const usable =
+        link &&
+        !link.revoked_at &&
+        (!link.expires_at || new Date(link.expires_at).getTime() > Date.now());
+
+      if (usable && link) {
+        access = {
+          role: link.role as ViewerRole,
+          linkLabel: link.label,
+          invalidKey: false,
+          contact: link.unlock_contact,
+          gameLog: link.unlock_game_log,
+          highlights: link.unlock_highlights,
+        };
+        await supabaseAdmin
+          .from("profile_unlock_links")
+          .update({ view_count: link.view_count + 1, last_viewed_at: new Date().toISOString() })
+          .eq("id", link.id);
+      } else {
+        access = { ...PUBLIC_ACCESS, invalidKey: true };
+      }
+    }
+
+    const isPrivate = (profile as { visibility?: string }).visibility === "private";
+    const unlocked = access.role !== "public";
+
+    if (isPrivate && !unlocked) {
       // Teaser only — no stats, games, media, or achievements leave the server.
       return {
         profile: profile as Profile,
         isPrivate: true,
+        access,
+        privateDetails: null,
         stats: [],
         achievements: [],
         games: [],
+        gamesLocked: 0,
         highlights: [],
+        highlightsLocked: 0,
       };
     }
 
-    const [{ data: stats }, { data: achievements }, { data: games }, { data: highlightRows }] = await Promise.all([
-      supabase
-        .from("season_stats")
-        .select("*")
+    const [{ data: stats }, { data: achievements }, { data: allGames }, { data: allHighlights }] =
+      await Promise.all([
+        supabase
+          .from("season_stats")
+          .select("*")
+          .eq("profile_id", profile.id)
+          .order("season", { ascending: false }),
+        supabase
+          .from("achievements")
+          .select("*")
+          .eq("profile_id", profile.id)
+          .order("date", { ascending: false }),
+        supabaseAdmin
+          .from("games")
+          .select("*, game_media(*)")
+          .eq("profile_id", profile.id)
+          .order("game_date", { ascending: false }),
+        supabaseAdmin
+          .from("highlights")
+          .select("*")
+          .eq("profile_id", profile.id)
+          .order("sort_order", { ascending: true }),
+      ]);
+
+    let privateDetails: PrivateDetails | null = null;
+    if (access.contact) {
+      const { data: details } = await supabaseAdmin
+        .from("profile_private_details")
+        .select("contact_email, contact_phone, guardian_name, academic_notes")
         .eq("profile_id", profile.id)
-        .order("season", { ascending: false }),
-      supabase
-        .from("achievements")
-        .select("*")
-        .eq("profile_id", profile.id)
-        .order("date", { ascending: false }),
-      supabase
-        .from("games")
-        .select("*, game_media(*)")
-        .eq("profile_id", profile.id)
-        .order("game_date", { ascending: false }),
-      supabase
-        .from("highlights")
-        .select("*")
-        .eq("profile_id", profile.id)
-        .order("sort_order", { ascending: true }),
-    ]);
+        .maybeSingle();
+      privateDetails = (details as PrivateDetails | null) ?? null;
+    }
+
+    // Highlight library: only the athlete's public picks unless unlocked.
+    const highlightRows = ((allHighlights ?? []) as Highlight[]).filter(
+      (row) => access.highlights || row.is_public,
+    );
+    const highlightsLocked = (allHighlights ?? []).length - highlightRows.length;
 
     // Highlight media lives in a private bucket: hand out short-lived signed URLs.
     const highlights: Highlight[] = await Promise.all(
-      ((highlightRows ?? []) as Highlight[]).map(async (row) => ({
+      highlightRows.map(async (row) => ({
         ...row,
         url: await signHighlightUrl(supabase, row.url),
         thumbnail_url: row.thumbnail_url
@@ -207,22 +304,33 @@ export const getPublicProfile = createServerFn({ method: "GET" })
       })),
     );
 
-    const gameList: Game[] = (games ?? []).map((row: Record<string, unknown>) => {
+    const gameRows = (allGames ?? []) as Record<string, unknown>[];
+    const visibleGames = access.gameLog ? gameRows : gameRows.slice(0, PUBLIC_GAME_LIMIT);
+    const gameList: Game[] = visibleGames.map((row) => {
       const { game_media, ...game } = row as Record<string, unknown> & {
         game_media?: GameMedia[];
       };
-      return {
+      const base = {
         ...(game as unknown as Omit<Game, "media">),
         media: [...(game_media ?? [])].sort((a, b) => a.sort_order - b.sort_order),
       };
+      // Coach notes, reflections, mood, and ratings are unlock-only.
+      return access.gameLog
+        ? base
+        : { ...base, coach_notes: null, player_reflection: null, mood: null, performance_rating: null };
     });
 
     return {
       profile: profile as Profile,
-      isPrivate: false,
+      isPrivate,
+      access,
+      privateDetails,
       stats: (stats ?? []) as SeasonStats[],
       achievements: (achievements ?? []) as Achievement[],
       games: gameList,
+      gamesLocked: gameRows.length - visibleGames.length,
       highlights,
+      highlightsLocked,
     };
   });
+
