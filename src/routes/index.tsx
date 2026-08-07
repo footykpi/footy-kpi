@@ -2,6 +2,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import { useState } from "react";
 import { useSuspenseQuery } from "@tanstack/react-query";
 import { queryOptions } from "@tanstack/react-query";
+import { z } from "zod";
 
 import {
   Trophy,
@@ -18,17 +19,28 @@ import {
   Users,
   Mail,
   Eye,
+  KeyRound,
+  Phone,
+  BookOpen,
+  Telescope,
+  UserSearch,
+  AlertTriangle,
 } from "lucide-react";
 
-import { getPublicProfile, type PublicProfile } from "@/lib/profile.functions";
+import { getPublicProfile, type PublicProfile, type ViewerAccess } from "@/lib/profile.functions";
 import { GameLog } from "@/components/GameLog";
 import { ProgressCharts } from "@/components/ProgressCharts";
 import { HighlightsReel } from "@/components/HighlightsReel";
+import { AccessLinks } from "@/components/AccessLinks";
 import playerPhoto from "@/assets/player-photo.jpg";
 
+const SLUG = "demo-athlete";
+
 export const Route = createFileRoute("/")({
-  loader: async ({ context }) => {
-    await context.queryClient.ensureQueryData(profileQueryOptions({ slug: "demo-athlete" }));
+  validateSearch: z.object({ key: z.string().trim().max(120).optional() }),
+  loaderDeps: ({ search }) => ({ key: search.key }),
+  loader: async ({ context, deps }) => {
+    await context.queryClient.ensureQueryData(profileQueryOptions({ slug: SLUG, key: deps.key }));
   },
   head: () => ({
     meta: [
@@ -43,10 +55,13 @@ export const Route = createFileRoute("/")({
   component: Index,
 });
 
-const profileQueryOptions = (params: { slug: string }) =>
+const profileQueryOptions = (params: { slug: string; key?: string | undefined }) =>
   queryOptions({
-    queryKey: ["profile", params.slug],
-    queryFn: () => getPublicProfile({ data: { slug: params.slug } }),
+    queryKey: ["profile", params.slug, params.key ?? null],
+    queryFn: () =>
+      getPublicProfile({
+        data: { slug: params.slug, ...(params.key ? { key: params.key } : {}) },
+      }),
   });
 
 function formatNumber(value: number | null | undefined, digits = 0): string {
@@ -60,11 +75,25 @@ function formatNumber(value: number | null | undefined, digits = 0): string {
 const SPORT = "soccer";
 
 function Index() {
-  const { data } = useSuspenseQuery(profileQueryOptions({ slug: "demo-athlete" }));
-  const { profile, stats, achievements, games, highlights, isPrivate } = data as PublicProfile;
+  const search = Route.useSearch();
+  const { data } = useSuspenseQuery(profileQueryOptions({ slug: SLUG, key: search.key }));
+  const {
+    profile,
+    stats,
+    achievements,
+    games,
+    highlights,
+    isPrivate,
+    access,
+    privateDetails,
+    gamesLocked,
+    highlightsLocked,
+  } = data as PublicProfile;
   const season = stats.find((s) => s.sport === SPORT);
   const [previewPrivate, setPreviewPrivate] = useState(isPrivate);
-  const locked = isPrivate || previewPrivate;
+  const unlocked = access.role !== "public";
+  const locked = (isPrivate || previewPrivate) && !unlocked;
+
 
   return (
     <div className="min-h-screen bg-background">
