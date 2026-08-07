@@ -292,9 +292,24 @@ function Index() {
               highlights={highlights}
             />
 
+            {highlightsLocked > 0 && (
+              <LockedNotice
+                title={`${highlightsLocked} more highlight${highlightsLocked === 1 ? "" : "s"} reserved`}
+                body="The full highlight library — including unlisted clips, certificates, and medals — opens with a recruiter or college coach unlock link."
+              />
+            )}
+
             <ProgressCharts games={games.filter((g) => g.sport === SPORT)} />
 
             <GameLog games={games.filter((g) => g.sport === SPORT)} />
+
+            {gamesLocked > 0 && (
+              <LockedNotice
+                title={`${gamesLocked} earlier game${gamesLocked === 1 ? "" : "s"} not shown`}
+                body="Coach notes, player reflections, mood, and performance ratings are only released to recruiters and college coaches with an unlock link."
+              />
+            )}
+
 
             {achievements.length > 0 && (
               <div className="rounded-2xl border border-border bg-card p-6">
