@@ -472,3 +472,126 @@ function SoccerBallIcon({ className }: { className?: string }) {
     </svg>
   );
 }
+
+const ROLE_LABEL = {
+  recruiter: { text: "Recruiter access", icon: UserSearch },
+  coach: { text: "College coach access", icon: Telescope },
+} as const;
+
+function RoleBadge({ access }: { access: ViewerAccess }) {
+  const meta = ROLE_LABEL[access.role as "recruiter" | "coach"];
+  const Icon = meta.icon;
+  return (
+    <span className="inline-flex items-center gap-2 rounded-full bg-primary px-4 py-2 text-sm font-semibold text-primary-foreground">
+      <Icon className="h-4 w-4" />
+      {meta.text}
+    </span>
+  );
+}
+
+function UnlockedBanner({ access }: { access: ViewerAccess }) {
+  const meta = ROLE_LABEL[access.role as "recruiter" | "coach"];
+  const unlockedItems = [
+    access.contact ? "Academics & contact details" : null,
+    access.gameLog ? "Full game log with coach notes" : null,
+    access.highlights ? "Full highlight library" : null,
+  ].filter(Boolean) as string[];
+
+  return (
+    <div className="rounded-2xl border border-primary/40 bg-primary/5 p-6">
+      <div className="flex items-center gap-2 text-primary">
+        <KeyRound className="h-5 w-5" />
+        <h2 className="font-display text-2xl text-foreground">{meta.text} unlocked</h2>
+      </div>
+      <p className="mt-2 text-sm text-muted-foreground">
+        {access.linkLabel
+          ? `You opened the link "${access.linkLabel}". `
+          : "You opened a private unlock link. "}
+        The athlete chose to share these extras with you:
+      </p>
+      <ul className="mt-4 grid gap-2 sm:grid-cols-2">
+        {unlockedItems.map((item) => (
+          <li key={item} className="flex items-start gap-2 text-sm text-foreground">
+            <span className="mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full bg-primary" />
+            {item}
+          </li>
+        ))}
+      </ul>
+    </div>
+  );
+}
+
+function ContactCard({
+  details,
+  profileGpa,
+}: {
+  details: {
+    contact_email: string | null;
+    contact_phone: string | null;
+    guardian_name: string | null;
+    academic_notes: string | null;
+  };
+  profileGpa: number | null;
+}) {
+  return (
+    <div className="rounded-2xl border border-border bg-card p-6">
+      <div className="flex items-center gap-2 text-primary">
+        <BookOpen className="h-5 w-5" />
+        <h2 className="font-display text-2xl text-foreground">Academics &amp; Contact</h2>
+      </div>
+      <div className="mt-5 grid gap-3 sm:grid-cols-2">
+        {details.contact_email && (
+          <DetailRow icon={<Mail className="h-4 w-4" />} label="Email" value={details.contact_email} />
+        )}
+        {details.contact_phone && (
+          <DetailRow icon={<Phone className="h-4 w-4" />} label="Phone" value={details.contact_phone} />
+        )}
+        {details.guardian_name && (
+          <DetailRow icon={<Users className="h-4 w-4" />} label="Guardian" value={details.guardian_name} />
+        )}
+        {profileGpa !== null && profileGpa !== undefined && (
+          <DetailRow icon={<TrendingUp className="h-4 w-4" />} label="GPA" value={String(profileGpa)} />
+        )}
+      </div>
+      {details.academic_notes && (
+        <p className="mt-4 rounded-xl bg-surface p-4 text-sm leading-relaxed text-muted-foreground">
+          {details.academic_notes}
+        </p>
+      )}
+    </div>
+  );
+}
+
+function DetailRow({
+  icon,
+  label,
+  value,
+}: {
+  icon: React.ReactNode;
+  label: string;
+  value: string;
+}) {
+  return (
+    <div className="rounded-xl bg-surface p-4">
+      <div className="flex items-center gap-2 text-sm text-muted-foreground">
+        {icon}
+        {label}
+      </div>
+      <div className="mt-1 font-medium text-foreground">{value}</div>
+    </div>
+  );
+}
+
+function LockedNotice({ title, body }: { title: string; body: string }) {
+  return (
+    <div className="flex items-start gap-3 rounded-2xl border border-dashed border-border bg-surface/60 p-5">
+      <div className="mt-0.5 flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-primary/10 text-primary">
+        <Lock className="h-4 w-4" />
+      </div>
+      <div>
+        <p className="font-semibold text-foreground">{title}</p>
+        <p className="mt-1 text-sm text-muted-foreground">{body}</p>
+      </div>
+    </div>
+  );
+}
