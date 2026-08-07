@@ -171,6 +171,7 @@ export type Database = {
           created_at: string
           highlight_date: string | null
           id: string
+          is_public: boolean
           media_type: string
           profile_id: string
           sort_order: number
@@ -185,6 +186,7 @@ export type Database = {
           created_at?: string
           highlight_date?: string | null
           id?: string
+          is_public?: boolean
           media_type?: string
           profile_id: string
           sort_order?: number
@@ -199,6 +201,7 @@ export type Database = {
           created_at?: string
           highlight_date?: string | null
           id?: string
+          is_public?: boolean
           media_type?: string
           profile_id?: string
           sort_order?: number
@@ -210,6 +213,103 @@ export type Database = {
         Relationships: [
           {
             foreignKeyName: "highlights_profile_id_fkey"
+            columns: ["profile_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      profile_private_details: {
+        Row: {
+          academic_notes: string | null
+          contact_email: string | null
+          contact_phone: string | null
+          created_at: string
+          guardian_name: string | null
+          profile_id: string
+          updated_at: string
+        }
+        Insert: {
+          academic_notes?: string | null
+          contact_email?: string | null
+          contact_phone?: string | null
+          created_at?: string
+          guardian_name?: string | null
+          profile_id: string
+          updated_at?: string
+        }
+        Update: {
+          academic_notes?: string | null
+          contact_email?: string | null
+          contact_phone?: string | null
+          created_at?: string
+          guardian_name?: string | null
+          profile_id?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "profile_private_details_profile_id_fkey"
+            columns: ["profile_id"]
+            isOneToOne: true
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      profile_unlock_links: {
+        Row: {
+          created_at: string
+          expires_at: string | null
+          id: string
+          label: string | null
+          last_viewed_at: string | null
+          profile_id: string
+          revoked_at: string | null
+          role: string
+          token: string
+          unlock_contact: boolean
+          unlock_game_log: boolean
+          unlock_highlights: boolean
+          updated_at: string
+          view_count: number
+        }
+        Insert: {
+          created_at?: string
+          expires_at?: string | null
+          id?: string
+          label?: string | null
+          last_viewed_at?: string | null
+          profile_id: string
+          revoked_at?: string | null
+          role: string
+          token: string
+          unlock_contact?: boolean
+          unlock_game_log?: boolean
+          unlock_highlights?: boolean
+          updated_at?: string
+          view_count?: number
+        }
+        Update: {
+          created_at?: string
+          expires_at?: string | null
+          id?: string
+          label?: string | null
+          last_viewed_at?: string | null
+          profile_id?: string
+          revoked_at?: string | null
+          role?: string
+          token?: string
+          unlock_contact?: boolean
+          unlock_game_log?: boolean
+          unlock_highlights?: boolean
+          updated_at?: string
+          view_count?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "profile_unlock_links_profile_id_fkey"
             columns: ["profile_id"]
             isOneToOne: false
             referencedRelation: "profiles"

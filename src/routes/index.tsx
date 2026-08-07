@@ -2,6 +2,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import { useState } from "react";
 import { useSuspenseQuery } from "@tanstack/react-query";
 import { queryOptions } from "@tanstack/react-query";
+import { z } from "zod";
 
 import {
   Trophy,
@@ -18,17 +19,28 @@ import {
   Users,
   Mail,
   Eye,
+  KeyRound,
+  Phone,
+  BookOpen,
+  Telescope,
+  UserSearch,
+  AlertTriangle,
 } from "lucide-react";
 
-import { getPublicProfile, type PublicProfile } from "@/lib/profile.functions";
+import { getPublicProfile, type PublicProfile, type ViewerAccess } from "@/lib/profile.functions";
 import { GameLog } from "@/components/GameLog";
 import { ProgressCharts } from "@/components/ProgressCharts";
 import { HighlightsReel } from "@/components/HighlightsReel";
+import { AccessLinks } from "@/components/AccessLinks";
 import playerPhoto from "@/assets/player-photo.jpg";
 
+const SLUG = "demo-athlete";
+
 export const Route = createFileRoute("/")({
-  loader: async ({ context }) => {
-    await context.queryClient.ensureQueryData(profileQueryOptions({ slug: "demo-athlete" }));
+  validateSearch: z.object({ key: z.string().trim().max(120).optional() }),
+  loaderDeps: ({ search }) => ({ key: search.key }),
+  loader: async ({ context, deps }) => {
+    await context.queryClient.ensureQueryData(profileQueryOptions({ slug: SLUG, key: deps.key }));
   },
   head: () => ({
     meta: [
@@ -43,10 +55,13 @@ export const Route = createFileRoute("/")({
   component: Index,
 });
 
-const profileQueryOptions = (params: { slug: string }) =>
+const profileQueryOptions = (params: { slug: string; key?: string | undefined }) =>
   queryOptions({
-    queryKey: ["profile", params.slug],
-    queryFn: () => getPublicProfile({ data: { slug: params.slug } }),
+    queryKey: ["profile", params.slug, params.key ?? null],
+    queryFn: () =>
+      getPublicProfile({
+        data: { slug: params.slug, ...(params.key ? { key: params.key } : {}) },
+      }),
   });
 
 function formatNumber(value: number | null | undefined, digits = 0): string {
@@ -60,11 +75,25 @@ function formatNumber(value: number | null | undefined, digits = 0): string {
 const SPORT = "soccer";
 
 function Index() {
-  const { data } = useSuspenseQuery(profileQueryOptions({ slug: "demo-athlete" }));
-  const { profile, stats, achievements, games, highlights, isPrivate } = data as PublicProfile;
+  const search = Route.useSearch();
+  const { data } = useSuspenseQuery(profileQueryOptions({ slug: SLUG, key: search.key }));
+  const {
+    profile,
+    stats,
+    achievements,
+    games,
+    highlights,
+    isPrivate,
+    access,
+    privateDetails,
+    gamesLocked,
+    highlightsLocked,
+  } = data as PublicProfile;
   const season = stats.find((s) => s.sport === SPORT);
   const [previewPrivate, setPreviewPrivate] = useState(isPrivate);
-  const locked = isPrivate || previewPrivate;
+  const unlocked = access.role !== "public";
+  const locked = (isPrivate || previewPrivate) && !unlocked;
+
 
   return (
     <div className="min-h-screen bg-background">
@@ -77,26 +106,30 @@ function Index() {
             <span className="font-display text-2xl tracking-wide text-foreground">ATHLETEFOLIO</span>
           </div>
           <div className="flex items-center gap-3">
-            <div className="flex items-center gap-1 rounded-full border border-border bg-background p-1">
-              <button
-                type="button"
-                onClick={() => setPreviewPrivate(false)}
-                aria-pressed={!locked}
-                className={`inline-flex items-center gap-1.5 rounded-full px-3 py-1.5 text-sm font-medium transition-colors ${!locked ? "bg-primary text-primary-foreground" : "text-muted-foreground hover:text-foreground"}`}
-              >
-                <Globe className="h-4 w-4" />
-                Public
-              </button>
-              <button
-                type="button"
-                onClick={() => setPreviewPrivate(true)}
-                aria-pressed={locked}
-                className={`inline-flex items-center gap-1.5 rounded-full px-3 py-1.5 text-sm font-medium transition-colors ${locked ? "bg-primary text-primary-foreground" : "text-muted-foreground hover:text-foreground"}`}
-              >
-                <Lock className="h-4 w-4" />
-                Private
-              </button>
-            </div>
+            {unlocked ? (
+              <RoleBadge access={access} />
+            ) : (
+              <div className="flex items-center gap-1 rounded-full border border-border bg-background p-1">
+                <button
+                  type="button"
+                  onClick={() => setPreviewPrivate(false)}
+                  aria-pressed={!locked}
+                  className={`inline-flex items-center gap-1.5 rounded-full px-3 py-1.5 text-sm font-medium transition-colors ${!locked ? "bg-primary text-primary-foreground" : "text-muted-foreground hover:text-foreground"}`}
+                >
+                  <Globe className="h-4 w-4" />
+                  Public
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setPreviewPrivate(true)}
+                  aria-pressed={locked}
+                  className={`inline-flex items-center gap-1.5 rounded-full px-3 py-1.5 text-sm font-medium transition-colors ${locked ? "bg-primary text-primary-foreground" : "text-muted-foreground hover:text-foreground"}`}
+                >
+                  <Lock className="h-4 w-4" />
+                  Private
+                </button>
+              </div>
+            )}
             {!locked && (
               <button className="inline-flex items-center gap-2 rounded-full border border-border bg-background px-4 py-2 text-sm font-medium text-foreground transition-colors hover:bg-surface-elevated">
                 <Share2 className="h-4 w-4" />
@@ -104,6 +137,7 @@ function Index() {
               </button>
             )}
           </div>
+
         </div>
       </header>
 
@@ -188,11 +222,28 @@ function Index() {
           </div>
 
           <div className="space-y-8 lg:col-span-8">
+            {access.invalidKey && (
+              <div className="flex items-start gap-3 rounded-2xl border border-destructive/40 bg-destructive/10 p-5">
+                <AlertTriangle className="mt-0.5 h-5 w-5 text-destructive" />
+                <div>
+                  <p className="font-semibold text-foreground">This unlock link is no longer valid</p>
+                  <p className="mt-1 text-sm text-muted-foreground">
+                    It may have expired or been revoked. You&apos;re seeing the standard public
+                    profile — ask the athlete for a fresh link.
+                  </p>
+                </div>
+              </div>
+            )}
             {locked ? (
               <PrivateTeaser firstName={profile.first_name} />
             ) : (
             <>
+            {unlocked && <UnlockedBanner access={access} />}
+
+            {privateDetails && <ContactCard details={privateDetails} profileGpa={profile.gpa} />}
+
             {profile.bio && (
+
               <div className="rounded-2xl border border-border bg-card p-6">
                 <h2 className="font-display text-2xl text-foreground">About</h2>
                 <p className="mt-3 leading-relaxed text-muted-foreground">{profile.bio}</p>
@@ -241,9 +292,24 @@ function Index() {
               highlights={highlights}
             />
 
+            {highlightsLocked > 0 && (
+              <LockedNotice
+                title={`${highlightsLocked} more highlight${highlightsLocked === 1 ? "" : "s"} reserved`}
+                body="The full highlight library — including unlisted clips, certificates, and medals — opens with a recruiter or college coach unlock link."
+              />
+            )}
+
             <ProgressCharts games={games.filter((g) => g.sport === SPORT)} />
 
             <GameLog games={games.filter((g) => g.sport === SPORT)} />
+
+            {gamesLocked > 0 && (
+              <LockedNotice
+                title={`${gamesLocked} earlier game${gamesLocked === 1 ? "" : "s"} not shown`}
+                body="Coach notes, player reflections, mood, and performance ratings are only released to recruiters and college coaches with an unlock link."
+              />
+            )}
+
 
             {achievements.length > 0 && (
               <div className="rounded-2xl border border-border bg-card p-6">
@@ -276,7 +342,10 @@ function Index() {
             )}
             </>
             )}
+
+            {!unlocked && <AccessLinks slug={SLUG} />}
           </div>
+
         </section>
       </main>
 
@@ -401,5 +470,128 @@ function SoccerBallIcon({ className }: { className?: string }) {
       <path d="M12 7.2 9 9.4l1.1 3.6h3.8L15 9.4z" />
       <path d="M12 3.2v4M5.2 8.8 9 9.4M18.8 8.8 15 9.4M8.2 20.2 10.1 13M15.8 20.2 13.9 13" />
     </svg>
+  );
+}
+
+const ROLE_LABEL = {
+  recruiter: { text: "Recruiter access", icon: UserSearch },
+  coach: { text: "College coach access", icon: Telescope },
+} as const;
+
+function RoleBadge({ access }: { access: ViewerAccess }) {
+  const meta = ROLE_LABEL[access.role as "recruiter" | "coach"];
+  const Icon = meta.icon;
+  return (
+    <span className="inline-flex items-center gap-2 rounded-full bg-primary px-4 py-2 text-sm font-semibold text-primary-foreground">
+      <Icon className="h-4 w-4" />
+      {meta.text}
+    </span>
+  );
+}
+
+function UnlockedBanner({ access }: { access: ViewerAccess }) {
+  const meta = ROLE_LABEL[access.role as "recruiter" | "coach"];
+  const unlockedItems = [
+    access.contact ? "Academics & contact details" : null,
+    access.gameLog ? "Full game log with coach notes" : null,
+    access.highlights ? "Full highlight library" : null,
+  ].filter(Boolean) as string[];
+
+  return (
+    <div className="rounded-2xl border border-primary/40 bg-primary/5 p-6">
+      <div className="flex items-center gap-2 text-primary">
+        <KeyRound className="h-5 w-5" />
+        <h2 className="font-display text-2xl text-foreground">{meta.text} unlocked</h2>
+      </div>
+      <p className="mt-2 text-sm text-muted-foreground">
+        {access.linkLabel
+          ? `You opened the link "${access.linkLabel}". `
+          : "You opened a private unlock link. "}
+        The athlete chose to share these extras with you:
+      </p>
+      <ul className="mt-4 grid gap-2 sm:grid-cols-2">
+        {unlockedItems.map((item) => (
+          <li key={item} className="flex items-start gap-2 text-sm text-foreground">
+            <span className="mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full bg-primary" />
+            {item}
+          </li>
+        ))}
+      </ul>
+    </div>
+  );
+}
+
+function ContactCard({
+  details,
+  profileGpa,
+}: {
+  details: {
+    contact_email: string | null;
+    contact_phone: string | null;
+    guardian_name: string | null;
+    academic_notes: string | null;
+  };
+  profileGpa: number | null;
+}) {
+  return (
+    <div className="rounded-2xl border border-border bg-card p-6">
+      <div className="flex items-center gap-2 text-primary">
+        <BookOpen className="h-5 w-5" />
+        <h2 className="font-display text-2xl text-foreground">Academics &amp; Contact</h2>
+      </div>
+      <div className="mt-5 grid gap-3 sm:grid-cols-2">
+        {details.contact_email && (
+          <DetailRow icon={<Mail className="h-4 w-4" />} label="Email" value={details.contact_email} />
+        )}
+        {details.contact_phone && (
+          <DetailRow icon={<Phone className="h-4 w-4" />} label="Phone" value={details.contact_phone} />
+        )}
+        {details.guardian_name && (
+          <DetailRow icon={<Users className="h-4 w-4" />} label="Guardian" value={details.guardian_name} />
+        )}
+        {profileGpa !== null && profileGpa !== undefined && (
+          <DetailRow icon={<TrendingUp className="h-4 w-4" />} label="GPA" value={String(profileGpa)} />
+        )}
+      </div>
+      {details.academic_notes && (
+        <p className="mt-4 rounded-xl bg-surface p-4 text-sm leading-relaxed text-muted-foreground">
+          {details.academic_notes}
+        </p>
+      )}
+    </div>
+  );
+}
+
+function DetailRow({
+  icon,
+  label,
+  value,
+}: {
+  icon: React.ReactNode;
+  label: string;
+  value: string;
+}) {
+  return (
+    <div className="rounded-xl bg-surface p-4">
+      <div className="flex items-center gap-2 text-sm text-muted-foreground">
+        {icon}
+        {label}
+      </div>
+      <div className="mt-1 font-medium text-foreground">{value}</div>
+    </div>
+  );
+}
+
+function LockedNotice({ title, body }: { title: string; body: string }) {
+  return (
+    <div className="flex items-start gap-3 rounded-2xl border border-dashed border-border bg-surface/60 p-5">
+      <div className="mt-0.5 flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-primary/10 text-primary">
+        <Lock className="h-4 w-4" />
+      </div>
+      <div>
+        <p className="font-semibold text-foreground">{title}</p>
+        <p className="mt-1 text-sm text-muted-foreground">{body}</p>
+      </div>
+    </div>
   );
 }
