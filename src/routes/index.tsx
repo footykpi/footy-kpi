@@ -284,6 +284,8 @@ function Index() {
                   <StatCard label="Games Played" value={formatNumber(season.games_played)} />
                 </div>
               )}
+
+              <SeasonStatsEditor profileId={profile.id} season={season} />
             </div>
 
             <HighlightsReel
