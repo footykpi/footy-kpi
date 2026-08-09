@@ -174,11 +174,18 @@ export type Database = {
           is_public: boolean
           media_type: string
           profile_id: string
+          proof_media_type: string | null
+          proof_url: string | null
+          reviewed_at: string | null
+          reviewer_name: string | null
           sort_order: number
+          submitted_for_review_at: string | null
           thumbnail_url: string | null
           title: string | null
           updated_at: string
           url: string
+          verification_note: string | null
+          verification_status: string
         }
         Insert: {
           caption?: string | null
@@ -189,11 +196,18 @@ export type Database = {
           is_public?: boolean
           media_type?: string
           profile_id: string
+          proof_media_type?: string | null
+          proof_url?: string | null
+          reviewed_at?: string | null
+          reviewer_name?: string | null
           sort_order?: number
+          submitted_for_review_at?: string | null
           thumbnail_url?: string | null
           title?: string | null
           updated_at?: string
           url: string
+          verification_note?: string | null
+          verification_status?: string
         }
         Update: {
           caption?: string | null
@@ -204,11 +218,18 @@ export type Database = {
           is_public?: boolean
           media_type?: string
           profile_id?: string
+          proof_media_type?: string | null
+          proof_url?: string | null
+          reviewed_at?: string | null
+          reviewer_name?: string | null
           sort_order?: number
+          submitted_for_review_at?: string | null
           thumbnail_url?: string | null
           title?: string | null
           updated_at?: string
           url?: string
+          verification_note?: string | null
+          verification_status?: string
         }
         Relationships: [
           {
