@@ -271,9 +271,14 @@ export function HighlightsReel({
                     )}
                   </div>
                   <div className="p-4">
-                    <div className="flex items-center gap-1.5 text-xs font-medium uppercase tracking-wide text-primary">
-                      <Icon className="h-3.5 w-3.5" />
-                      {meta.label}
+                    <div className="flex flex-wrap items-center justify-between gap-2">
+                      <div className="flex items-center gap-1.5 text-xs font-medium uppercase tracking-wide text-primary">
+                        <Icon className="h-3.5 w-3.5" />
+                        {meta.label}
+                      </div>
+                      {isVerifiable(highlight.category) && (
+                        <VerificationBadge status={highlight.verification_status} />
+                      )}
                     </div>
                     <div className="mt-1 font-semibold text-foreground">
                       {highlight.title ?? "Untitled highlight"}
@@ -283,6 +288,10 @@ export function HighlightsReel({
                     )}
                   </div>
                 </button>
+                {isVerifiable(highlight.category) && (
+                  <VerificationPanel highlight={highlight} profileSlug={profileSlug} />
+                )}
+
                 <button
                   type="button"
                   aria-label="Remove highlight"
