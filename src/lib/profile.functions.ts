@@ -309,8 +309,10 @@ export const getPublicProfile = createServerFn({ method: "GET" })
         thumbnail_url: row.thumbnail_url
           ? await signHighlightUrl(supabase, row.thumbnail_url)
           : null,
+        proof_url: row.proof_url ? await signHighlightUrl(supabase, row.proof_url) : null,
       })),
     );
+
 
     const gameRows = (allGames ?? []) as Record<string, unknown>[];
     const visibleGames = access.gameLog ? gameRows : gameRows.slice(0, PUBLIC_GAME_LIMIT);
