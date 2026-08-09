@@ -32,6 +32,7 @@ import { GameLog } from "@/components/GameLog";
 import { ProgressCharts } from "@/components/ProgressCharts";
 import { HighlightsReel } from "@/components/HighlightsReel";
 import { AccessLinks } from "@/components/AccessLinks";
+import { SeasonStatsEditor } from "@/components/SeasonStatsEditor";
 import playerPhoto from "@/assets/player-photo.jpg";
 
 const SLUG = "demo-athlete";
@@ -284,6 +285,8 @@ function Index() {
                   <StatCard label="Games Played" value={formatNumber(season.games_played)} />
                 </div>
               )}
+
+              <SeasonStatsEditor profileId={profile.id} season={season} />
             </div>
 
             <HighlightsReel
