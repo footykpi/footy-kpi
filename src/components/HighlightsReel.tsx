@@ -10,10 +10,19 @@ import {
   X,
   Loader2,
   ImagePlus,
+  ShieldCheck,
+  ShieldAlert,
+  ShieldQuestion,
+  FileCheck2,
 } from "lucide-react";
 
 import { supabase } from "@/integrations/supabase/client";
 import type { Highlight } from "@/lib/profile.functions";
+import {
+  submitHighlightProof,
+  reviewHighlightProof,
+  VERIFIABLE_CATEGORIES,
+} from "@/lib/verification.functions";
 
 type Category = Highlight["category"];
 
@@ -25,10 +34,49 @@ const CATEGORIES: { value: Category; label: string; icon: typeof Trophy }[] = [
 ];
 
 const ACCEPT = "image/*,video/*";
+const PROOF_ACCEPT = "image/*,video/*,application/pdf";
+
+function isVerifiable(category: Category) {
+  return (VERIFIABLE_CATEGORIES as readonly string[]).includes(category);
+}
 
 function categoryMeta(value: Category) {
   return CATEGORIES.find((c) => c.value === value) ?? CATEGORIES[0]!;
 }
+
+function VerificationBadge({ status }: { status: Highlight["verification_status"] }) {
+  if (status === "verified") {
+    return (
+      <span className="inline-flex items-center gap-1 rounded-full bg-primary px-2 py-0.5 text-xs font-semibold text-primary-foreground">
+        <ShieldCheck className="h-3.5 w-3.5" />
+        Verified
+      </span>
+    );
+  }
+  if (status === "pending") {
+    return (
+      <span className="inline-flex items-center gap-1 rounded-full border border-border bg-background px-2 py-0.5 text-xs font-semibold text-muted-foreground">
+        <ShieldQuestion className="h-3.5 w-3.5" />
+        Pending review
+      </span>
+    );
+  }
+  if (status === "rejected") {
+    return (
+      <span className="inline-flex items-center gap-1 rounded-full border border-destructive/40 bg-background px-2 py-0.5 text-xs font-semibold text-destructive">
+        <ShieldAlert className="h-3.5 w-3.5" />
+        Proof rejected
+      </span>
+    );
+  }
+  return (
+    <span className="inline-flex items-center gap-1 rounded-full border border-border bg-background px-2 py-0.5 text-xs font-medium text-muted-foreground">
+      <ShieldQuestion className="h-3.5 w-3.5" />
+      Unverified
+    </span>
+  );
+}
+
 
 export function HighlightsReel({
   profileId,
