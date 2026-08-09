@@ -10,10 +10,19 @@ import {
   X,
   Loader2,
   ImagePlus,
+  ShieldCheck,
+  ShieldAlert,
+  ShieldQuestion,
+  FileCheck2,
 } from "lucide-react";
 
 import { supabase } from "@/integrations/supabase/client";
 import type { Highlight } from "@/lib/profile.functions";
+import {
+  submitHighlightProof,
+  reviewHighlightProof,
+  VERIFIABLE_CATEGORIES,
+} from "@/lib/verification.functions";
 
 type Category = Highlight["category"];
 
@@ -25,10 +34,49 @@ const CATEGORIES: { value: Category; label: string; icon: typeof Trophy }[] = [
 ];
 
 const ACCEPT = "image/*,video/*";
+const PROOF_ACCEPT = "image/*,video/*,application/pdf";
+
+function isVerifiable(category: Category) {
+  return (VERIFIABLE_CATEGORIES as readonly string[]).includes(category);
+}
 
 function categoryMeta(value: Category) {
   return CATEGORIES.find((c) => c.value === value) ?? CATEGORIES[0]!;
 }
+
+function VerificationBadge({ status }: { status: Highlight["verification_status"] }) {
+  if (status === "verified") {
+    return (
+      <span className="inline-flex items-center gap-1 rounded-full bg-primary px-2 py-0.5 text-xs font-semibold text-primary-foreground">
+        <ShieldCheck className="h-3.5 w-3.5" />
+        Verified
+      </span>
+    );
+  }
+  if (status === "pending") {
+    return (
+      <span className="inline-flex items-center gap-1 rounded-full border border-border bg-background px-2 py-0.5 text-xs font-semibold text-muted-foreground">
+        <ShieldQuestion className="h-3.5 w-3.5" />
+        Pending review
+      </span>
+    );
+  }
+  if (status === "rejected") {
+    return (
+      <span className="inline-flex items-center gap-1 rounded-full border border-destructive/40 bg-background px-2 py-0.5 text-xs font-semibold text-destructive">
+        <ShieldAlert className="h-3.5 w-3.5" />
+        Proof rejected
+      </span>
+    );
+  }
+  return (
+    <span className="inline-flex items-center gap-1 rounded-full border border-border bg-background px-2 py-0.5 text-xs font-medium text-muted-foreground">
+      <ShieldQuestion className="h-3.5 w-3.5" />
+      Unverified
+    </span>
+  );
+}
+
 
 export function HighlightsReel({
   profileId,
@@ -223,9 +271,14 @@ export function HighlightsReel({
                     )}
                   </div>
                   <div className="p-4">
-                    <div className="flex items-center gap-1.5 text-xs font-medium uppercase tracking-wide text-primary">
-                      <Icon className="h-3.5 w-3.5" />
-                      {meta.label}
+                    <div className="flex flex-wrap items-center justify-between gap-2">
+                      <div className="flex items-center gap-1.5 text-xs font-medium uppercase tracking-wide text-primary">
+                        <Icon className="h-3.5 w-3.5" />
+                        {meta.label}
+                      </div>
+                      {isVerifiable(highlight.category) && (
+                        <VerificationBadge status={highlight.verification_status} />
+                      )}
                     </div>
                     <div className="mt-1 font-semibold text-foreground">
                       {highlight.title ?? "Untitled highlight"}
@@ -235,6 +288,10 @@ export function HighlightsReel({
                     )}
                   </div>
                 </button>
+                {isVerifiable(highlight.category) && (
+                  <VerificationPanel highlight={highlight} profileSlug={profileSlug} />
+                )}
+
                 <button
                   type="button"
                   aria-label="Remove highlight"
@@ -321,5 +378,187 @@ function FilterPill({
     >
       {children}
     </button>
+  );
+}
+
+function VerificationPanel({
+  highlight,
+  profileSlug,
+}: {
+  highlight: Highlight;
+  profileSlug: string;
+}) {
+  const queryClient = useQueryClient();
+  const proofInput = useRef<HTMLInputElement>(null);
+  const [busy, setBusy] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [reviewOpen, setReviewOpen] = useState(false);
+  const [reviewerName, setReviewerName] = useState("");
+  const [note, setNote] = useState("");
+
+  const status = highlight.verification_status;
+
+  async function uploadProof(files: FileList | null) {
+    const file = files?.[0];
+    if (!file) return;
+    setBusy(true);
+    setError(null);
+    try {
+      const ext = file.name.split(".").pop() ?? "bin";
+      const path = `${profileSlug}/proof/${crypto.randomUUID()}.${ext}`;
+      const { error: uploadError } = await supabase.storage
+        .from("highlights")
+        .upload(path, file, { contentType: file.type, upsert: false });
+      if (uploadError) throw uploadError;
+
+      await submitHighlightProof({
+        data: {
+          highlightId: highlight.id,
+          proofPath: path,
+          proofMediaType: file.type.startsWith("video/")
+            ? "video"
+            : file.type.startsWith("image/")
+              ? "photo"
+              : "document",
+        },
+      });
+      await queryClient.invalidateQueries({ queryKey: ["profile"] });
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Could not submit proof.");
+    } finally {
+      setBusy(false);
+      if (proofInput.current) proofInput.current.value = "";
+    }
+  }
+
+  async function decide(decision: "verified" | "rejected") {
+    if (!reviewerName.trim()) {
+      setError("Add the reviewer's name (coach, club, or tournament official).");
+      return;
+    }
+    setBusy(true);
+    setError(null);
+    try {
+      await reviewHighlightProof({
+        data: {
+          highlightId: highlight.id,
+          decision,
+          reviewerName: reviewerName.trim(),
+          note: note.trim() || undefined,
+        },
+      });
+      setReviewOpen(false);
+      setNote("");
+      await queryClient.invalidateQueries({ queryKey: ["profile"] });
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Could not save the review.");
+    } finally {
+      setBusy(false);
+    }
+  }
+
+  return (
+    <div className="border-t border-border bg-background/40 p-4">
+      {status === "verified" ? (
+        <p className="text-xs text-muted-foreground">
+          Approved{highlight.reviewer_name ? ` by ${highlight.reviewer_name}` : ""}
+          {highlight.reviewed_at
+            ? ` on ${new Date(highlight.reviewed_at).toLocaleDateString()}`
+            : ""}
+          .
+        </p>
+      ) : (
+        <>
+          <input
+            ref={proofInput}
+            type="file"
+            accept={PROOF_ACCEPT}
+            className="hidden"
+            onChange={(event) => void uploadProof(event.target.files)}
+          />
+
+          {status === "pending" ? (
+            <div className="space-y-3">
+              <div className="flex flex-wrap items-center gap-3">
+                {highlight.proof_url && (
+                  <a
+                    href={highlight.proof_url}
+                    target="_blank"
+                    rel="noreferrer"
+                    className="inline-flex items-center gap-1.5 text-xs font-medium text-primary hover:underline"
+                  >
+                    <FileCheck2 className="h-3.5 w-3.5" />
+                    View submitted proof
+                  </a>
+                )}
+                <button
+                  type="button"
+                  onClick={() => setReviewOpen((open) => !open)}
+                  className="text-xs font-medium text-muted-foreground hover:text-foreground"
+                >
+                  {reviewOpen ? "Cancel review" : "Review proof"}
+                </button>
+              </div>
+
+              {reviewOpen && (
+                <div className="space-y-2">
+                  <input
+                    value={reviewerName}
+                    onChange={(event) => setReviewerName(event.target.value)}
+                    placeholder="Reviewer name (coach, club, official)"
+                    className="w-full rounded-lg border border-border bg-background px-3 py-2 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/40"
+                  />
+                  <input
+                    value={note}
+                    onChange={(event) => setNote(event.target.value)}
+                    placeholder="Note (optional)"
+                    className="w-full rounded-lg border border-border bg-background px-3 py-2 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/40"
+                  />
+                  <div className="flex gap-2">
+                    <button
+                      type="button"
+                      disabled={busy}
+                      onClick={() => void decide("verified")}
+                      className="inline-flex items-center gap-1.5 rounded-full bg-primary px-3 py-1.5 text-xs font-semibold text-primary-foreground disabled:opacity-60"
+                    >
+                      {busy ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <ShieldCheck className="h-3.5 w-3.5" />}
+                      Approve
+                    </button>
+                    <button
+                      type="button"
+                      disabled={busy}
+                      onClick={() => void decide("rejected")}
+                      className="inline-flex items-center gap-1.5 rounded-full border border-destructive/40 px-3 py-1.5 text-xs font-semibold text-destructive disabled:opacity-60"
+                    >
+                      <ShieldAlert className="h-3.5 w-3.5" />
+                      Reject
+                    </button>
+                  </div>
+                </div>
+              )}
+            </div>
+          ) : (
+            <div className="flex flex-wrap items-center gap-3">
+              <button
+                type="button"
+                disabled={busy}
+                onClick={() => proofInput.current?.click()}
+                className="inline-flex items-center gap-1.5 rounded-full border border-border px-3 py-1.5 text-xs font-semibold text-foreground hover:bg-surface-elevated disabled:opacity-60"
+              >
+                {busy ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <Upload className="h-3.5 w-3.5" />}
+                {status === "rejected" ? "Upload new proof" : "Upload proof for verification"}
+              </button>
+              {status === "rejected" && highlight.verification_note && (
+                <span className="text-xs text-muted-foreground">
+                  Reviewer note: {highlight.verification_note}
+                </span>
+              )}
+            </div>
+          )}
+
+          {error && <p className="mt-2 text-xs text-destructive">{error}</p>}
+        </>
+      )}
+    </div>
   );
 }

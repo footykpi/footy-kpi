@@ -108,7 +108,15 @@ export interface Highlight {
   highlight_date: string | null;
   sort_order: number;
   is_public: boolean;
+  verification_status: "unverified" | "pending" | "verified" | "rejected";
+  proof_url: string | null;
+  proof_media_type: string | null;
+  verification_note: string | null;
+  reviewer_name: string | null;
+  submitted_for_review_at: string | null;
+  reviewed_at: string | null;
 }
+
 
 export type ViewerRole = "public" | "recruiter" | "coach";
 
@@ -301,8 +309,10 @@ export const getPublicProfile = createServerFn({ method: "GET" })
         thumbnail_url: row.thumbnail_url
           ? await signHighlightUrl(supabase, row.thumbnail_url)
           : null,
+        proof_url: row.proof_url ? await signHighlightUrl(supabase, row.proof_url) : null,
       })),
     );
+
 
     const gameRows = (allGames ?? []) as Record<string, unknown>[];
     const visibleGames = access.gameLog ? gameRows : gameRows.slice(0, PUBLIC_GAME_LIMIT);
