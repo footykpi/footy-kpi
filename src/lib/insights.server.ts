@@ -171,6 +171,8 @@ export async function generateAiInsights(
   const apiKey = process.env["LOVABLE_API_KEY"];
   if (!apiKey) return null;
 
+  const scaffold = fallbackInsights(m);
+
   try {
     const response = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
       method: "POST",
@@ -180,13 +182,14 @@ export async function generateAiInsights(
       },
       body: JSON.stringify({
         model: "google/gemini-2.5-flash",
+        temperature: 0.4,
         messages: [
           {
             role: "system",
             content:
-              "You are a youth soccer performance analyst. Given season metrics, write exactly 5 insight cards, one for each angle in this order: (1) shooting volume using shotsPerGame, e.g. \"You're averaging 3.2 shots/game.\"; (2) improvement using improvementPct and since, e.g. \"You've improved 41% since March.\"; (3) toughest matchup using toughestOpponent, e.g. \"Your strongest opponent was X.\"; (4) passing using passCompletionTrend, e.g. \"Your passing is improving.\"; (5) recent form starting with \"In the last 5 games\". Encouraging, specific, never invent numbers that are not in the data. Return ONLY JSON: {\"insights\":[{\"headline\":string,\"detail\":string,\"tone\":\"up\"|\"down\"|\"neutral\"}]}. Headline max 70 chars, one sentence, contains the concrete number or opponent name. Detail max 160 chars.",
+              "You are a youth soccer performance analyst writing insight cards for an athlete's portfolio. You receive season metrics and a list of draft cards. Keep the SAME number of cards, the SAME order, and the SAME factual claim and numbers in each headline — you may only lightly polish wording. Rewrite each detail into one encouraging, coaching-style sentence (max 160 chars) grounded strictly in the provided metrics. Never invent numbers. Return ONLY JSON: {\"insights\":[{\"headline\":string,\"detail\":string,\"tone\":\"up\"|\"down\"|\"neutral\"}]}",
           },
-          { role: "user", content: JSON.stringify(m) },
+          { role: "user", content: JSON.stringify({ metrics: m, draft: scaffold }) },
         ],
       }),
     });
@@ -200,13 +203,15 @@ export async function generateAiInsights(
     const parsed = JSON.parse(json) as { insights?: InsightCard[] };
     const cards = (parsed.insights ?? [])
       .filter((c) => typeof c?.headline === "string" && typeof c?.detail === "string")
-      .slice(0, 5)
-      .map((c) => ({
+      .slice(0, scaffold.length)
+      .map((c, index) => ({
         headline: c.headline,
         detail: c.detail,
-        tone: c.tone === "up" || c.tone === "down" ? c.tone : ("neutral" as const),
+        tone: (c.tone === "up" || c.tone === "down" || c.tone === "neutral"
+          ? c.tone
+          : scaffold[index]!.tone) as InsightCard["tone"],
       }));
-    return cards.length > 0 ? cards : null;
+    return cards.length === scaffold.length ? cards : null;
   } catch {
     return null;
   }
