@@ -102,6 +102,10 @@ export type Database = {
           created_at: string
           game_date: string
           id: string
+          journal_improve: string | null
+          journal_next_goal: string | null
+          journal_updated_at: string | null
+          journal_went_well: string | null
           location: string | null
           mood: string | null
           opponent: string
@@ -121,6 +125,10 @@ export type Database = {
           created_at?: string
           game_date: string
           id?: string
+          journal_improve?: string | null
+          journal_next_goal?: string | null
+          journal_updated_at?: string | null
+          journal_went_well?: string | null
           location?: string | null
           mood?: string | null
           opponent: string
@@ -140,6 +148,10 @@ export type Database = {
           created_at?: string
           game_date?: string
           id?: string
+          journal_improve?: string | null
+          journal_next_goal?: string | null
+          journal_updated_at?: string | null
+          journal_went_well?: string | null
           location?: string | null
           mood?: string | null
           opponent?: string
