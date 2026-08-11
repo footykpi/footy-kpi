@@ -184,7 +184,7 @@ export async function generateAiInsights(
           {
             role: "system",
             content:
-              "You are a youth soccer performance analyst. Given season metrics, write 5 short insight cards for the athlete's portfolio. Encouraging, specific, never invent numbers not present. Return ONLY JSON: {\"insights\":[{\"headline\":string,\"detail\":string,\"tone\":\"up\"|\"down\"|\"neutral\"}]}. Headline max 70 chars and must contain a concrete number or opponent name. Detail max 160 chars.",
+              "You are a youth soccer performance analyst. Given season metrics, write exactly 5 insight cards, one for each angle in this order: (1) shooting volume using shotsPerGame, e.g. \"You're averaging 3.2 shots/game.\"; (2) improvement using improvementPct and since, e.g. \"You've improved 41% since March.\"; (3) toughest matchup using toughestOpponent, e.g. \"Your strongest opponent was X.\"; (4) passing using passCompletionTrend, e.g. \"Your passing is improving.\"; (5) recent form starting with \"In the last 5 games\". Encouraging, specific, never invent numbers that are not in the data. Return ONLY JSON: {\"insights\":[{\"headline\":string,\"detail\":string,\"tone\":\"up\"|\"down\"|\"neutral\"}]}. Headline max 70 chars, one sentence, contains the concrete number or opponent name. Detail max 160 chars.",
           },
           { role: "user", content: JSON.stringify(m) },
         ],
