@@ -1,0 +1,1 @@
+REVOKE ALL ON FUNCTION public.validate_season_stats() FROM PUBLIC, anon, authenticated;

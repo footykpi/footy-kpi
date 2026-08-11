@@ -1,7 +1,6 @@
 import { createServerFn } from "@tanstack/react-start";
-import { z } from "zod";
 
-const countField = z.number().int().min(0).max(100000).nullable();
+import { seasonStatsSchema } from "@/lib/season-stats-validation";
 
 export const SOCCER_STAT_FIELDS = [
   "games_played",
@@ -25,31 +24,9 @@ export const SOCCER_STAT_FIELDS = [
 
 export type SoccerStatField = (typeof SOCCER_STAT_FIELDS)[number];
 
-const statsSchema = z.object({
-  profileId: z.string().uuid(),
-  season: z.string().trim().min(2).max(20),
-  games_played: countField,
-  goals: countField,
-  assists: countField,
-  shots: countField,
-  shots_on_goal: countField,
-  minutes_played: countField,
-  yellow_cards: countField,
-  red_cards: countField,
-  penalty_kicks: countField,
-  pk_saves: countField,
-  saves: countField,
-  clean_sheets: countField,
-  fouls: countField,
-  tackles: countField,
-  interceptions: countField,
-  headers_won: countField,
-  mvp_awards: countField,
-  pass_completion: z.number().min(0).max(100).nullable(),
-});
-
 export const saveSeasonStats = createServerFn({ method: "POST" })
-  .validator(statsSchema)
+  .validator(seasonStatsSchema)
+
   .handler(async ({ data }): Promise<{ ok: true; id: string }> => {
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
     const { profileId, season, ...values } = data;
