@@ -316,7 +316,7 @@ export function HighlightsReel({
                   </div>
                 </button>
                 {isVerifiable(highlight.category) && (
-                  <VerificationPanel highlight={highlight} profileSlug={profileSlug} />
+                  <VerificationPanel highlight={highlight} profileSlug={profileSlug} editKey={editKey} />
                 )}
 
                 <button
