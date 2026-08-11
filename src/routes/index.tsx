@@ -31,6 +31,7 @@ import { getPublicProfile, type PublicProfile, type ViewerAccess } from "@/lib/p
 import { GameLog } from "@/components/GameLog";
 import { ProgressCharts } from "@/components/ProgressCharts";
 import { AiInsights } from "@/components/AiInsights";
+import { SeasonJournal } from "@/components/SeasonJournal";
 import { HighlightsReel } from "@/components/HighlightsReel";
 import { AccessLinks } from "@/components/AccessLinks";
 import { SeasonStatsEditor } from "@/components/SeasonStatsEditor";
@@ -308,6 +309,8 @@ function Index() {
             <ProgressCharts games={games.filter((g) => g.sport === SPORT)} />
 
             <GameLog games={games.filter((g) => g.sport === SPORT)} />
+
+            <SeasonJournal games={games.filter((g) => g.sport === SPORT)} />
 
             {gamesLocked > 0 && (
               <LockedNotice
