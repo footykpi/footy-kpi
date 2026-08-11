@@ -1,5 +1,6 @@
 import { useRef, useState } from "react";
 import { useQueryClient } from "@tanstack/react-query";
+import { useServerFn } from "@tanstack/react-start";
 import {
   Trophy,
   Medal,
@@ -14,15 +15,21 @@ import {
   ShieldAlert,
   ShieldQuestion,
   FileCheck2,
+  Lock,
 } from "lucide-react";
 
-import { supabase } from "@/integrations/supabase/client";
 import type { Highlight } from "@/lib/profile.functions";
+import {
+  uploadHighlight,
+  deleteHighlight,
+  uploadHighlightProof,
+} from "@/lib/highlights.functions";
 import {
   submitHighlightProof,
   reviewHighlightProof,
   VERIFIABLE_CATEGORIES,
 } from "@/lib/verification.functions";
+
 
 type Category = Highlight["category"];
 
@@ -92,37 +99,37 @@ export function HighlightsReel({
   const [filter, setFilter] = useState<Category | "all">("all");
   const [uploadCategory, setUploadCategory] = useState<Category>("moment");
   const [title, setTitle] = useState("");
+  const [editKey, setEditKey] = useState("");
   const [uploading, setUploading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [lightbox, setLightbox] = useState<Highlight | null>(null);
+
+  const uploadHighlightFn = useServerFn(uploadHighlight);
+  const deleteHighlightFn = useServerFn(deleteHighlight);
 
   const visible = filter === "all" ? highlights : highlights.filter((h) => h.category === filter);
 
   async function handleFiles(files: FileList | null) {
     if (!files || files.length === 0) return;
+    if (!editKey.trim()) {
+      setError("Enter the edit key to upload highlights.");
+      return;
+    }
     setUploading(true);
     setError(null);
 
     try {
       for (const file of Array.from(files)) {
-        const isVideo = file.type.startsWith("video/");
-        const ext = file.name.split(".").pop() ?? "bin";
-        const path = `${profileSlug}/${crypto.randomUUID()}.${ext}`;
-
-        const { error: uploadError } = await supabase.storage
-          .from("highlights")
-          .upload(path, file, { contentType: file.type, upsert: false });
-        if (uploadError) throw uploadError;
-
-        const { error: insertError } = await supabase.from("highlights").insert({
-          profile_id: profileId,
-          media_type: isVideo ? "video" : "photo",
-          category: uploadCategory,
-          title: title.trim() || null,
-          url: path,
-          sort_order: highlights.length,
+        await uploadHighlightFn({
+          data: {
+            profileId,
+            slug: profileSlug,
+            file,
+            category: uploadCategory,
+            title: title.trim() || undefined,
+            editKey,
+          },
         });
-        if (insertError) throw insertError;
       }
 
       setTitle("");
@@ -136,9 +143,18 @@ export function HighlightsReel({
   }
 
   async function handleRemove(id: string) {
-    await supabase.from("highlights").delete().eq("id", id);
-    await queryClient.invalidateQueries({ queryKey: ["profile"] });
+    if (!editKey.trim()) {
+      setError("Enter the edit key to remove highlights.");
+      return;
+    }
+    try {
+      await deleteHighlightFn({ data: { highlightId: id, editKey } });
+      await queryClient.invalidateQueries({ queryKey: ["profile"] });
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Could not remove highlight.");
+    }
   }
+
 
   return (
     <div className="rounded-2xl border border-border bg-card p-6">
@@ -181,6 +197,16 @@ export function HighlightsReel({
             placeholder="Caption or moment title (optional)"
             className="w-full flex-1 rounded-lg border border-border bg-background px-3 py-2 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/40"
           />
+          <div className="relative flex items-center">
+            <Lock className="absolute left-3 h-4 w-4 text-muted-foreground" />
+            <input
+              type="password"
+              value={editKey}
+              onChange={(event) => setEditKey(event.target.value)}
+              placeholder="Edit key"
+              className="w-full rounded-lg border border-border bg-background py-2 pl-9 pr-3 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/40 sm:w-48"
+            />
+          </div>
           <input
             ref={fileInput}
             type="file"
@@ -201,6 +227,7 @@ export function HighlightsReel({
         </div>
 
         {error && <p className="mt-3 text-sm text-destructive">{error}</p>}
+
       </div>
 
       {/* Filters */}
@@ -289,7 +316,7 @@ export function HighlightsReel({
                   </div>
                 </button>
                 {isVerifiable(highlight.category) && (
-                  <VerificationPanel highlight={highlight} profileSlug={profileSlug} />
+                  <VerificationPanel highlight={highlight} profileSlug={profileSlug} editKey={editKey} />
                 )}
 
                 <button
@@ -384,9 +411,11 @@ function FilterPill({
 function VerificationPanel({
   highlight,
   profileSlug,
+  editKey,
 }: {
   highlight: Highlight;
   profileSlug: string;
+  editKey: string;
 }) {
   const queryClient = useQueryClient();
   const proofInput = useRef<HTMLInputElement>(null);
@@ -396,30 +425,26 @@ function VerificationPanel({
   const [reviewerName, setReviewerName] = useState("");
   const [note, setNote] = useState("");
 
+  const uploadProofFn = useServerFn(uploadHighlightProof);
+
   const status = highlight.verification_status;
 
   async function uploadProof(files: FileList | null) {
     const file = files?.[0];
     if (!file) return;
+    if (!editKey.trim()) {
+      setError("Enter the edit key to upload proof.");
+      return;
+    }
     setBusy(true);
     setError(null);
     try {
-      const ext = file.name.split(".").pop() ?? "bin";
-      const path = `${profileSlug}/proof/${crypto.randomUUID()}.${ext}`;
-      const { error: uploadError } = await supabase.storage
-        .from("highlights")
-        .upload(path, file, { contentType: file.type, upsert: false });
-      if (uploadError) throw uploadError;
-
-      await submitHighlightProof({
+      await uploadProofFn({
         data: {
           highlightId: highlight.id,
-          proofPath: path,
-          proofMediaType: file.type.startsWith("video/")
-            ? "video"
-            : file.type.startsWith("image/")
-              ? "photo"
-              : "document",
+          slug: profileSlug,
+          file,
+          editKey,
         },
       });
       await queryClient.invalidateQueries({ queryKey: ["profile"] });
@@ -456,6 +481,7 @@ function VerificationPanel({
       setBusy(false);
     }
   }
+
 
   return (
     <div className="border-t border-border bg-background/40 p-4">

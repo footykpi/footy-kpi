@@ -180,13 +180,15 @@ function createPublishableClient() {
 
 type PublishableClient = ReturnType<typeof createPublishableClient>;
 
-async function signHighlightUrl(client: PublishableClient, path: string): Promise<string> {
+async function signHighlightUrl(path: string): Promise<string> {
   if (/^https?:\/\//.test(path)) return path;
-  const { data } = await client.storage
+  const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+  const { data } = await supabaseAdmin.storage
     .from("highlights")
     .createSignedUrl(path, 60 * 60 * 24);
   return data?.signedUrl ?? path;
 }
+
 
 const PUBLIC_ACCESS: ViewerAccess = {
   role: "public",
@@ -200,9 +202,9 @@ const PUBLIC_ACCESS: ViewerAccess = {
 export const getPublicProfile = createServerFn({ method: "GET" })
   .validator(z.object({ slug: z.string(), key: z.string().trim().max(120).optional() }))
   .handler(async ({ data }): Promise<PublicProfile> => {
-    const supabase = createPublishableClient();
     // Game notes, private details, and unlock tokens are server-role only.
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+
 
     // Private profiles are not readable by anon (RLS), so the lookup runs server-side;
     // the teaser branch below is what limits what actually leaves the server.
@@ -312,13 +314,14 @@ export const getPublicProfile = createServerFn({ method: "GET" })
     const highlights: Highlight[] = await Promise.all(
       highlightRows.map(async (row) => ({
         ...row,
-        url: await signHighlightUrl(supabase, row.url),
+        url: await signHighlightUrl(row.url),
         thumbnail_url: row.thumbnail_url
-          ? await signHighlightUrl(supabase, row.thumbnail_url)
+          ? await signHighlightUrl(row.thumbnail_url)
           : null,
-        proof_url: row.proof_url ? await signHighlightUrl(supabase, row.proof_url) : null,
+        proof_url: row.proof_url ? await signHighlightUrl(row.proof_url) : null,
       })),
     );
+
 
 
     const gameRows = (allGames ?? []) as Record<string, unknown>[];
