@@ -411,9 +411,11 @@ function FilterPill({
 function VerificationPanel({
   highlight,
   profileSlug,
+  editKey,
 }: {
   highlight: Highlight;
   profileSlug: string;
+  editKey: string;
 }) {
   const queryClient = useQueryClient();
   const proofInput = useRef<HTMLInputElement>(null);
@@ -423,30 +425,26 @@ function VerificationPanel({
   const [reviewerName, setReviewerName] = useState("");
   const [note, setNote] = useState("");
 
+  const uploadProofFn = useServerFn(uploadHighlightProof);
+
   const status = highlight.verification_status;
 
   async function uploadProof(files: FileList | null) {
     const file = files?.[0];
     if (!file) return;
+    if (!editKey.trim()) {
+      setError("Enter the edit key to upload proof.");
+      return;
+    }
     setBusy(true);
     setError(null);
     try {
-      const ext = file.name.split(".").pop() ?? "bin";
-      const path = `${profileSlug}/proof/${crypto.randomUUID()}.${ext}`;
-      const { error: uploadError } = await supabase.storage
-        .from("highlights")
-        .upload(path, file, { contentType: file.type, upsert: false });
-      if (uploadError) throw uploadError;
-
-      await submitHighlightProof({
+      await uploadProofFn({
         data: {
           highlightId: highlight.id,
-          proofPath: path,
-          proofMediaType: file.type.startsWith("video/")
-            ? "video"
-            : file.type.startsWith("image/")
-              ? "photo"
-              : "document",
+          slug: profileSlug,
+          file,
+          editKey,
         },
       });
       await queryClient.invalidateQueries({ queryKey: ["profile"] });
@@ -483,6 +481,7 @@ function VerificationPanel({
       setBusy(false);
     }
   }
+
 
   return (
     <div className="border-t border-border bg-background/40 p-4">
