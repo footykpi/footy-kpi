@@ -99,37 +99,37 @@ export function HighlightsReel({
   const [filter, setFilter] = useState<Category | "all">("all");
   const [uploadCategory, setUploadCategory] = useState<Category>("moment");
   const [title, setTitle] = useState("");
+  const [editKey, setEditKey] = useState("");
   const [uploading, setUploading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [lightbox, setLightbox] = useState<Highlight | null>(null);
+
+  const uploadHighlightFn = useServerFn(uploadHighlight);
+  const deleteHighlightFn = useServerFn(deleteHighlight);
 
   const visible = filter === "all" ? highlights : highlights.filter((h) => h.category === filter);
 
   async function handleFiles(files: FileList | null) {
     if (!files || files.length === 0) return;
+    if (!editKey.trim()) {
+      setError("Enter the edit key to upload highlights.");
+      return;
+    }
     setUploading(true);
     setError(null);
 
     try {
       for (const file of Array.from(files)) {
-        const isVideo = file.type.startsWith("video/");
-        const ext = file.name.split(".").pop() ?? "bin";
-        const path = `${profileSlug}/${crypto.randomUUID()}.${ext}`;
-
-        const { error: uploadError } = await supabase.storage
-          .from("highlights")
-          .upload(path, file, { contentType: file.type, upsert: false });
-        if (uploadError) throw uploadError;
-
-        const { error: insertError } = await supabase.from("highlights").insert({
-          profile_id: profileId,
-          media_type: isVideo ? "video" : "photo",
-          category: uploadCategory,
-          title: title.trim() || null,
-          url: path,
-          sort_order: highlights.length,
+        await uploadHighlightFn({
+          data: {
+            profileId,
+            slug: profileSlug,
+            file,
+            category: uploadCategory,
+            title: title.trim() || undefined,
+            editKey,
+          },
         });
-        if (insertError) throw insertError;
       }
 
       setTitle("");
@@ -143,9 +143,18 @@ export function HighlightsReel({
   }
 
   async function handleRemove(id: string) {
-    await supabase.from("highlights").delete().eq("id", id);
-    await queryClient.invalidateQueries({ queryKey: ["profile"] });
+    if (!editKey.trim()) {
+      setError("Enter the edit key to remove highlights.");
+      return;
+    }
+    try {
+      await deleteHighlightFn({ data: { highlightId: id, editKey } });
+      await queryClient.invalidateQueries({ queryKey: ["profile"] });
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Could not remove highlight.");
+    }
   }
+
 
   return (
     <div className="rounded-2xl border border-border bg-card p-6">
