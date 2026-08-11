@@ -314,13 +314,14 @@ export const getPublicProfile = createServerFn({ method: "GET" })
     const highlights: Highlight[] = await Promise.all(
       highlightRows.map(async (row) => ({
         ...row,
-        url: await signHighlightUrl(supabase, row.url),
+        url: await signHighlightUrl(row.url),
         thumbnail_url: row.thumbnail_url
-          ? await signHighlightUrl(supabase, row.thumbnail_url)
+          ? await signHighlightUrl(row.thumbnail_url)
           : null,
-        proof_url: row.proof_url ? await signHighlightUrl(supabase, row.proof_url) : null,
+        proof_url: row.proof_url ? await signHighlightUrl(row.proof_url) : null,
       })),
     );
+
 
 
     const gameRows = (allGames ?? []) as Record<string, unknown>[];
