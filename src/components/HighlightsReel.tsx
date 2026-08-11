@@ -197,6 +197,16 @@ export function HighlightsReel({
             placeholder="Caption or moment title (optional)"
             className="w-full flex-1 rounded-lg border border-border bg-background px-3 py-2 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/40"
           />
+          <div className="relative flex items-center">
+            <Lock className="absolute left-3 h-4 w-4 text-muted-foreground" />
+            <input
+              type="password"
+              value={editKey}
+              onChange={(event) => setEditKey(event.target.value)}
+              placeholder="Edit key"
+              className="w-full rounded-lg border border-border bg-background py-2 pl-9 pr-3 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/40 sm:w-48"
+            />
+          </div>
           <input
             ref={fileInput}
             type="file"
@@ -217,6 +227,7 @@ export function HighlightsReel({
         </div>
 
         {error && <p className="mt-3 text-sm text-destructive">{error}</p>}
+
       </div>
 
       {/* Filters */}
