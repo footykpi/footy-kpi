@@ -30,6 +30,7 @@ import {
 import { getPublicProfile, type PublicProfile, type ViewerAccess } from "@/lib/profile.functions";
 import { GameLog } from "@/components/GameLog";
 import { ProgressCharts } from "@/components/ProgressCharts";
+import { AiInsights } from "@/components/AiInsights";
 import { HighlightsReel } from "@/components/HighlightsReel";
 import { AccessLinks } from "@/components/AccessLinks";
 import { SeasonStatsEditor } from "@/components/SeasonStatsEditor";
@@ -301,6 +302,8 @@ function Index() {
                 body="The full highlight library — including unlisted clips, certificates, and medals — opens with a recruiter or college coach unlock link."
               />
             )}
+
+            <AiInsights profileId={profile.id} />
 
             <ProgressCharts games={games.filter((g) => g.sport === SPORT)} />
 
