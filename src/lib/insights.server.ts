@@ -205,7 +205,8 @@ export async function generateAiInsights(
       .filter((c) => typeof c?.headline === "string" && typeof c?.detail === "string")
       .slice(0, scaffold.length)
       .map((c, index) => ({
-        headline: c.headline,
+        // Headlines stay deterministic so the five insight topics are always covered.
+        headline: scaffold[index]!.headline,
         detail: c.detail,
         tone: (c.tone === "up" || c.tone === "down" || c.tone === "neutral"
           ? c.tone
