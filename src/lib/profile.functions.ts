@@ -180,13 +180,15 @@ function createPublishableClient() {
 
 type PublishableClient = ReturnType<typeof createPublishableClient>;
 
-async function signHighlightUrl(client: PublishableClient, path: string): Promise<string> {
+async function signHighlightUrl(path: string): Promise<string> {
   if (/^https?:\/\//.test(path)) return path;
-  const { data } = await client.storage
+  const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+  const { data } = await supabaseAdmin.storage
     .from("highlights")
     .createSignedUrl(path, 60 * 60 * 24);
   return data?.signedUrl ?? path;
 }
+
 
 const PUBLIC_ACCESS: ViewerAccess = {
   role: "public",
