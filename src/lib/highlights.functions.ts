@@ -74,6 +74,12 @@ export const uploadHighlight = createServerFn({ method: "POST" })
 
     await uploadFileToStorage(supabaseAdmin, path, data.file);
 
+    const { data: countRow } = await supabaseAdmin
+      .from("highlights")
+      .select("sort_order", { count: "exact", head: true })
+      .eq("profile_id", data.profileId);
+    const nextSortOrder = (countRow ?? 0) + 1;
+
     const { data: inserted, error: insertError } = await supabaseAdmin
       .from("highlights")
       .insert({
@@ -82,7 +88,7 @@ export const uploadHighlight = createServerFn({ method: "POST" })
         category: data.category,
         title: data.title?.trim() || null,
         url: path,
-        sort_order: 0,
+        sort_order: nextSortOrder,
       })
       .select("id")
       .single();
@@ -95,6 +101,7 @@ export const uploadHighlight = createServerFn({ method: "POST" })
 
     return { id: inserted!.id };
   });
+
 
 export const deleteHighlight = createServerFn({ method: "POST" })
   .validator(deleteHighlightSchema)
