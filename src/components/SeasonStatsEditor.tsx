@@ -1,64 +1,41 @@
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
-import { Check, PencilLine, Save, X } from "lucide-react";
+import { AlertCircle, Check, PencilLine, Save, X } from "lucide-react";
 import { toast } from "sonner";
 
 import { saveSeasonStats } from "@/lib/season-stats.functions";
+import {
+  crossFieldErrors,
+  STAT_FIELD_KEYS,
+  STAT_RULES,
+  validateField,
+  validateSeasonLabel,
+  type StatFieldKey,
+  type StatValues,
+} from "@/lib/season-stats-validation";
 import type { SeasonStats } from "@/lib/profile.functions";
 
-type FieldKey =
-  | "games_played"
-  | "goals"
-  | "assists"
-  | "shots"
-  | "shots_on_goal"
-  | "minutes_played"
-  | "yellow_cards"
-  | "red_cards"
-  | "penalty_kicks"
-  | "pk_saves"
-  | "saves"
-  | "clean_sheets"
-  | "fouls"
-  | "tackles"
-  | "interceptions"
-  | "headers_won"
-  | "mvp_awards"
-  | "pass_completion";
+type FieldKey = StatFieldKey;
 
-const GROUPS: { title: string; fields: { key: FieldKey; label: string; suffix?: string }[] }[] = [
+const GROUPS: { title: string; fields: FieldKey[] }[] = [
   {
     title: "Attacking",
-    fields: [
-      { key: "goals", label: "Goals" },
-      { key: "assists", label: "Assists" },
-      { key: "shots", label: "Shots" },
-      { key: "shots_on_goal", label: "Shots on goal" },
-      { key: "penalty_kicks", label: "Penalty kicks" },
-      { key: "headers_won", label: "Headers won" },
-    ],
+    fields: ["goals", "assists", "shots", "shots_on_goal", "penalty_kicks", "headers_won"],
   },
   {
     title: "Defending & goalkeeping",
-    fields: [
-      { key: "tackles", label: "Tackles" },
-      { key: "interceptions", label: "Interceptions" },
-      { key: "saves", label: "Saves" },
-      { key: "pk_saves", label: "PK saves" },
-      { key: "clean_sheets", label: "Clean sheets" },
-      { key: "fouls", label: "Fouls" },
-    ],
+    fields: ["tackles", "interceptions", "saves", "pk_saves", "clean_sheets", "fouls"],
   },
   {
     title: "Playing time & discipline",
     fields: [
-      { key: "games_played", label: "Games played" },
-      { key: "minutes_played", label: "Minutes played" },
-      { key: "pass_completion", label: "Pass completion", suffix: "%" },
-      { key: "yellow_cards", label: "Yellow cards" },
-      { key: "red_cards", label: "Red cards" },
-      { key: "mvp_awards", label: "MVP awards" },
+      "games_played",
+      "minutes_played",
+      "pass_completion",
+      "yellow_cards",
+      "red_cards",
+      "mvp_awards",
     ],
   },
 ];
@@ -67,27 +44,42 @@ type FormState = Record<FieldKey, string> & { season: string };
 
 function toForm(season: SeasonStats | undefined): FormState {
   const value = (v: number | null | undefined) => (v === null || v === undefined ? "" : String(v));
+  const entries = STAT_FIELD_KEYS.map((key) => [
+    key,
+    value((season as unknown as Record<string, number | null | undefined>)?.[key]),
+  ]);
   return {
+    ...(Object.fromEntries(entries) as Record<FieldKey, string>),
     season: season?.season ?? String(new Date().getFullYear()),
-    games_played: value(season?.games_played),
-    goals: value(season?.goals),
-    assists: value(season?.assists),
-    shots: value(season?.shots),
-    shots_on_goal: value(season?.shots_on_goal),
-    minutes_played: value(season?.minutes_played),
-    yellow_cards: value(season?.yellow_cards),
-    red_cards: value(season?.red_cards),
-    penalty_kicks: value(season?.penalty_kicks),
-    pk_saves: value(season?.pk_saves),
-    saves: value(season?.saves),
-    clean_sheets: value(season?.clean_sheets),
-    fouls: value(season?.fouls),
-    tackles: value(season?.tackles),
-    interceptions: value(season?.interceptions),
-    headers_won: value(season?.headers_won),
-    mvp_awards: value(season?.mvp_awards),
-    pass_completion: value(season?.pass_completion),
   };
+}
+
+function parsed(form: FormState): StatValues {
+  return Object.fromEntries(
+    STAT_FIELD_KEYS.map((key) => {
+      const raw = form[key].trim();
+      return [key, raw === "" ? null : Number(raw)];
+    }),
+  ) as StatValues;
+}
+
+type Errors = Partial<Record<FieldKey | "season", string>>;
+
+function validateAll(form: FormState): Errors {
+  const errors: Errors = {};
+  const seasonError = validateSeasonLabel(form.season);
+  if (seasonError) errors.season = seasonError;
+
+  let hasFieldError = false;
+  for (const key of STAT_FIELD_KEYS) {
+    const message = validateField(key, form[key]);
+    if (message) {
+      errors[key] = message;
+      hasFieldError = true;
+    }
+  }
+  if (!hasFieldError) Object.assign(errors, crossFieldErrors(parsed(form)));
+  return errors;
 }
 
 export function SeasonStatsEditor({
@@ -101,58 +93,39 @@ export function SeasonStatsEditor({
   const save = useServerFn(saveSeasonStats);
   const [open, setOpen] = useState(false);
   const [form, setForm] = useState<FormState>(() => toForm(season));
+  const [touched, setTouched] = useState<Record<string, boolean>>({});
+  const [submitted, setSubmitted] = useState(false);
+
+  const errors = useMemo(() => validateAll(form), [form]);
+  const errorCount = Object.keys(errors).length;
+  const showError = (key: FieldKey | "season") =>
+    (submitted || touched[key]) && errors[key] ? errors[key] : null;
 
   const set = (key: keyof FormState, value: string) =>
     setForm((prev) => ({ ...prev, [key]: value }));
 
   const mutation = useMutation({
     mutationFn: async () => {
-      const num = (key: FieldKey, decimals = false) => {
-        const raw = form[key].trim();
-        if (raw === "") return null;
-        const parsed = decimals ? Number.parseFloat(raw) : Number.parseInt(raw, 10);
-        if (Number.isNaN(parsed) || parsed < 0) throw new Error(`Enter a valid number for ${key}`);
-        return parsed;
-      };
-
-      const seasonLabel = form.season.trim();
-      if (seasonLabel.length < 2) throw new Error("Enter a season label, e.g. 2026");
-
-      const pass = num("pass_completion", true);
-      if (pass !== null && pass > 100) throw new Error("Pass completion must be 0–100%");
-
+      const values = parsed(form);
       return save({
         data: {
           profileId,
-          season: seasonLabel,
-          games_played: num("games_played"),
-          goals: num("goals"),
-          assists: num("assists"),
-          shots: num("shots"),
-          shots_on_goal: num("shots_on_goal"),
-          minutes_played: num("minutes_played"),
-          yellow_cards: num("yellow_cards"),
-          red_cards: num("red_cards"),
-          penalty_kicks: num("penalty_kicks"),
-          pk_saves: num("pk_saves"),
-          saves: num("saves"),
-          clean_sheets: num("clean_sheets"),
-          fouls: num("fouls"),
-          tackles: num("tackles"),
-          interceptions: num("interceptions"),
-          headers_won: num("headers_won"),
-          mvp_awards: num("mvp_awards"),
-          pass_completion: pass,
+          season: form.season.trim(),
+          ...values,
+          games_played: values.games_played ?? 0,
+          minutes_played: values.minutes_played ?? 0,
         },
       });
     },
     onSuccess: async () => {
       toast.success("Season stats saved");
       setOpen(false);
+      setSubmitted(false);
       await queryClient.invalidateQueries({ queryKey: ["profile"] });
     },
     onError: (error: Error) => toast.error(error.message || "Could not save season stats"),
   });
+
 
   if (!open) {
     return (
