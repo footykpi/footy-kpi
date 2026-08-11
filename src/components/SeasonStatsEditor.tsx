@@ -145,8 +145,14 @@ export function SeasonStatsEditor({
 
   return (
     <form
+      noValidate
       onSubmit={(event) => {
         event.preventDefault();
+        setSubmitted(true);
+        if (Object.keys(validateAll(form)).length > 0) {
+          toast.error("Fix the highlighted fields before saving");
+          return;
+        }
         mutation.mutate();
       }}
       className="mt-6 rounded-2xl border border-border bg-surface p-5"
@@ -154,15 +160,22 @@ export function SeasonStatsEditor({
       <div className="flex flex-wrap items-end justify-between gap-4">
         <label className="block">
           <span className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
-            Season
+            Season <span className="text-primary">*</span>
           </span>
           <input
             value={form.season}
             onChange={(event) => set("season", event.target.value)}
+            onBlur={() => setTouched((prev) => ({ ...prev, season: true }))}
             maxLength={20}
             placeholder="2026"
-            className="mt-1 w-32 rounded-lg border border-border bg-background px-3 py-2 text-foreground outline-none focus:border-primary"
+            aria-invalid={Boolean(showError("season"))}
+            className={`mt-1 w-32 rounded-lg border bg-background px-3 py-2 text-foreground outline-none focus:border-primary ${
+              showError("season") ? "border-destructive" : "border-border"
+            }`}
           />
+          {showError("season") ? (
+            <span className="mt-1 block text-xs text-destructive">{showError("season")}</span>
+          ) : null}
         </label>
         <button
           type="button"
@@ -181,44 +194,64 @@ export function SeasonStatsEditor({
               {group.title}
             </legend>
             <div className="mt-3 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-              {group.fields.map((field) => (
-                <label key={field.key} className="block">
-                  <span className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
-                    {field.label}
-                    {field.suffix ? ` (${field.suffix})` : ""}
-                  </span>
-                  <input
-                    type="number"
-                    min={0}
-                    {...(field.key === "pass_completion"
-                      ? { max: 100, step: "0.1" }
-                      : { step: "1" })}
-                    inputMode="decimal"
-                    value={form[field.key]}
-                    onChange={(event) => set(field.key, event.target.value)}
-                    placeholder="—"
-                    className="mt-1 w-full rounded-lg border border-border bg-background px-3 py-2 text-foreground outline-none focus:border-primary"
-                  />
-                </label>
-              ))}
+              {group.fields.map((key) => {
+                const rule = STAT_RULES[key];
+                const error = showError(key);
+                return (
+                  <label key={key} className="block">
+                    <span className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+                      {rule.label}
+                      {rule.suffix ? ` (${rule.suffix})` : ""}
+                      {rule.required ? <span className="text-primary"> *</span> : null}
+                    </span>
+                    <input
+                      type="number"
+                      min={rule.min}
+                      max={rule.max}
+                      step={rule.decimals === 1 ? "0.1" : "1"}
+                      inputMode={rule.decimals === 1 ? "decimal" : "numeric"}
+                      value={form[key]}
+                      onChange={(event) => set(key, event.target.value)}
+                      onBlur={() => setTouched((prev) => ({ ...prev, [key]: true }))}
+                      placeholder={rule.required ? "0" : "—"}
+                      aria-invalid={Boolean(error)}
+                      className={`mt-1 w-full rounded-lg border bg-background px-3 py-2 text-foreground outline-none focus:border-primary ${
+                        error ? "border-destructive" : "border-border"
+                      }`}
+                    />
+                    <span className="mt-1 block text-xs text-destructive">
+                      {error ?? "\u00a0"}
+                    </span>
+                  </label>
+                );
+              })}
             </div>
           </fieldset>
         ))}
       </div>
 
+      {submitted && errorCount > 0 ? (
+        <p className="mt-4 inline-flex items-center gap-2 rounded-lg border border-destructive/40 bg-destructive/10 px-3 py-2 text-xs text-destructive">
+          <AlertCircle className="h-4 w-4" />
+          {errorCount} field{errorCount === 1 ? "" : "s"} need fixing before this season can be
+          saved.
+        </p>
+      ) : null}
+
       <div className="mt-6 flex items-center gap-3">
         <button
           type="submit"
-          disabled={mutation.isPending}
+          disabled={mutation.isPending || errorCount > 0}
           className="inline-flex items-center gap-2 rounded-full bg-primary px-5 py-2 text-sm font-semibold text-primary-foreground transition-opacity hover:opacity-90 disabled:opacity-60"
         >
           {mutation.isSuccess ? <Check className="h-4 w-4" /> : <Save className="h-4 w-4" />}
           {mutation.isPending ? "Saving…" : "Save season stats"}
         </button>
         <p className="text-xs text-muted-foreground">
-          Leave a field blank to keep it off the portfolio.
+          Required fields are marked *. Leave optional fields blank to keep them off the portfolio.
         </p>
       </div>
     </form>
   );
 }
+
