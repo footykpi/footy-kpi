@@ -121,6 +121,12 @@ export function validateSeasonLabel(raw: string): string | null {
 }
 
 /** Zod schema mirroring the same rules for the server boundary. */
+const count = (key: StatFieldKey) => {
+  const rule = STAT_RULES[key];
+  return z.number().int().min(rule.min).max(rule.max);
+};
+const optionalCount = (key: StatFieldKey) => count(key).nullable();
+
 export const seasonStatsSchema = z
   .object({
     profileId: z.string().uuid(),
@@ -130,19 +136,31 @@ export const seasonStatsSchema = z
       .refine((value) => validateSeasonLabel(value) === null, {
         message: "Use a season like 2026 or 2025/26.",
       }),
-    ...(Object.fromEntries(
-      STAT_FIELD_KEYS.map((key) => {
-        const rule = STAT_RULES[key];
-        let base = z.number().min(rule.min).max(rule.max);
-        if (rule.decimals === 0) base = base.int();
-        else base = base.refine((v) => Number.isInteger(v * 10), {
-          message: `${rule.label} allows at most one decimal.`,
-        }) as unknown as typeof base;
-        return [key, rule.required ? base : base.nullable()];
-      }),
-    ) as {
-      [K in StatFieldKey]: z.ZodType<number | null>;
-    }),
+    games_played: count("games_played"),
+    minutes_played: count("minutes_played"),
+    goals: optionalCount("goals"),
+    assists: optionalCount("assists"),
+    shots: optionalCount("shots"),
+    shots_on_goal: optionalCount("shots_on_goal"),
+    yellow_cards: optionalCount("yellow_cards"),
+    red_cards: optionalCount("red_cards"),
+    penalty_kicks: optionalCount("penalty_kicks"),
+    pk_saves: optionalCount("pk_saves"),
+    saves: optionalCount("saves"),
+    clean_sheets: optionalCount("clean_sheets"),
+    fouls: optionalCount("fouls"),
+    tackles: optionalCount("tackles"),
+    interceptions: optionalCount("interceptions"),
+    headers_won: optionalCount("headers_won"),
+    mvp_awards: optionalCount("mvp_awards"),
+    pass_completion: z
+      .number()
+      .min(0)
+      .max(100)
+      .refine((v) => Number.isInteger(Math.round(v * 10)) && Number.isInteger(v * 10), {
+        message: "Pass completion allows at most one decimal.",
+      })
+      .nullable(),
   })
   .superRefine((data, ctx) => {
     const values = Object.fromEntries(
@@ -154,3 +172,4 @@ export const seasonStatsSchema = z
   });
 
 export type SeasonStatsInput = z.infer<typeof seasonStatsSchema>;
+
