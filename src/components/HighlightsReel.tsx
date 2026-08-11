@@ -1,5 +1,6 @@
 import { useRef, useState } from "react";
 import { useQueryClient } from "@tanstack/react-query";
+import { useServerFn } from "@tanstack/react-start";
 import {
   Trophy,
   Medal,
@@ -14,15 +15,21 @@ import {
   ShieldAlert,
   ShieldQuestion,
   FileCheck2,
+  Lock,
 } from "lucide-react";
 
-import { supabase } from "@/integrations/supabase/client";
 import type { Highlight } from "@/lib/profile.functions";
+import {
+  uploadHighlight,
+  deleteHighlight,
+  uploadHighlightProof,
+} from "@/lib/highlights.functions";
 import {
   submitHighlightProof,
   reviewHighlightProof,
   VERIFIABLE_CATEGORIES,
 } from "@/lib/verification.functions";
+
 
 type Category = Highlight["category"];
 
