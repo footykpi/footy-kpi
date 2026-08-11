@@ -74,13 +74,17 @@ export const uploadHighlight = createServerFn({ method: "POST" })
 
     await uploadFileToStorage(supabaseAdmin, path, data.file);
 
-    const { data: countRow } = await supabaseAdmin
+    const { data: maxSortRow } = await supabaseAdmin
       .from("highlights")
-      .select("sort_order", { count: "exact", head: true })
-      .eq("profile_id", data.profileId);
-    const nextSortOrder = (countRow ?? 0) + 1;
+      .select("sort_order")
+      .eq("profile_id", data.profileId)
+      .order("sort_order", { ascending: false })
+      .limit(1)
+      .maybeSingle();
+    const nextSortOrder = (maxSortRow?.sort_order ?? 0) + 1;
 
     const { data: inserted, error: insertError } = await supabaseAdmin
+
       .from("highlights")
       .insert({
         profile_id: data.profileId,
