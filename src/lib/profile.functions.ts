@@ -204,7 +204,9 @@ export const getPublicProfile = createServerFn({ method: "GET" })
     // Game notes, private details, and unlock tokens are server-role only.
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
 
-    const { data: profile, error: profileError } = await supabase
+    // Private profiles are not readable by anon (RLS), so the lookup runs server-side;
+    // the teaser branch below is what limits what actually leaves the server.
+    const { data: profile, error: profileError } = await supabaseAdmin
       .from("profiles")
       .select("*")
       .eq("slug", data.slug)
@@ -268,12 +270,12 @@ export const getPublicProfile = createServerFn({ method: "GET" })
 
     const [{ data: stats }, { data: achievements }, { data: allGames }, { data: allHighlights }] =
       await Promise.all([
-        supabase
+        supabaseAdmin
           .from("season_stats")
           .select("*")
           .eq("profile_id", profile.id)
           .order("season", { ascending: false }),
-        supabase
+        supabaseAdmin
           .from("achievements")
           .select("*")
           .eq("profile_id", profile.id)
