@@ -202,9 +202,9 @@ const PUBLIC_ACCESS: ViewerAccess = {
 export const getPublicProfile = createServerFn({ method: "GET" })
   .validator(z.object({ slug: z.string(), key: z.string().trim().max(120).optional() }))
   .handler(async ({ data }): Promise<PublicProfile> => {
-    const supabase = createPublishableClient();
     // Game notes, private details, and unlock tokens are server-role only.
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+
 
     // Private profiles are not readable by anon (RLS), so the lookup runs server-side;
     // the teaser branch below is what limits what actually leaves the server.
