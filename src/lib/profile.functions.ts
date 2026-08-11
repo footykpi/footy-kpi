@@ -93,7 +93,12 @@ export interface Game {
   player_reflection: string | null;
   mood: string | null;
   performance_rating: number | null;
+  journal_went_well: string | null;
+  journal_improve: string | null;
+  journal_next_goal: string | null;
+  journal_updated_at: string | null;
   media: GameMedia[];
+
 }
 
 export interface Highlight {
