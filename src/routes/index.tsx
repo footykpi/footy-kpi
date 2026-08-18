@@ -82,16 +82,16 @@ function Index() {
   const { data } = useSuspenseQuery(profileQueryOptions({ slug: SLUG, key: search.key }));
   const {
     profile,
-    stats,
-    achievements,
-    games,
-    highlights,
-    isPrivate,
-    access,
-    privateDetails,
-    gamesLocked,
-    highlightsLocked,
-  } = data as PublicProfile;
+    stats = [],
+    achievements = [],
+    games = [],
+    highlights = [],
+    isPrivate = false,
+    access = { role: "public", linkLabel: null, invalidKey: false, contact: false, gameLog: false, highlights: false },
+    privateDetails = null,
+    gamesLocked = 0,
+    highlightsLocked = 0,
+  } = (data ?? {}) as Partial<PublicProfile>;
   const season = stats.find((s) => s.sport === SPORT);
   const [previewPrivate, setPreviewPrivate] = useState(isPrivate);
   const unlocked = access.role !== "public";
