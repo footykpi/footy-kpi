@@ -97,6 +97,16 @@ function Index() {
   const unlocked = access.role !== "public";
   const locked = (isPrivate || previewPrivate) && !unlocked;
 
+  if (!profile) {
+    return (
+      <div className="flex min-h-screen items-center justify-center bg-background px-6">
+        <p className="text-sm text-muted-foreground">This portfolio isn't available right now.</p>
+      </div>
+    );
+  }
+
+
+
 
   return (
     <div className="min-h-screen bg-background">
