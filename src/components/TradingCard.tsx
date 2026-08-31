@@ -139,78 +139,150 @@ export function TradingCard({ profile, season, games, photoUrl }: TradingCardPro
         </DialogHeader>
 
         <div className="flex justify-center">
+          {/* Foil border frame */}
           <div
             ref={cardRef}
-            className="w-[320px] overflow-hidden rounded-2xl border border-indigo-light/40 bg-card"
+            className="w-[330px] rounded-[20px] p-[6px]"
             style={{
               background:
-                "linear-gradient(160deg, var(--surface-elevated) 0%, var(--background) 55%, var(--surface) 100%)",
+                "linear-gradient(135deg, #f2e6a8 0%, #b9932f 18%, #fff6c9 32%, #8d6c1c 48%, #e8d78a 64%, #6f5410 82%, #f6ecb6 100%)",
+              boxShadow: "0 24px 50px -20px rgba(0,0,0,.75)",
             }}
           >
-            <div className="flex items-center justify-between border-b border-border/60 px-4 py-2">
-              <span className="font-display text-lg tracking-widest text-indigo-light">
-                ATHLETEFOLIO
-              </span>
-              <span className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
-                {season?.season ?? "Season"}
-              </span>
-            </div>
-
-            <div className="relative">
-              <img
-                src={photoUrl}
-                alt={fullName}
-                crossOrigin="anonymous"
-                className="h-[300px] w-full object-cover"
+            <div
+              className="relative overflow-hidden rounded-[15px] border border-black/40"
+              style={{
+                background:
+                  "radial-gradient(120% 90% at 50% 0%, var(--surface-elevated) 0%, var(--background) 60%, #05050f 100%)",
+              }}
+            >
+              {/* holographic sheen */}
+              <div
+                className="pointer-events-none absolute inset-0 z-20 opacity-[0.16]"
+                style={{
+                  background:
+                    "linear-gradient(115deg, transparent 20%, #ffffff 38%, transparent 46%, #7df9ff 58%, transparent 66%, #ff8ae2 78%, transparent 88%)",
+                  mixBlendMode: "screen",
+                }}
               />
-              {profile.jersey_number && (
-                <span className="absolute right-3 top-3 rounded-lg bg-primary px-2.5 py-1 font-display text-2xl leading-none text-primary-foreground">
-                  #{profile.jersey_number}
+
+              {/* Team banner */}
+              <div className="relative z-10 flex items-center justify-between bg-primary px-3 py-1.5">
+                <span className="font-display text-[15px] tracking-[0.22em] text-primary-foreground">
+                  {(profile.team ?? "").toUpperCase()}
                 </span>
-              )}
-            </div>
-
-            <div className="px-4 pb-4 pt-3">
-              <h3 className="font-display text-3xl leading-tight text-foreground">{fullName}</h3>
-              <p className="text-sm font-medium text-indigo-light">
-                {profile.position} • {profile.team}
-              </p>
-              <p className="mt-0.5 text-xs uppercase tracking-wider text-muted-foreground">
-                Class of {profile.graduation_year ?? "—"}
-                {profile.height ? ` • ${profile.height}` : ""}
-                {profile.dominant_hand ? ` • ${profile.dominant_hand} foot` : ""}
-              </p>
-
-              <div className="mt-3 grid grid-cols-4 gap-2 text-center">
-                {[
-                  { label: "GP", value: num(season?.games_played) },
-                  { label: "Goals", value: num(season?.goals) },
-                  { label: "Assists", value: num(season?.assists) },
-                  { label: "MVP", value: num(season?.mvp_awards) },
-                ].map((s) => (
-                  <div key={s.label} className="rounded-lg bg-surface/80 py-2">
-                    <div className="font-display text-xl text-foreground">{s.value}</div>
-                    <div className="text-[10px] uppercase tracking-wider text-muted-foreground">
-                      {s.label}
-                    </div>
-                  </div>
-                ))}
+                <span className="font-display text-[13px] tracking-[0.18em] text-primary-foreground/80">
+                  {season?.season ?? "SEASON"}
+                </span>
               </div>
 
-              <div className="mt-2 flex items-center justify-between rounded-lg bg-surface/60 px-3 py-2 text-xs text-muted-foreground">
-                <span>
-                  Record <span className="text-foreground">{record(games)}</span>
+              {/* Portrait window */}
+              <div className="relative mx-[10px] mt-[10px] overflow-hidden rounded-[10px] border-2 border-yellow-200/50">
+                <div
+                  className="absolute inset-0"
+                  style={{
+                    background:
+                      "radial-gradient(90% 70% at 50% 20%, color-mix(in oklab, var(--primary) 45%, transparent) 0%, transparent 70%)",
+                  }}
+                />
+                <img
+                  src={photoUrl}
+                  alt={fullName}
+                  crossOrigin="anonymous"
+                  className="relative h-[290px] w-full object-cover"
+                />
+                {/* position tab */}
+                <span className="absolute left-0 top-3 rounded-r-md bg-black/75 px-2.5 py-1 text-[11px] font-bold uppercase tracking-[0.18em] text-yellow-200">
+                  {profile.position ?? "Player"}
                 </span>
-                <span>
-                  Minutes <span className="text-foreground">{num(season?.minutes_played)}</span>
+                {/* jersey roundel */}
+                {profile.jersey_number && (
+                  <span
+                    className="absolute bottom-3 right-3 flex h-14 w-14 items-center justify-center rounded-full font-display text-3xl leading-none text-primary-foreground"
+                    style={{
+                      background:
+                        "radial-gradient(circle at 30% 25%, color-mix(in oklab, var(--primary) 80%, white) 0%, var(--primary) 70%)",
+                      boxShadow: "0 0 0 3px rgba(255,246,201,.75), 0 6px 14px rgba(0,0,0,.5)",
+                    }}
+                  >
+                    {profile.jersey_number}
+                  </span>
+                )}
+              </div>
+
+              {/* Name plate */}
+              <div
+                className="relative z-10 mx-[10px] mt-[10px] rounded-md border border-yellow-200/40 px-3 py-2 text-center"
+                style={{
+                  background:
+                    "linear-gradient(180deg, rgba(255,246,201,.14) 0%, rgba(0,0,0,.35) 100%)",
+                }}
+              >
+                <h3 className="font-display text-[30px] uppercase leading-none tracking-wide text-foreground">
+                  {fullName}
+                </h3>
+                <p className="mt-1 text-[10px] font-semibold uppercase tracking-[0.2em] text-yellow-200/90">
+                  Class of {profile.graduation_year ?? "—"}
+                  {profile.height ? ` • ${profile.height}` : ""}
+                  {profile.dominant_hand ? ` • ${profile.dominant_hand} foot` : ""}
+                </p>
+              </div>
+
+              {/* Stat strip */}
+              <div className="relative z-10 px-[10px] pb-1 pt-2">
+                <div className="grid grid-cols-4 overflow-hidden rounded-md border border-border/70">
+                  {[
+                    { label: "GP", value: num(season?.games_played) },
+                    { label: "G", value: num(season?.goals) },
+                    { label: "A", value: num(season?.assists) },
+                    { label: "MVP", value: num(season?.mvp_awards) },
+                  ].map((s, i) => (
+                    <div
+                      key={s.label}
+                      className={`bg-black/35 py-1.5 text-center ${i > 0 ? "border-l border-border/60" : ""}`}
+                    >
+                      <div className="font-display text-[22px] leading-none text-foreground">
+                        {s.value}
+                      </div>
+                      <div className="mt-0.5 text-[9px] font-bold uppercase tracking-[0.14em] text-muted-foreground">
+                        {s.label}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+
+                <div className="mt-1 grid grid-cols-3 overflow-hidden rounded-md border border-border/70 text-center">
+                  {[
+                    { label: "Record", value: record(games) },
+                    { label: "Min", value: num(season?.minutes_played) },
+                    { label: "Pass %", value: num(season?.pass_completion) },
+                  ].map((s, i) => (
+                    <div
+                      key={s.label}
+                      className={`bg-black/25 py-1 ${i > 0 ? "border-l border-border/60" : ""}`}
+                    >
+                      <div className="text-[13px] font-semibold text-foreground">{s.value}</div>
+                      <div className="text-[9px] uppercase tracking-[0.14em] text-muted-foreground">
+                        {s.label}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              {/* Footer / serial */}
+              <div className="relative z-10 flex items-center justify-between px-[12px] pb-2 pt-1">
+                <span className="font-display text-[12px] tracking-[0.28em] text-yellow-200/80">
+                  ATHLETEFOLIO
                 </span>
-                <span>
-                  Pass % <span className="text-foreground">{num(season?.pass_completion)}</span>
+                <span className="text-[9px] font-medium uppercase tracking-[0.16em] text-muted-foreground">
+                  No. {(profile.jersey_number ?? 1).toString().padStart(3, "0")} · Official Rookie
                 </span>
               </div>
             </div>
           </div>
         </div>
+
 
         <div className="mt-2 flex flex-wrap gap-2">
           <button
