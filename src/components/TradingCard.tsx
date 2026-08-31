@@ -47,6 +47,27 @@ export function TradingCard({ profile, season, games, photoUrl }: TradingCardPro
   const shareUrl =
     typeof window !== "undefined" ? `${window.location.origin}/?slug=${profile.slug}` : "";
   const shareText = `${fullName} — ${profile.position ?? "Soccer"} · ${profile.team} · Class of ${profile.graduation_year ?? ""}`.trim();
+  const [qrDataUrl, setQrDataUrl] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (!shareUrl) return;
+    let active = true;
+    QRCode.toDataURL(shareUrl, {
+      margin: 0,
+      width: 240,
+      errorCorrectionLevel: "M",
+      color: { dark: "#0a0a1a", light: "#ffffff" },
+    })
+      .then((url) => {
+        if (active) setQrDataUrl(url);
+      })
+      .catch(() => setQrDataUrl(null));
+    return () => {
+      active = false;
+    };
+  }, [shareUrl]);
+
+
 
   async function renderBlob(): Promise<Blob | null> {
     if (!cardRef.current) return null;
