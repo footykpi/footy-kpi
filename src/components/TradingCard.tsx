@@ -293,15 +293,30 @@ export function TradingCard({ profile, season, games, photoUrl }: TradingCardPro
                 </div>
               </div>
 
-              {/* Footer / serial */}
-              <div className="relative z-10 flex items-center justify-between px-[12px] pb-2 pt-1">
-                <span className="font-display text-[12px] tracking-[0.28em] text-yellow-200/80">
-                  ATHLETEFOLIO
-                </span>
-                <span className="text-[9px] font-medium uppercase tracking-[0.16em] text-muted-foreground">
-                  No. {(profile.jersey_number ?? 1).toString().padStart(3, "0")} · Official Rookie
-                </span>
+              {/* Footer / serial + QR */}
+              <div className="relative z-10 flex items-end justify-between gap-2 px-[12px] pb-2 pt-1">
+                <div>
+                  <span className="block font-display text-[12px] tracking-[0.28em] text-yellow-200/80">
+                    ATHLETEFOLIO
+                  </span>
+                  <span className="text-[9px] font-medium uppercase tracking-[0.16em] text-muted-foreground">
+                    No. {(profile.jersey_number ?? 1).toString().padStart(3, "0")} · Official Rookie
+                  </span>
+                </div>
+                {qrDataUrl && (
+                  <div className="flex flex-col items-center gap-0.5">
+                    <img
+                      src={qrDataUrl}
+                      alt={`Scan to view ${fullName}'s profile`}
+                      className="h-[52px] w-[52px] rounded-[3px] border border-yellow-200/60 bg-white p-[3px]"
+                    />
+                    <span className="text-[7px] font-bold uppercase tracking-[0.12em] text-muted-foreground">
+                      Scan profile
+                    </span>
+                  </div>
+                )}
               </div>
+
             </div>
           </div>
         </div>
