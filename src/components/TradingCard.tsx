@@ -1,7 +1,9 @@
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { toPng } from "html-to-image";
+import QRCode from "qrcode";
 import { Download, IdCard, Share2, Link as LinkIcon, Loader2 } from "lucide-react";
 import { toast } from "sonner";
+
 
 import {
   Dialog,
