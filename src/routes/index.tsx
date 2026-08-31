@@ -35,6 +35,7 @@ import { SeasonJournal } from "@/components/SeasonJournal";
 import { HighlightsReel } from "@/components/HighlightsReel";
 import { AccessLinks } from "@/components/AccessLinks";
 import { SeasonStatsEditor } from "@/components/SeasonStatsEditor";
+import { TradingCard } from "@/components/TradingCard";
 import playerPhoto from "@/assets/player-photo.jpg";
 
 const SLUG = "demo-athlete";
