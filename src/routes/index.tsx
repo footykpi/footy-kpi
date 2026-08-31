@@ -35,6 +35,7 @@ import { SeasonJournal } from "@/components/SeasonJournal";
 import { HighlightsReel } from "@/components/HighlightsReel";
 import { AccessLinks } from "@/components/AccessLinks";
 import { SeasonStatsEditor } from "@/components/SeasonStatsEditor";
+import { TradingCard } from "@/components/TradingCard";
 import playerPhoto from "@/assets/player-photo.jpg";
 
 const SLUG = "demo-athlete";
@@ -144,10 +145,18 @@ function Index() {
               </div>
             )}
             {!locked && (
-              <button className="inline-flex items-center gap-2 rounded-full border border-border bg-background px-4 py-2 text-sm font-medium text-foreground transition-colors hover:bg-surface-elevated">
-                <Share2 className="h-4 w-4" />
-                Share Profile
-              </button>
+              <>
+                <TradingCard
+                  profile={profile}
+                  season={season}
+                  games={games.filter((g) => g.sport === SPORT)}
+                  photoUrl={profile.photo_url ?? playerPhoto}
+                />
+                <button className="inline-flex items-center gap-2 rounded-full border border-border bg-background px-4 py-2 text-sm font-medium text-foreground transition-colors hover:bg-surface-elevated">
+                  <Share2 className="h-4 w-4" />
+                  Share Profile
+                </button>
+              </>
             )}
           </div>
 
