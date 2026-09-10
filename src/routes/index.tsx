@@ -117,7 +117,7 @@ function Index() {
             <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-primary text-primary-foreground">
               <SoccerBallIcon className="h-6 w-6" />
             </div>
-            <span className="font-display text-2xl tracking-wide text-foreground">ATHLETEFOLIO</span>
+            <span className="font-display text-2xl tracking-wide text-foreground">FOOTY KPI</span>
           </div>
           <div className="flex items-center gap-3">
             {unlocked ? (
@@ -383,10 +383,10 @@ function Index() {
             <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary text-primary-foreground">
               <Shield className="h-4 w-4" />
             </div>
-            <span className="font-display text-lg tracking-wide text-foreground">ATHLETEFOLIO</span>
+            <span className="font-display text-lg tracking-wide text-foreground">FOOTY KPI</span>
           </div>
           <p className="text-sm text-muted-foreground">
-            Built for athletes, families, coaches, and recruiters.
+            Built for players, families, coaches, and recruiters.
           </p>
         </div>
       </footer>

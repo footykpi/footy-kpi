@@ -297,7 +297,7 @@ export function TradingCard({ profile, season, games, photoUrl }: TradingCardPro
               <div className="relative z-10 flex items-end justify-between gap-2 px-[12px] pb-2 pt-1">
                 <div>
                   <span className="block font-display text-[12px] tracking-[0.28em] text-yellow-200/80">
-                    ATHLETEFOLIO
+                    FOOTY KPI
                   </span>
                   <span className="text-[9px] font-medium uppercase tracking-[0.16em] text-muted-foreground">
                     No. {(profile.jersey_number ?? 1).toString().padStart(3, "0")} · Official Rookie

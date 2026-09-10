@@ -78,14 +78,14 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
     meta: [
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
-      { title: "AthleteFolio — Youth Athletic Portfolios" },
-      { name: "description", content: "A digital athletic portfolio for youth athletes. Every game, stat, and achievement in one shareable profile." },
-      { name: "author", content: "AthleteFolio" },
-      { property: "og:title", content: "AthleteFolio — Youth Athletic Portfolios" },
-      { property: "og:description", content: "A digital athletic portfolio for youth athletes. Every game, stat, and achievement in one shareable profile." },
+      { title: "Footy KPI — Youth Football (Soccer) Portfolios" },
+      { name: "description", content: "A digital football (soccer) portfolio for youth players. Every game, stat, and achievement in one shareable profile." },
+      { name: "author", content: "Footy KPI" },
+      { property: "og:title", content: "Footy KPI — Youth Football (Soccer) Portfolios" },
+      { property: "og:description", content: "A digital football (soccer) portfolio for youth players. Every game, stat, and achievement in one shareable profile." },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
-      { name: "twitter:site", content: "@AthleteFolio" },
+      { name: "twitter:site", content: "@FootyKPI" },
     ],
     links: [
       {
