@@ -2,7 +2,7 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { useEffect, useRef, useState } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
-import { ExternalLink, ImagePlus, Loader2, Mail, Trash2, UserPlus } from "lucide-react";
+import { ExternalLink, ImagePlus, Loader2, Mail, Pencil, Trash2, UserPlus } from "lucide-react";
 
 import { AppHeader } from "@/components/AppHeader";
 import { AccessLinks } from "@/components/AccessLinks";
@@ -82,6 +82,7 @@ function AthleteDashboard() {
   const [form, setForm] = useState<FormState>(EMPTY);
   const [coachEmail, setCoachEmail] = useState("");
   const [saved, setSaved] = useState(false);
+  const [editing, setEditing] = useState(false);
 
   const { data: account } = useQuery({ queryKey: ["my-account"], queryFn: () => fetchAccount({}) });
   const slug = account?.profileSlug ?? null;
@@ -140,6 +141,7 @@ function AthleteDashboard() {
       }),
     onSuccess: async () => {
       setSaved(true);
+      setEditing(false);
       await queryClient.invalidateQueries({ queryKey: ["my-portfolio"] });
       setTimeout(() => setSaved(false), 2500);
     },
@@ -210,7 +212,69 @@ function AthleteDashboard() {
         )}
 
         <section className="rounded-2xl border border-border bg-card p-6">
-          <h2 className="font-display text-2xl text-foreground">Profile details</h2>
+          <div className="flex flex-wrap items-center justify-between gap-3">
+            <h2 className="font-display text-2xl text-foreground">Profile details</h2>
+            {!editing && (
+              <button
+                type="button"
+                onClick={() => setEditing(true)}
+                className="inline-flex items-center gap-2 rounded-full border border-border bg-background px-4 py-2 text-sm font-medium text-foreground hover:bg-surface-elevated"
+              >
+                <Pencil className="h-4 w-4" />
+                Edit
+              </button>
+            )}
+          </div>
+
+          {!editing ? (
+            <div className="mt-5">
+              <div className="flex flex-wrap items-center gap-4">
+                <img
+                  src={profile?.photo_url ?? playerPhoto}
+                  alt={`${form.first_name} ${form.last_name}`.trim() || "Profile photo"}
+                  className="h-20 w-20 rounded-full border border-border object-cover"
+                />
+                <div>
+                  <p className="font-display text-2xl text-foreground">
+                    {`${form.first_name} ${form.last_name}`.trim() || "Athlete"}
+                  </p>
+                  <p className="text-sm text-muted-foreground">
+                    {[form.position, form.team].filter(Boolean).join(" · ") || "No team or position yet"}
+                  </p>
+                  <span
+                    className={`mt-2 inline-block rounded-full px-3 py-1 text-xs font-semibold capitalize ${
+                      form.visibility === "public"
+                        ? "bg-primary text-primary-foreground"
+                        : "bg-surface text-muted-foreground"
+                    }`}
+                  >
+                    {form.visibility}
+                  </span>
+                </div>
+              </div>
+              <dl className="mt-6 grid gap-x-8 gap-y-4 sm:grid-cols-2">
+                {FIELDS.filter(
+                  ({ key }) => !["first_name", "last_name", "team", "position"].includes(key),
+                ).map(({ key, label }) => (
+                  <div key={key}>
+                    <dt className="text-xs font-medium uppercase tracking-wide text-muted-foreground">
+                      {label}
+                    </dt>
+                    <dd className="mt-1 text-sm text-foreground">{form[key] || "—"}</dd>
+                  </div>
+                ))}
+              </dl>
+              {form.bio && (
+                <div className="mt-6">
+                  <p className="text-xs font-medium uppercase tracking-wide text-muted-foreground">
+                    Bio
+                  </p>
+                  <p className="mt-1 whitespace-pre-line text-sm text-foreground">{form.bio}</p>
+                </div>
+              )}
+            </div>
+          ) : (
+            <>
           <div className="mt-5 grid gap-4 sm:grid-cols-2">
             {FIELDS.map(({ key, label }) => (
               <label key={key} className="text-sm font-medium text-foreground">
@@ -305,9 +369,34 @@ function AthleteDashboard() {
             ))}
             <button
               type="button"
+              onClick={() => {
+                if (profile) {
+                  setForm({
+                    first_name: profile.first_name ?? "",
+                    last_name: profile.last_name ?? "",
+                    team: profile.team ?? "",
+                    jersey_number: profile.jersey_number ?? "",
+                    position: profile.position ?? "",
+                    graduation_year: profile.graduation_year ? String(profile.graduation_year) : "",
+                    height: profile.height ?? "",
+                    weight: profile.weight ?? "",
+                    dominant_hand: profile.dominant_hand ?? "",
+                    gpa: profile.gpa ? String(profile.gpa) : "",
+                    bio: profile.bio ?? "",
+                    visibility: profile.visibility === "public" ? "public" : "private",
+                  });
+                }
+                setEditing(false);
+              }}
+              className="ml-auto inline-flex items-center gap-2 rounded-full border border-border bg-background px-5 py-2.5 text-sm font-semibold text-foreground hover:bg-surface-elevated"
+            >
+              Cancel
+            </button>
+            <button
+              type="button"
               disabled={save.isPending}
               onClick={() => save.mutate()}
-              className="ml-auto inline-flex items-center gap-2 rounded-full bg-primary px-5 py-2.5 text-sm font-semibold text-primary-foreground transition-opacity hover:opacity-90 disabled:opacity-60"
+              className="inline-flex items-center gap-2 rounded-full bg-primary px-5 py-2.5 text-sm font-semibold text-primary-foreground transition-opacity hover:opacity-90 disabled:opacity-60"
             >
               {save.isPending && <Loader2 className="h-4 w-4 animate-spin" />}
               {saved ? "Saved" : "Save profile"}
@@ -317,6 +406,8 @@ function AthleteDashboard() {
             <p className="mt-3 text-sm text-destructive">
               {save.error instanceof Error ? save.error.message : "Could not save your profile."}
             </p>
+          )}
+            </>
           )}
         </section>
 
