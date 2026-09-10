@@ -1,9 +1,10 @@
 # Project Roadmap
 
 ## In progress
-- [ ] Publish again so the new accounts and dashboards go live.
 
 ## Completed
+- [x] Publish again so the new accounts and dashboards go live.
+- [x] Connect custom domain footykpi.com (active; www redirects to footykpi.com).
 - [x] Add sign up / log in with athlete, coach, and recruiter dashboards.
 - [x] Use the uploaded shield as the Footy KPI logo and app icon.
 - [x] Publish Footy KPI to a live Lovable URL.
