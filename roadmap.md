@@ -1,10 +1,12 @@
 # Project Roadmap
 
 ## In progress
-- [x] Use the uploaded shield as the Footy KPI logo and app icon.
-- [x] Publish Footy KPI to a live Lovable URL.
+- [ ] Publish again so the new accounts and dashboards go live.
 
 ## Completed
+- [x] Add sign up / log in with athlete, coach, and recruiter dashboards.
+- [x] Use the uploaded shield as the Footy KPI logo and app icon.
+- [x] Publish Footy KPI to a live Lovable URL.
 - [x] Rename app from AthleteFolio to Footy KPI across metadata and UI.
 - [x] Build soccer portfolio dashboard (profile, season stats, game log).
 - [x] Add progress charts, highlights reel, and verification workflow.
