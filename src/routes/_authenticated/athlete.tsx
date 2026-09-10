@@ -1,8 +1,8 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
-import { ExternalLink, Loader2, Mail, Trash2, UserPlus } from "lucide-react";
+import { ExternalLink, ImagePlus, Loader2, Mail, Trash2, UserPlus } from "lucide-react";
 
 import { AppHeader } from "@/components/AppHeader";
 import { AccessLinks } from "@/components/AccessLinks";
@@ -14,6 +14,7 @@ import { SeasonJournal } from "@/components/SeasonJournal";
 import { SeasonStatsEditor } from "@/components/SeasonStatsEditor";
 import { TradingCard } from "@/components/TradingCard";
 import { getMyAccount, saveMyProfile } from "@/lib/account.functions";
+import { removeProfilePhoto, uploadProfilePhoto } from "@/lib/profile-photo.functions";
 import { inviteCoach, listMyCoaches, removeCoachLink } from "@/lib/coach.functions";
 import { getPublicProfile } from "@/lib/profile.functions";
 import playerPhoto from "@/assets/player-photo.jpg";
@@ -46,7 +47,7 @@ const FIELDS = [
 ] as const;
 
 type FieldKey = (typeof FIELDS)[number]["key"];
-type FormState = Record<FieldKey | "bio" | "photo_url", string> & {
+type FormState = Record<FieldKey | "bio", string> & {
   visibility: "public" | "private";
 };
 
@@ -62,7 +63,7 @@ const EMPTY: FormState = {
   dominant_hand: "",
   gpa: "",
   bio: "",
-  photo_url: "",
+  
   visibility: "private",
 };
 
@@ -108,7 +109,7 @@ function AthleteDashboard() {
       dominant_hand: profile.dominant_hand ?? "",
       gpa: profile.gpa ? String(profile.gpa) : "",
       bio: profile.bio ?? "",
-      photo_url: profile.photo_url ?? "",
+      
       visibility: profile.visibility === "public" ? "public" : "private",
     });
   }, [profile]);
@@ -128,7 +129,7 @@ function AthleteDashboard() {
           dominant_hand: form.dominant_hand.trim() || null,
           gpa: form.gpa.trim() || null,
           bio: form.bio.trim() || null,
-          photo_url: form.photo_url.trim() || null,
+          
           visibility: form.visibility,
         },
       }),
@@ -201,15 +202,60 @@ function AthleteDashboard() {
                 />
               </label>
             ))}
-            <label className="text-sm font-medium text-foreground sm:col-span-2">
-              Photo URL
-              <input
-                value={form.photo_url}
-                onChange={(event) => set("photo_url", event.target.value)}
-                placeholder="https://…"
-                className="mt-1.5 w-full rounded-lg border border-border bg-background px-3 py-2 text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-primary/40"
-              />
-            </label>
+            <div className="sm:col-span-2">
+              <p className="text-sm font-medium text-foreground">Profile photo</p>
+              <div className="mt-2 flex flex-wrap items-center gap-4">
+                <img
+                  src={profile?.photo_url ?? playerPhoto}
+                  alt={`${form.first_name} ${form.last_name}`.trim() || "Profile photo"}
+                  className="h-20 w-20 rounded-full border border-border object-cover"
+                />
+                <input
+                  ref={photoInput}
+                  type="file"
+                  accept="image/*"
+                  className="hidden"
+                  onChange={(event) => {
+                    const file = event.target.files?.[0];
+                    event.target.value = "";
+                    if (file) uploadPhoto.mutate(file);
+                  }}
+                />
+                <button
+                  type="button"
+                  disabled={uploadPhoto.isPending}
+                  onClick={() => photoInput.current?.click()}
+                  className="inline-flex items-center gap-2 rounded-full border border-border bg-background px-4 py-2 text-sm font-medium text-foreground hover:bg-surface-elevated disabled:opacity-60"
+                >
+                  {uploadPhoto.isPending ? (
+                    <Loader2 className="h-4 w-4 animate-spin" />
+                  ) : (
+                    <ImagePlus className="h-4 w-4" />
+                  )}
+                  {profile?.photo_url ? "Change photo" : "Upload photo"}
+                </button>
+                {profile?.photo_url && (
+                  <button
+                    type="button"
+                    disabled={dropPhoto.isPending}
+                    onClick={() => dropPhoto.mutate()}
+                    className="text-sm text-muted-foreground hover:text-destructive disabled:opacity-60"
+                  >
+                    Remove
+                  </button>
+                )}
+              </div>
+              <p className="mt-2 text-xs text-muted-foreground">
+                JPG or PNG from your phone or computer, up to 8MB.
+              </p>
+              {(uploadPhoto.isError || dropPhoto.isError) && (
+                <p className="mt-2 text-sm text-destructive">
+                  {(uploadPhoto.error ?? dropPhoto.error) instanceof Error
+                    ? (uploadPhoto.error ?? dropPhoto.error as Error).message
+                    : "Could not update your photo."}
+                </p>
+              )}
+            </div>
             <label className="text-sm font-medium text-foreground sm:col-span-2">
               Bio
               <textarea
