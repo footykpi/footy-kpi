@@ -135,7 +135,7 @@ export const deleteHighlight = createServerFn({ method: "POST" })
 
 export const uploadHighlightProof = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
-  .validator(uploadProofSchema)
+  .validator(parseProofForm)
   .handler(async ({ data, context }) => {
     const { supabase, userId } = context;
     const own = await requireOwnProfile(supabase, userId);
