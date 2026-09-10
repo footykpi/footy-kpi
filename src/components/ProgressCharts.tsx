@@ -246,12 +246,12 @@ export function ProgressCharts({ games }: { games: Game[] }) {
             <span className="text-xs text-muted-foreground">Goal contributions per game</span>
           </div>
           <div className="mt-4 flex flex-wrap gap-2">
-            {points.map((point) => {
+            {points.map((point, index) => {
               const contribution = point.goals + point.assists;
               const intensity = contribution / heatMax;
               return (
                 <div
-                  key={point.label}
+                  key={`${point.label}-${index}`}
                   title={`${point.label}: ${contribution} G+A`}
                   className="flex h-12 w-12 flex-col items-center justify-center rounded-lg border border-border text-xs font-semibold text-foreground"
                   style={{
