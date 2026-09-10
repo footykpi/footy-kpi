@@ -16,6 +16,7 @@ import { Route as AuthenticatedAthleteRouteImport } from './routes/_authenticate
 import { Route as AuthenticatedCoachRouteImport } from './routes/_authenticated/coach'
 import { Route as AuthenticatedDashboardRouteImport } from './routes/_authenticated/dashboard'
 import { Route as PSlugRouteImport } from './routes/p.$slug'
+import { Route as AuthenticatedCoachSlugRouteImport } from './routes/_authenticated/coach.$slug'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -51,22 +52,29 @@ const PSlugRoute = PSlugRouteImport.update({
   path: '/p/$slug',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AuthenticatedCoachSlugRoute = AuthenticatedCoachSlugRouteImport.update({
+  id: '/$slug',
+  path: '/$slug',
+  getParentRoute: () => AuthenticatedCoachRoute,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/auth': typeof AuthRoute
   '/athlete': typeof AuthenticatedAthleteRoute
-  '/coach': typeof AuthenticatedCoachRoute
+  '/coach': typeof AuthenticatedCoachRouteWithChildren
   '/dashboard': typeof AuthenticatedDashboardRoute
   '/p/$slug': typeof PSlugRoute
+  '/coach/$slug': typeof AuthenticatedCoachSlugRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/auth': typeof AuthRoute
   '/athlete': typeof AuthenticatedAthleteRoute
-  '/coach': typeof AuthenticatedCoachRoute
+  '/coach': typeof AuthenticatedCoachRouteWithChildren
   '/dashboard': typeof AuthenticatedDashboardRoute
   '/p/$slug': typeof PSlugRoute
+  '/coach/$slug': typeof AuthenticatedCoachSlugRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -74,15 +82,30 @@ export interface FileRoutesById {
   '/_authenticated': typeof AuthenticatedRouteRouteWithChildren
   '/auth': typeof AuthRoute
   '/_authenticated/athlete': typeof AuthenticatedAthleteRoute
-  '/_authenticated/coach': typeof AuthenticatedCoachRoute
+  '/_authenticated/coach': typeof AuthenticatedCoachRouteWithChildren
   '/_authenticated/dashboard': typeof AuthenticatedDashboardRoute
   '/p/$slug': typeof PSlugRoute
+  '/_authenticated/coach/$slug': typeof AuthenticatedCoachSlugRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/auth' | '/athlete' | '/coach' | '/dashboard' | '/p/$slug'
+  fullPaths:
+    | '/'
+    | '/auth'
+    | '/athlete'
+    | '/coach'
+    | '/dashboard'
+    | '/p/$slug'
+    | '/coach/$slug'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/auth' | '/athlete' | '/coach' | '/dashboard' | '/p/$slug'
+  to:
+    | '/'
+    | '/auth'
+    | '/athlete'
+    | '/coach'
+    | '/dashboard'
+    | '/p/$slug'
+    | '/coach/$slug'
   id:
     | '__root__'
     | '/'
@@ -92,6 +115,7 @@ export interface FileRouteTypes {
     | '/_authenticated/coach'
     | '/_authenticated/dashboard'
     | '/p/$slug'
+    | '/_authenticated/coach/$slug'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -152,18 +176,36 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof PSlugRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/_authenticated/coach/$slug': {
+      id: '/_authenticated/coach/$slug'
+      path: '/$slug'
+      fullPath: '/coach/$slug'
+      preLoaderRoute: typeof AuthenticatedCoachSlugRouteImport
+      parentRoute: typeof AuthenticatedCoachRoute
+    }
   }
 }
 
+interface AuthenticatedCoachRouteChildren {
+  AuthenticatedCoachSlugRoute: typeof AuthenticatedCoachSlugRoute
+}
+
+const AuthenticatedCoachRouteChildren: AuthenticatedCoachRouteChildren = {
+  AuthenticatedCoachSlugRoute: AuthenticatedCoachSlugRoute,
+}
+
+const AuthenticatedCoachRouteWithChildren =
+  AuthenticatedCoachRoute._addFileChildren(AuthenticatedCoachRouteChildren)
+
 interface AuthenticatedRouteRouteChildren {
   AuthenticatedAthleteRoute: typeof AuthenticatedAthleteRoute
-  AuthenticatedCoachRoute: typeof AuthenticatedCoachRoute
+  AuthenticatedCoachRoute: typeof AuthenticatedCoachRouteWithChildren
   AuthenticatedDashboardRoute: typeof AuthenticatedDashboardRoute
 }
 
 const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedAthleteRoute: AuthenticatedAthleteRoute,
-  AuthenticatedCoachRoute: AuthenticatedCoachRoute,
+  AuthenticatedCoachRoute: AuthenticatedCoachRouteWithChildren,
   AuthenticatedDashboardRoute: AuthenticatedDashboardRoute,
 }
 
