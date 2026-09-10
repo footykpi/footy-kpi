@@ -275,9 +275,9 @@ export function TradingCard({ profile, season, games, photoUrl }: TradingCardPro
                   }}
                 />
                 <img
-                  src={photoUrl}
+                  src={photoDataUrl ?? photoUrl}
                   alt={fullName}
-                  crossOrigin="anonymous"
+                  {...(photoDataUrl ? {} : { crossOrigin: "anonymous" as const })}
                   className="relative h-[290px] w-full object-cover"
                 />
                 {/* position tab */}
