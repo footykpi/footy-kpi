@@ -294,7 +294,10 @@ export function TradingCard({ profile, season, games, photoUrl }: TradingCardPro
                   className="relative h-[290px] w-full object-cover"
                 />
                 {/* position tab */}
-                <span className="absolute left-0 top-3 rounded-r-md bg-black/75 px-2.5 py-1 text-[11px] font-bold uppercase tracking-[0.18em] text-yellow-200">
+                <span
+                  className="absolute left-0 top-3 rounded-r-md px-2.5 py-1 text-[11px] font-bold uppercase tracking-[0.18em]"
+                  style={{ background: "rgba(0,0,0,0.75)", color: "#fef08a" }}
+                >
                   {profile.position ?? "Player"}
                 </span>
                 {/* jersey roundel */}
@@ -340,7 +343,10 @@ export function TradingCard({ profile, season, games, photoUrl }: TradingCardPro
 
               {/* Stat strip */}
               <div className="relative z-10 px-[10px] pb-1 pt-2">
-                <div className="grid grid-cols-4 overflow-hidden rounded-md border border-border/70">
+                <div
+                  className="grid grid-cols-4 overflow-hidden rounded-md"
+                  style={{ border: "1px solid rgba(255,255,255,0.14)" }}
+                >
                   {[
                     { label: "GP", value: num(season?.games_played) },
                     { label: "G", value: num(season?.goals) },
@@ -349,19 +355,32 @@ export function TradingCard({ profile, season, games, photoUrl }: TradingCardPro
                   ].map((s, i) => (
                     <div
                       key={s.label}
-                      className={`bg-black/35 py-1.5 text-center ${i > 0 ? "border-l border-border/60" : ""}`}
+                      className="py-1.5 text-center"
+                      style={{
+                        background: "rgba(0,0,0,0.35)",
+                        ...(i > 0 ? { borderLeft: "1px solid rgba(255,255,255,0.12)" } : {}),
+                      }}
                     >
-                      <div className="font-display text-[22px] leading-none text-foreground">
+                      <div
+                        className="font-display text-[22px] leading-none"
+                        style={{ color: "#f8f8fc" }}
+                      >
                         {s.value}
                       </div>
-                      <div className="mt-0.5 text-[9px] font-bold uppercase tracking-[0.14em] text-muted-foreground">
+                      <div
+                        className="mt-0.5 text-[9px] font-bold uppercase tracking-[0.14em]"
+                        style={{ color: "#a3a8bd" }}
+                      >
                         {s.label}
                       </div>
                     </div>
                   ))}
                 </div>
 
-                <div className="mt-1 grid grid-cols-3 overflow-hidden rounded-md border border-border/70 text-center">
+                <div
+                  className="mt-1 grid grid-cols-3 overflow-hidden rounded-md text-center"
+                  style={{ border: "1px solid rgba(255,255,255,0.14)" }}
+                >
                   {[
                     { label: "Record", value: record(games) },
                     { label: "Min", value: num(season?.minutes_played) },
@@ -369,10 +388,19 @@ export function TradingCard({ profile, season, games, photoUrl }: TradingCardPro
                   ].map((s, i) => (
                     <div
                       key={s.label}
-                      className={`bg-black/25 py-1 ${i > 0 ? "border-l border-border/60" : ""}`}
+                      className="py-1"
+                      style={{
+                        background: "rgba(0,0,0,0.25)",
+                        ...(i > 0 ? { borderLeft: "1px solid rgba(255,255,255,0.12)" } : {}),
+                      }}
                     >
-                      <div className="text-[13px] font-semibold text-foreground">{s.value}</div>
-                      <div className="text-[9px] uppercase tracking-[0.14em] text-muted-foreground">
+                      <div className="text-[13px] font-semibold" style={{ color: "#f8f8fc" }}>
+                        {s.value}
+                      </div>
+                      <div
+                        className="text-[9px] uppercase tracking-[0.14em]"
+                        style={{ color: "#a3a8bd" }}
+                      >
                         {s.label}
                       </div>
                     </div>
@@ -383,10 +411,16 @@ export function TradingCard({ profile, season, games, photoUrl }: TradingCardPro
               {/* Footer / serial + QR */}
               <div className="relative z-10 flex items-end justify-between gap-2 px-[12px] pb-2 pt-1">
                 <div>
-                  <span className="block font-display text-[12px] tracking-[0.28em] text-yellow-200/80">
+                  <span
+                    className="block font-display text-[12px] tracking-[0.28em]"
+                    style={{ color: "rgba(254,240,138,0.8)" }}
+                  >
                     FOOTY KPI
                   </span>
-                  <span className="text-[9px] font-medium uppercase tracking-[0.16em] text-muted-foreground">
+                  <span
+                    className="text-[9px] font-medium uppercase tracking-[0.16em]"
+                    style={{ color: "#a3a8bd" }}
+                  >
                     No. {(profile.jersey_number ?? 1).toString().padStart(3, "0")} · Official Rookie
                   </span>
                 </div>
@@ -395,9 +429,13 @@ export function TradingCard({ profile, season, games, photoUrl }: TradingCardPro
                     <img
                       src={qrDataUrl}
                       alt={`Scan to view ${fullName}'s profile`}
-                      className="h-[52px] w-[52px] rounded-[3px] border border-yellow-200/60 bg-white p-[3px]"
+                      className="h-[52px] w-[52px] rounded-[3px] p-[3px]"
+                      style={{ background: "#ffffff", border: "1px solid rgba(254,240,138,0.6)" }}
                     />
-                    <span className="text-[7px] font-bold uppercase tracking-[0.12em] text-muted-foreground">
+                    <span
+                      className="text-[7px] font-bold uppercase tracking-[0.12em]"
+                      style={{ color: "#a3a8bd" }}
+                    >
                       Scan profile
                     </span>
                   </div>
