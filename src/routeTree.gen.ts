@@ -12,10 +12,13 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/route'
 import { Route as AuthRouteImport } from './routes/auth'
+import { Route as ResetPasswordRouteImport } from './routes/reset-password'
 import { Route as AuthenticatedAthleteRouteImport } from './routes/_authenticated/athlete'
 import { Route as AuthenticatedCoachRouteImport } from './routes/_authenticated/coach'
 import { Route as AuthenticatedDashboardRouteImport } from './routes/_authenticated/dashboard'
+import { Route as AuthenticatedRecruiterRouteImport } from './routes/_authenticated/recruiter'
 import { Route as PSlugRouteImport } from './routes/p.$slug'
+import { Route as AuthenticatedCoachSlugRouteImport } from './routes/_authenticated/coach.$slug'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -29,6 +32,11 @@ const AuthenticatedRouteRoute = AuthenticatedRouteRouteImport.update({
 const AuthRoute = AuthRouteImport.update({
   id: '/auth',
   path: '/auth',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ResetPasswordRoute = ResetPasswordRouteImport.update({
+  id: '/reset-password',
+  path: '/reset-password',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AuthenticatedAthleteRoute = AuthenticatedAthleteRouteImport.update({
@@ -46,58 +54,99 @@ const AuthenticatedDashboardRoute = AuthenticatedDashboardRouteImport.update({
   path: '/dashboard',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
+const AuthenticatedRecruiterRoute = AuthenticatedRecruiterRouteImport.update({
+  id: '/recruiter',
+  path: '/recruiter',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
 const PSlugRoute = PSlugRouteImport.update({
   id: '/p/$slug',
   path: '/p/$slug',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AuthenticatedCoachSlugRoute = AuthenticatedCoachSlugRouteImport.update({
+  id: '/$slug',
+  path: '/$slug',
+  getParentRoute: () => AuthenticatedCoachRoute,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/auth': typeof AuthRoute
+  '/reset-password': typeof ResetPasswordRoute
   '/athlete': typeof AuthenticatedAthleteRoute
-  '/coach': typeof AuthenticatedCoachRoute
+  '/coach': typeof AuthenticatedCoachRouteWithChildren
   '/dashboard': typeof AuthenticatedDashboardRoute
+  '/recruiter': typeof AuthenticatedRecruiterRoute
   '/p/$slug': typeof PSlugRoute
+  '/coach/$slug': typeof AuthenticatedCoachSlugRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/auth': typeof AuthRoute
+  '/reset-password': typeof ResetPasswordRoute
   '/athlete': typeof AuthenticatedAthleteRoute
-  '/coach': typeof AuthenticatedCoachRoute
+  '/coach': typeof AuthenticatedCoachRouteWithChildren
   '/dashboard': typeof AuthenticatedDashboardRoute
+  '/recruiter': typeof AuthenticatedRecruiterRoute
   '/p/$slug': typeof PSlugRoute
+  '/coach/$slug': typeof AuthenticatedCoachSlugRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/_authenticated': typeof AuthenticatedRouteRouteWithChildren
   '/auth': typeof AuthRoute
+  '/reset-password': typeof ResetPasswordRoute
   '/_authenticated/athlete': typeof AuthenticatedAthleteRoute
-  '/_authenticated/coach': typeof AuthenticatedCoachRoute
+  '/_authenticated/coach': typeof AuthenticatedCoachRouteWithChildren
   '/_authenticated/dashboard': typeof AuthenticatedDashboardRoute
+  '/_authenticated/recruiter': typeof AuthenticatedRecruiterRoute
   '/p/$slug': typeof PSlugRoute
+  '/_authenticated/coach/$slug': typeof AuthenticatedCoachSlugRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/auth' | '/athlete' | '/coach' | '/dashboard' | '/p/$slug'
+  fullPaths:
+    | '/'
+    | '/auth'
+    | '/reset-password'
+    | '/athlete'
+    | '/coach'
+    | '/dashboard'
+    | '/recruiter'
+    | '/p/$slug'
+    | '/coach/$slug'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/auth' | '/athlete' | '/coach' | '/dashboard' | '/p/$slug'
+  to:
+    | '/'
+    | '/auth'
+    | '/reset-password'
+    | '/athlete'
+    | '/coach'
+    | '/dashboard'
+    | '/recruiter'
+    | '/p/$slug'
+    | '/coach/$slug'
   id:
     | '__root__'
     | '/'
     | '/_authenticated'
     | '/auth'
+    | '/reset-password'
     | '/_authenticated/athlete'
     | '/_authenticated/coach'
     | '/_authenticated/dashboard'
+    | '/_authenticated/recruiter'
     | '/p/$slug'
+    | '/_authenticated/coach/$slug'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AuthenticatedRouteRoute: typeof AuthenticatedRouteRouteWithChildren
   AuthRoute: typeof AuthRoute
+  ResetPasswordRoute: typeof ResetPasswordRoute
   PSlugRoute: typeof PSlugRoute
 }
 
@@ -124,6 +173,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/reset-password': {
+      id: '/reset-password'
+      path: '/reset-password'
+      fullPath: '/reset-password'
+      preLoaderRoute: typeof ResetPasswordRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/_authenticated/athlete': {
       id: '/_authenticated/athlete'
       path: '/athlete'
@@ -145,6 +201,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedDashboardRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/recruiter': {
+      id: '/_authenticated/recruiter'
+      path: '/recruiter'
+      fullPath: '/recruiter'
+      preLoaderRoute: typeof AuthenticatedRecruiterRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/p/$slug': {
       id: '/p/$slug'
       path: '/p/$slug'
@@ -152,19 +215,39 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof PSlugRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/_authenticated/coach/$slug': {
+      id: '/_authenticated/coach/$slug'
+      path: '/$slug'
+      fullPath: '/coach/$slug'
+      preLoaderRoute: typeof AuthenticatedCoachSlugRouteImport
+      parentRoute: typeof AuthenticatedCoachRoute
+    }
   }
 }
 
+interface AuthenticatedCoachRouteChildren {
+  AuthenticatedCoachSlugRoute: typeof AuthenticatedCoachSlugRoute
+}
+
+const AuthenticatedCoachRouteChildren: AuthenticatedCoachRouteChildren = {
+  AuthenticatedCoachSlugRoute: AuthenticatedCoachSlugRoute,
+}
+
+const AuthenticatedCoachRouteWithChildren =
+  AuthenticatedCoachRoute._addFileChildren(AuthenticatedCoachRouteChildren)
+
 interface AuthenticatedRouteRouteChildren {
   AuthenticatedAthleteRoute: typeof AuthenticatedAthleteRoute
-  AuthenticatedCoachRoute: typeof AuthenticatedCoachRoute
+  AuthenticatedCoachRoute: typeof AuthenticatedCoachRouteWithChildren
   AuthenticatedDashboardRoute: typeof AuthenticatedDashboardRoute
+  AuthenticatedRecruiterRoute: typeof AuthenticatedRecruiterRoute
 }
 
 const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedAthleteRoute: AuthenticatedAthleteRoute,
-  AuthenticatedCoachRoute: AuthenticatedCoachRoute,
+  AuthenticatedCoachRoute: AuthenticatedCoachRouteWithChildren,
   AuthenticatedDashboardRoute: AuthenticatedDashboardRoute,
+  AuthenticatedRecruiterRoute: AuthenticatedRecruiterRoute,
 }
 
 const AuthenticatedRouteRouteWithChildren =
@@ -174,6 +257,7 @@ const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AuthenticatedRouteRoute: AuthenticatedRouteRouteWithChildren,
   AuthRoute: AuthRoute,
+  ResetPasswordRoute: ResetPasswordRoute,
   PSlugRoute: PSlugRoute,
 }
 export const routeTree = rootRouteImport

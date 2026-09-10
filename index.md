@@ -1,1 +1,2 @@
 - [Season Journal](mem://features/season-journal) — 3 post-game questions per game, mood chip, builds season journal
+- [Accounts & roles](mem://features/accounts-and-roles) — Email/password auth, athlete/coach/recruiter dashboards, coach invites
