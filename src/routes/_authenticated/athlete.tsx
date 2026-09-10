@@ -7,6 +7,7 @@ import { ExternalLink, ImagePlus, Loader2, Mail, Trash2, UserPlus } from "lucide
 import { AppHeader } from "@/components/AppHeader";
 import { AccessLinks } from "@/components/AccessLinks";
 import { AiInsights } from "@/components/AiInsights";
+import { GameEntryForm } from "@/components/GameEntryForm";
 import { GameLog } from "@/components/GameLog";
 import { HighlightsReel } from "@/components/HighlightsReel";
 import { ProgressCharts } from "@/components/ProgressCharts";
@@ -340,6 +341,8 @@ function AthleteDashboard() {
             <AiInsights profileId={profile.id} />
 
             <ProgressCharts games={games} />
+
+            <GameEntryForm />
 
             <GameLog games={games} />
 
