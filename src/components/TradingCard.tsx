@@ -300,10 +300,11 @@ export function TradingCard({ profile, season, games, photoUrl }: TradingCardPro
                 {/* jersey roundel */}
                 {profile.jersey_number && (
                   <span
-                    className="absolute bottom-3 right-3 flex h-14 w-14 items-center justify-center rounded-full font-display text-3xl leading-none text-primary-foreground"
+                    className="absolute bottom-3 right-3 flex h-14 w-14 items-center justify-center rounded-full font-display text-3xl leading-none"
                     style={{
+                      color: "#ffffff",
                       background:
-                        "radial-gradient(circle at 30% 25%, color-mix(in oklab, var(--primary) 80%, white) 0%, var(--primary) 70%)",
+                        "radial-gradient(circle at 30% 25%, #9c86f9 0%, #6d4bf6 70%)",
                       boxShadow: "0 0 0 3px rgba(255,246,201,.75), 0 6px 14px rgba(0,0,0,.5)",
                     }}
                   >
@@ -314,16 +315,23 @@ export function TradingCard({ profile, season, games, photoUrl }: TradingCardPro
 
               {/* Name plate */}
               <div
-                className="relative z-10 mx-[10px] mt-[10px] rounded-md border border-yellow-200/40 px-3 py-2 text-center"
+                className="relative z-10 mx-[10px] mt-[10px] rounded-md px-3 py-2 text-center"
                 style={{
+                  border: "1px solid rgba(254,240,138,0.4)",
                   background:
                     "linear-gradient(180deg, rgba(255,246,201,.14) 0%, rgba(0,0,0,.35) 100%)",
                 }}
               >
-                <h3 className="font-display text-[30px] uppercase leading-none tracking-wide text-foreground">
+                <h3
+                  className="font-display text-[30px] uppercase leading-none tracking-wide"
+                  style={{ color: "#f8f8fc" }}
+                >
                   {fullName}
                 </h3>
-                <p className="mt-1 text-[10px] font-semibold uppercase tracking-[0.2em] text-yellow-200/90">
+                <p
+                  className="mt-1 text-[10px] font-semibold uppercase tracking-[0.2em]"
+                  style={{ color: "rgba(254,240,138,0.9)" }}
+                >
                   Class of {profile.graduation_year ?? "—"}
                   {profile.height ? ` • ${profile.height}` : ""}
                   {profile.dominant_hand ? ` • ${profile.dominant_hand} foot` : ""}
