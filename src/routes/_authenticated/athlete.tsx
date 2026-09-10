@@ -2,7 +2,7 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { useEffect, useRef, useState } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
-import { ExternalLink, ImagePlus, Loader2, Mail, Trash2, UserPlus } from "lucide-react";
+import { ExternalLink, ImagePlus, Loader2, Mail, Pencil, Trash2, UserPlus } from "lucide-react";
 
 import { AppHeader } from "@/components/AppHeader";
 import { AccessLinks } from "@/components/AccessLinks";
@@ -82,6 +82,7 @@ function AthleteDashboard() {
   const [form, setForm] = useState<FormState>(EMPTY);
   const [coachEmail, setCoachEmail] = useState("");
   const [saved, setSaved] = useState(false);
+  const [editing, setEditing] = useState(false);
 
   const { data: account } = useQuery({ queryKey: ["my-account"], queryFn: () => fetchAccount({}) });
   const slug = account?.profileSlug ?? null;
