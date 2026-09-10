@@ -95,13 +95,50 @@ export function TradingCard({ profile, season, games, photoUrl }: TradingCardPro
 
 
 
+  /** Everything on the card must be loaded before the pixels are captured. */
+  async function waitForCardReady(node: HTMLElement) {
+    if (typeof document !== "undefined" && "fonts" in document) {
+      try {
+        await (document as Document & { fonts: FontFaceSet }).fonts.ready;
+      } catch {
+        // fonts unavailable — fall through to the bundled fallback family
+      }
+    }
+    const images = Array.from(node.querySelectorAll("img"));
+    await Promise.all(
+      images.map(
+        (img) =>
+          new Promise<void>((resolve) => {
+            if (img.complete && img.naturalWidth > 0) {
+              resolve();
+              return;
+            }
+            img.addEventListener("load", () => resolve(), { once: true });
+            img.addEventListener("error", () => resolve(), { once: true });
+            setTimeout(resolve, 4000);
+          }),
+      ),
+    );
+    await new Promise((resolve) => requestAnimationFrame(() => requestAnimationFrame(resolve)));
+  }
+
   async function renderBlob(): Promise<Blob | null> {
-    if (!cardRef.current) return null;
-    const dataUrl = await toPng(cardRef.current, {
+    const node = cardRef.current;
+    if (!node) return null;
+    await waitForCardReady(node);
+
+    const options = {
       pixelRatio: 2,
       cacheBust: true,
-      skipFonts: false,
-    });
+      width: node.offsetWidth,
+      height: node.offsetHeight,
+    } as const;
+
+    // Remote font stylesheets can't be inlined; skipping them keeps the export from failing.
+    // The first pass primes html-to-image's caches — some browsers return a blank canvas otherwise.
+    await toPng(node, { ...options, skipFonts: true }).catch(() => "");
+    const dataUrl = await toPng(node, { ...options, skipFonts: true });
+    if (!dataUrl || dataUrl.length < 5000) throw new Error("Empty card render");
     const res = await fetch(dataUrl);
     return await res.blob();
   }
