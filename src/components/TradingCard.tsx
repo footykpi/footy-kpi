@@ -134,10 +134,13 @@ export function TradingCard({ profile, season, games, photoUrl }: TradingCardPro
       height: node.offsetHeight,
     } as const;
 
-    // Remote font stylesheets can't be inlined; skipping them keeps the export from failing.
-    // The first pass primes html-to-image's caches — some browsers return a blank canvas otherwise.
-    await toPng(node, { ...options, skipFonts: true }).catch(() => "");
-    const dataUrl = await toPng(node, { ...options, skipFonts: true });
+    // The first pass primes caches — some browsers return a blank canvas otherwise.
+    await toPng(node, options).catch(() => "");
+    let dataUrl = await toPng(node, options).catch(() => "");
+    // Remote font stylesheets can't always be inlined; retry without them rather than fail.
+    if (!dataUrl || dataUrl.length < 5000) {
+      dataUrl = await toPng(node, { ...options, skipFonts: true });
+    }
     if (!dataUrl || dataUrl.length < 5000) throw new Error("Empty card render");
     const res = await fetch(dataUrl);
     return await res.blob();
