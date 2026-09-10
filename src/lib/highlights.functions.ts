@@ -55,7 +55,7 @@ async function removeStorageObject(supabase: StorageClient, path: string): Promi
 
 export const uploadHighlight = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
-  .validator(uploadHighlightSchema)
+  .validator(parseUploadForm)
   .handler(async ({ data, context }) => {
     const { supabase, userId } = context;
     const own = await requireOwnProfile(supabase, userId);
