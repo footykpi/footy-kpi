@@ -265,7 +265,7 @@ function AthleteDashboard() {
               {(uploadPhoto.isError || dropPhoto.isError) && (
                 <p className="mt-2 text-sm text-destructive">
                   {(uploadPhoto.error ?? dropPhoto.error) instanceof Error
-                    ? (uploadPhoto.error ?? dropPhoto.error as Error).message
+                    ? ((uploadPhoto.error ?? dropPhoto.error) as Error).message
                     : "Could not update your photo."}
                 </p>
               )}
