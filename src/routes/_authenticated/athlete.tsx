@@ -74,7 +74,10 @@ function AthleteDashboard() {
   const fetchCoaches = useServerFn(listMyCoaches);
   const invite = useServerFn(inviteCoach);
   const removeCoach = useServerFn(removeCoachLink);
+  const sendPhoto = useServerFn(uploadProfilePhoto);
+  const clearPhoto = useServerFn(removeProfilePhoto);
 
+  const photoInput = useRef<HTMLInputElement>(null);
   const [form, setForm] = useState<FormState>(EMPTY);
   const [coachEmail, setCoachEmail] = useState("");
   const [saved, setSaved] = useState(false);
