@@ -157,7 +157,11 @@ function AthleteDashboard() {
   });
 
   const uploadPhoto = useMutation({
-    mutationFn: (file: File) => sendPhoto({ data: { file } }),
+    mutationFn: (file: File) => {
+      const body = new FormData();
+      body.set("file", file);
+      return sendPhoto({ data: body });
+    },
     onSuccess: () => queryClient.invalidateQueries({ queryKey: ["my-portfolio"] }),
   });
 

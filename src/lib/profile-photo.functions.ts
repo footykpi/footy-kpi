@@ -1,5 +1,6 @@
 import { createServerFn } from "@tanstack/react-start";
-import { z } from "zod";
+
+
 
 import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
 import { requireOwnProfile } from "@/lib/auth-helpers.server";
@@ -7,17 +8,20 @@ import { signStoragePath } from "@/lib/storage.server";
 
 const MAX_BYTES = 8 * 1024 * 1024;
 
-const uploadSchema = z.object({
-  file: z
-    .instanceof(File)
-    .refine((file) => file.type.startsWith("image/"), "Please choose an image file.")
-    .refine((file) => file.size <= MAX_BYTES, "Images must be 8MB or smaller."),
-});
+/** Files must travel as FormData: File objects can't cross the RPC serializer. */
+function parsePhotoForm(data: unknown) {
+  if (!(data instanceof FormData)) throw new Error("Expected form data");
+  const file = data.get("file");
+  if (!(file instanceof File)) throw new Error("Please choose an image file.");
+  if (!file.type.startsWith("image/")) throw new Error("Please choose an image file.");
+  if (file.size > MAX_BYTES) throw new Error("Images must be 8MB or smaller.");
+  return { file };
+}
 
 /** Athlete uploads their own profile photo from their device. */
 export const uploadProfilePhoto = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
-  .validator(uploadSchema)
+  .validator(parsePhotoForm)
   .handler(async ({ data, context }): Promise<{ path: string; url: string }> => {
     const { supabase, userId } = context;
     const own = await requireOwnProfile(supabase, userId);

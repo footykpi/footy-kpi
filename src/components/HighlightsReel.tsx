@@ -116,13 +116,11 @@ export function HighlightsReel({
 
     try {
       for (const file of Array.from(files)) {
-        await uploadHighlightFn({
-          data: {
-            file,
-            category: uploadCategory,
-            title: title.trim() || undefined,
-          },
-        });
+        const body = new FormData();
+        body.set("file", file);
+        body.set("category", uploadCategory);
+        if (title.trim()) body.set("title", title.trim());
+        await uploadHighlightFn({ data: body });
       }
 
       setTitle("");
@@ -427,7 +425,10 @@ function VerificationPanel({
     setBusy(true);
     setError(null);
     try {
-      await uploadProofFn({ data: { highlightId: highlight.id, file } });
+      const body = new FormData();
+      body.set("file", file);
+      body.set("highlightId", highlight.id);
+      await uploadProofFn({ data: body });
       await refresh();
     } catch (err) {
       setError(err instanceof Error ? err.message : "Could not submit proof.");
