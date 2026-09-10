@@ -1,8 +1,8 @@
 # Project Roadmap
 
 ## In progress
-- [ ] Use the uploaded shield as the Footy KPI logo and app icon.
-- [ ] Publish Footy KPI to a live Lovable URL.
+- [x] Use the uploaded shield as the Footy KPI logo and app icon.
+- [x] Publish Footy KPI to a live Lovable URL.
 
 ## Completed
 - [x] Rename app from AthleteFolio to Footy KPI across metadata and UI.
