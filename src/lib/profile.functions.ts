@@ -2,6 +2,8 @@ import { createServerFn } from "@tanstack/react-start";
 import { createClient } from "@supabase/supabase-js";
 import { z } from "zod";
 
+import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
+
 const profileInputSchema = z.object({ slug: z.string() });
 
 export interface Profile {
@@ -123,7 +125,7 @@ export interface Highlight {
 }
 
 
-export type ViewerRole = "public" | "recruiter" | "coach";
+export type ViewerRole = "public" | "recruiter" | "coach" | "owner";
 
 /** What the current visitor is allowed to see, derived from their unlock link. */
 export interface ViewerAccess {
