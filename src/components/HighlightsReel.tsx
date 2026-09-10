@@ -15,7 +15,7 @@ import {
   ShieldAlert,
   ShieldQuestion,
   FileCheck2,
-  Lock,
+
 } from "lucide-react";
 
 import type { Highlight } from "@/lib/profile.functions";
@@ -85,36 +85,32 @@ function VerificationBadge({ status }: { status: Highlight["verification_status"
 }
 
 
+export type HighlightsMode = "owner" | "coach" | "public";
+
 export function HighlightsReel({
-  profileId,
-  profileSlug,
   highlights,
+  mode = "public",
 }: {
-  profileId: string;
-  profileSlug: string;
   highlights: Highlight[];
+  mode?: HighlightsMode;
 }) {
   const queryClient = useQueryClient();
   const fileInput = useRef<HTMLInputElement>(null);
   const [filter, setFilter] = useState<Category | "all">("all");
   const [uploadCategory, setUploadCategory] = useState<Category>("moment");
   const [title, setTitle] = useState("");
-  const [editKey, setEditKey] = useState("");
   const [uploading, setUploading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [lightbox, setLightbox] = useState<Highlight | null>(null);
 
   const uploadHighlightFn = useServerFn(uploadHighlight);
   const deleteHighlightFn = useServerFn(deleteHighlight);
+  const isOwner = mode === "owner";
 
   const visible = filter === "all" ? highlights : highlights.filter((h) => h.category === filter);
 
   async function handleFiles(files: FileList | null) {
     if (!files || files.length === 0) return;
-    if (!editKey.trim()) {
-      setError("Enter the edit key to upload highlights.");
-      return;
-    }
     setUploading(true);
     setError(null);
 
@@ -122,18 +118,16 @@ export function HighlightsReel({
       for (const file of Array.from(files)) {
         await uploadHighlightFn({
           data: {
-            profileId,
-            slug: profileSlug,
             file,
             category: uploadCategory,
             title: title.trim() || undefined,
-            editKey,
           },
         });
       }
 
       setTitle("");
       await queryClient.invalidateQueries({ queryKey: ["profile"] });
+      await queryClient.invalidateQueries({ queryKey: ["my-portfolio"] });
     } catch (err) {
       setError(err instanceof Error ? err.message : "Upload failed. Please try again.");
     } finally {
@@ -143,13 +137,10 @@ export function HighlightsReel({
   }
 
   async function handleRemove(id: string) {
-    if (!editKey.trim()) {
-      setError("Enter the edit key to remove highlights.");
-      return;
-    }
     try {
-      await deleteHighlightFn({ data: { highlightId: id, editKey } });
+      await deleteHighlightFn({ data: { highlightId: id } });
       await queryClient.invalidateQueries({ queryKey: ["profile"] });
+      await queryClient.invalidateQueries({ queryKey: ["my-portfolio"] });
     } catch (err) {
       setError(err instanceof Error ? err.message : "Could not remove highlight.");
     }
@@ -165,7 +156,8 @@ export function HighlightsReel({
         </span>
       </div>
 
-      {/* Upload panel */}
+      {/* Upload panel — the athlete only */}
+      {isOwner && (
       <div className="mt-5 rounded-xl border border-dashed border-border bg-surface p-5">
         <div className="flex flex-wrap items-center gap-2">
           {CATEGORIES.map((category) => {
@@ -197,16 +189,6 @@ export function HighlightsReel({
             placeholder="Caption or moment title (optional)"
             className="w-full flex-1 rounded-lg border border-border bg-background px-3 py-2 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/40"
           />
-          <div className="relative flex items-center">
-            <Lock className="absolute left-3 h-4 w-4 text-muted-foreground" />
-            <input
-              type="password"
-              value={editKey}
-              onChange={(event) => setEditKey(event.target.value)}
-              placeholder="Edit key"
-              className="w-full rounded-lg border border-border bg-background py-2 pl-9 pr-3 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/40 sm:w-48"
-            />
-          </div>
           <input
             ref={fileInput}
             type="file"
@@ -229,6 +211,7 @@ export function HighlightsReel({
         {error && <p className="mt-3 text-sm text-destructive">{error}</p>}
 
       </div>
+      )}
 
       {/* Filters */}
       {highlights.length > 0 && (
@@ -315,10 +298,11 @@ export function HighlightsReel({
                     )}
                   </div>
                 </button>
-                {isVerifiable(highlight.category) && (
-                  <VerificationPanel highlight={highlight} profileSlug={profileSlug} editKey={editKey} />
+                {isVerifiable(highlight.category) && mode !== "public" && (
+                  <VerificationPanel highlight={highlight} mode={mode} />
                 )}
 
+                {isOwner && (
                 <button
                   type="button"
                   aria-label="Remove highlight"
@@ -327,6 +311,7 @@ export function HighlightsReel({
                 >
                   <X className="h-4 w-4" />
                 </button>
+                )}
               </div>
             );
           })}
@@ -410,12 +395,10 @@ function FilterPill({
 
 function VerificationPanel({
   highlight,
-  profileSlug,
-  editKey,
+  mode,
 }: {
   highlight: Highlight;
-  profileSlug: string;
-  editKey: string;
+  mode: HighlightsMode;
 }) {
   const queryClient = useQueryClient();
   const proofInput = useRef<HTMLInputElement>(null);
@@ -426,28 +409,26 @@ function VerificationPanel({
   const [note, setNote] = useState("");
 
   const uploadProofFn = useServerFn(uploadHighlightProof);
+  const reviewProofFn = useServerFn(reviewHighlightProof);
+  const isOwner = mode === "owner";
+  const isCoach = mode === "coach";
 
   const status = highlight.verification_status;
+
+  async function refresh() {
+    await queryClient.invalidateQueries({ queryKey: ["profile"] });
+    await queryClient.invalidateQueries({ queryKey: ["my-portfolio"] });
+    await queryClient.invalidateQueries({ queryKey: ["coach-athlete"] });
+  }
 
   async function uploadProof(files: FileList | null) {
     const file = files?.[0];
     if (!file) return;
-    if (!editKey.trim()) {
-      setError("Enter the edit key to upload proof.");
-      return;
-    }
     setBusy(true);
     setError(null);
     try {
-      await uploadProofFn({
-        data: {
-          highlightId: highlight.id,
-          slug: profileSlug,
-          file,
-          editKey,
-        },
-      });
-      await queryClient.invalidateQueries({ queryKey: ["profile"] });
+      await uploadProofFn({ data: { highlightId: highlight.id, file } });
+      await refresh();
     } catch (err) {
       setError(err instanceof Error ? err.message : "Could not submit proof.");
     } finally {
@@ -464,7 +445,7 @@ function VerificationPanel({
     setBusy(true);
     setError(null);
     try {
-      await reviewHighlightProof({
+      await reviewProofFn({
         data: {
           highlightId: highlight.id,
           decision,
@@ -474,7 +455,7 @@ function VerificationPanel({
       });
       setReviewOpen(false);
       setNote("");
-      await queryClient.invalidateQueries({ queryKey: ["profile"] });
+      await refresh();
     } catch (err) {
       setError(err instanceof Error ? err.message : "Could not save the review.");
     } finally {
@@ -517,6 +498,7 @@ function VerificationPanel({
                     View submitted proof
                   </a>
                 )}
+                {isCoach ? (
                 <button
                   type="button"
                   onClick={() => setReviewOpen((open) => !open)}
@@ -524,6 +506,9 @@ function VerificationPanel({
                 >
                   {reviewOpen ? "Cancel review" : "Review proof"}
                 </button>
+                ) : (
+                  <span className="text-xs text-muted-foreground">Waiting for your coach to review.</span>
+                )}
               </div>
 
               {reviewOpen && (
@@ -565,6 +550,7 @@ function VerificationPanel({
             </div>
           ) : (
             <div className="flex flex-wrap items-center gap-3">
+              {isOwner && (
               <button
                 type="button"
                 disabled={busy}
@@ -574,6 +560,7 @@ function VerificationPanel({
                 {busy ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <Upload className="h-3.5 w-3.5" />}
                 {status === "rejected" ? "Upload new proof" : "Upload proof for verification"}
               </button>
+              )}
               {status === "rejected" && highlight.verification_note && (
                 <span className="text-xs text-muted-foreground">
                   Reviewer note: {highlight.verification_note}

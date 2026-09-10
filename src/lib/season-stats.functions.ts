@@ -1,5 +1,7 @@
 import { createServerFn } from "@tanstack/react-start";
 
+import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
+import { requireOwnProfile } from "@/lib/auth-helpers.server";
 import { seasonStatsSchema } from "@/lib/season-stats-validation";
 
 export const SOCCER_STAT_FIELDS = [
@@ -25,32 +27,31 @@ export const SOCCER_STAT_FIELDS = [
 export type SoccerStatField = (typeof SOCCER_STAT_FIELDS)[number];
 
 export const saveSeasonStats = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
   .validator(seasonStatsSchema)
+  .handler(async ({ data, context }): Promise<{ ok: true; id: string }> => {
+    const { supabase, userId } = context;
+    // The athlete can only ever write to their own profile.
+    const own = await requireOwnProfile(supabase, userId);
 
-  .handler(async ({ data }): Promise<{ ok: true; id: string }> => {
-    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
-    const { profileId, season, ...values } = data;
+    const { profileId: _ignored, season, ...values } = data;
+    const row = { ...values, profile_id: own.id, season, sport: "soccer" };
 
-    const row = { ...values, profile_id: profileId, season, sport: "soccer" };
-
-    const { data: existing } = await supabaseAdmin
+    const { data: existing } = await supabase
       .from("season_stats")
       .select("id")
-      .eq("profile_id", profileId)
+      .eq("profile_id", own.id)
       .eq("sport", "soccer")
       .eq("season", season)
       .maybeSingle();
 
     if (existing) {
-      const { error } = await supabaseAdmin
-        .from("season_stats")
-        .update(row)
-        .eq("id", existing.id);
+      const { error } = await supabase.from("season_stats").update(row).eq("id", existing.id);
       if (error) throw new Error(error.message);
       return { ok: true, id: existing.id };
     }
 
-    const { data: inserted, error } = await supabaseAdmin
+    const { data: inserted, error } = await supabase
       .from("season_stats")
       .insert(row)
       .select("id")

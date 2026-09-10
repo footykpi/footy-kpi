@@ -146,7 +146,7 @@ function JournalEditor({
   );
 }
 
-export function SeasonJournal({ games }: { games: Game[] }) {
+export function SeasonJournal({ games, editable = false }: { games: Game[]; editable?: boolean }) {
   const ordered = useMemo(
     () => [...games].sort((a, b) => b.game_date.localeCompare(a.game_date)),
     [games],
@@ -204,7 +204,7 @@ export function SeasonJournal({ games }: { games: Game[] }) {
                       )}
                     </p>
                   </div>
-                  {!isEditing && (
+                  {!isEditing && editable && (
                     <button
                       type="button"
                       onClick={() => setEditingId(game.id)}

@@ -1,6 +1,9 @@
 import { createServerFn } from "@tanstack/react-start";
 import { z } from "zod";
 
+import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
+import { requireOwnProfile } from "@/lib/auth-helpers.server";
+
 export interface UnlockLink {
   id: string;
   profile_id: string;
@@ -23,30 +26,24 @@ function randomToken(role: string): string {
 }
 
 export const listUnlockLinks = createServerFn({ method: "GET" })
-  .validator(z.object({ slug: z.string() }))
-  .handler(async ({ data }): Promise<UnlockLink[]> => {
-    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+  .middleware([requireSupabaseAuth])
+  .handler(async ({ context }): Promise<UnlockLink[]> => {
+    const { supabase, userId } = context;
+    const own = await requireOwnProfile(supabase, userId);
 
-    const { data: profile } = await supabaseAdmin
-      .from("profiles")
-      .select("id")
-      .eq("slug", data.slug)
-      .maybeSingle();
-    if (!profile) return [];
-
-    const { data: links } = await supabaseAdmin
+    const { data: links } = await supabase
       .from("profile_unlock_links")
       .select("*")
-      .eq("profile_id", profile.id)
+      .eq("profile_id", own.id)
       .order("created_at", { ascending: false });
 
     return (links ?? []) as UnlockLink[];
   });
 
 export const createUnlockLink = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
   .validator(
     z.object({
-      slug: z.string(),
       role: z.enum(["recruiter", "coach"]),
       label: z.string().trim().max(120).optional(),
       unlock_contact: z.boolean(),
@@ -55,20 +52,14 @@ export const createUnlockLink = createServerFn({ method: "POST" })
       expires_at: z.string().trim().min(1).optional(),
     }),
   )
-  .handler(async ({ data }): Promise<UnlockLink> => {
-    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+  .handler(async ({ data, context }): Promise<UnlockLink> => {
+    const { supabase, userId } = context;
+    const own = await requireOwnProfile(supabase, userId);
 
-    const { data: profile } = await supabaseAdmin
-      .from("profiles")
-      .select("id")
-      .eq("slug", data.slug)
-      .maybeSingle();
-    if (!profile) throw new Response("Profile not found", { status: 404 });
-
-    const { data: link, error } = await supabaseAdmin
+    const { data: link, error } = await supabase
       .from("profile_unlock_links")
       .insert({
-        profile_id: profile.id,
+        profile_id: own.id,
         role: data.role,
         token: randomToken(data.role),
         label: data.label?.trim() || null,
@@ -85,14 +76,17 @@ export const createUnlockLink = createServerFn({ method: "POST" })
   });
 
 export const revokeUnlockLink = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
   .validator(z.object({ id: z.string().uuid() }))
-  .handler(async ({ data }): Promise<{ ok: true }> => {
-    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+  .handler(async ({ data, context }): Promise<{ ok: true }> => {
+    const { supabase, userId } = context;
+    const own = await requireOwnProfile(supabase, userId);
 
-    const { error } = await supabaseAdmin
+    const { error } = await supabase
       .from("profile_unlock_links")
       .update({ revoked_at: new Date().toISOString() })
-      .eq("id", data.id);
+      .eq("id", data.id)
+      .eq("profile_id", own.id);
 
     if (error) throw new Error(error.message);
     return { ok: true };
