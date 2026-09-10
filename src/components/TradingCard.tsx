@@ -130,6 +130,7 @@ export function TradingCard({ profile, season, games, photoUrl }: TradingCardPro
     const options = {
       pixelRatio: 2,
       cacheBust: true,
+      backgroundColor: "#16142b",
       width: node.offsetWidth,
       height: node.offsetHeight,
     } as const;
@@ -228,7 +229,8 @@ export function TradingCard({ profile, season, games, photoUrl }: TradingCardPro
         </DialogHeader>
 
         <div className="flex justify-center">
-          {/* Foil border frame */}
+          {/* Foil border frame — colors are literal hex so the exported PNG never
+              depends on CSS theme variables resolving inside the capture. */}
           <div
             ref={cardRef}
             className="w-[330px] rounded-[20px] p-[6px]"
@@ -242,7 +244,7 @@ export function TradingCard({ profile, season, games, photoUrl }: TradingCardPro
               className="relative overflow-hidden rounded-[15px] border border-black/40"
               style={{
                 background:
-                  "radial-gradient(120% 90% at 50% 0%, var(--surface-elevated) 0%, var(--background) 60%, #05050f 100%)",
+                  "radial-gradient(120% 90% at 50% 0%, #322c5a 0%, #16142b 60%, #05050f 100%)",
               }}
             >
               {/* holographic sheen */}
@@ -256,22 +258,34 @@ export function TradingCard({ profile, season, games, photoUrl }: TradingCardPro
               />
 
               {/* Team banner */}
-              <div className="relative z-10 flex items-center justify-between bg-primary px-3 py-1.5">
-                <span className="font-display text-[15px] tracking-[0.22em] text-primary-foreground">
+              <div
+                className="relative z-10 flex items-center justify-between px-3 py-1.5"
+                style={{ background: "#6d4bf6" }}
+              >
+                <span
+                  className="font-display text-[15px] tracking-[0.22em]"
+                  style={{ color: "#ffffff" }}
+                >
                   {(profile.team ?? "").toUpperCase()}
                 </span>
-                <span className="font-display text-[13px] tracking-[0.18em] text-primary-foreground/80">
+                <span
+                  className="font-display text-[13px] tracking-[0.18em]"
+                  style={{ color: "rgba(255,255,255,0.8)" }}
+                >
                   {season?.season ?? "SEASON"}
                 </span>
               </div>
 
               {/* Portrait window */}
-              <div className="relative mx-[10px] mt-[10px] overflow-hidden rounded-[10px] border-2 border-yellow-200/50">
+              <div
+                className="relative mx-[10px] mt-[10px] overflow-hidden rounded-[10px]"
+                style={{ border: "2px solid rgba(254,240,138,0.5)" }}
+              >
                 <div
                   className="absolute inset-0"
                   style={{
                     background:
-                      "radial-gradient(90% 70% at 50% 20%, color-mix(in oklab, var(--primary) 45%, transparent) 0%, transparent 70%)",
+                      "radial-gradient(90% 70% at 50% 20%, rgba(109,75,246,0.45) 0%, rgba(109,75,246,0) 70%)",
                   }}
                 />
                 <img
@@ -281,16 +295,20 @@ export function TradingCard({ profile, season, games, photoUrl }: TradingCardPro
                   className="relative h-[290px] w-full object-cover"
                 />
                 {/* position tab */}
-                <span className="absolute left-0 top-3 rounded-r-md bg-black/75 px-2.5 py-1 text-[11px] font-bold uppercase tracking-[0.18em] text-yellow-200">
+                <span
+                  className="absolute left-0 top-3 rounded-r-md px-2.5 py-1 text-[11px] font-bold uppercase tracking-[0.18em]"
+                  style={{ background: "rgba(0,0,0,0.75)", color: "#fef08a" }}
+                >
                   {profile.position ?? "Player"}
                 </span>
                 {/* jersey roundel */}
                 {profile.jersey_number && (
                   <span
-                    className="absolute bottom-3 right-3 flex h-14 w-14 items-center justify-center rounded-full font-display text-3xl leading-none text-primary-foreground"
+                    className="absolute bottom-3 right-3 flex h-14 w-14 items-center justify-center rounded-full font-display text-3xl leading-none"
                     style={{
+                      color: "#ffffff",
                       background:
-                        "radial-gradient(circle at 30% 25%, color-mix(in oklab, var(--primary) 80%, white) 0%, var(--primary) 70%)",
+                        "radial-gradient(circle at 30% 25%, #9c86f9 0%, #6d4bf6 70%)",
                       boxShadow: "0 0 0 3px rgba(255,246,201,.75), 0 6px 14px rgba(0,0,0,.5)",
                     }}
                   >
@@ -301,16 +319,23 @@ export function TradingCard({ profile, season, games, photoUrl }: TradingCardPro
 
               {/* Name plate */}
               <div
-                className="relative z-10 mx-[10px] mt-[10px] rounded-md border border-yellow-200/40 px-3 py-2 text-center"
+                className="relative z-10 mx-[10px] mt-[10px] rounded-md px-3 py-2 text-center"
                 style={{
+                  border: "1px solid rgba(254,240,138,0.4)",
                   background:
                     "linear-gradient(180deg, rgba(255,246,201,.14) 0%, rgba(0,0,0,.35) 100%)",
                 }}
               >
-                <h3 className="font-display text-[30px] uppercase leading-none tracking-wide text-foreground">
+                <h3
+                  className="font-display text-[30px] uppercase leading-none tracking-wide"
+                  style={{ color: "#f8f8fc" }}
+                >
                   {fullName}
                 </h3>
-                <p className="mt-1 text-[10px] font-semibold uppercase tracking-[0.2em] text-yellow-200/90">
+                <p
+                  className="mt-1 text-[10px] font-semibold uppercase tracking-[0.2em]"
+                  style={{ color: "rgba(254,240,138,0.9)" }}
+                >
                   Class of {profile.graduation_year ?? "—"}
                   {profile.height ? ` • ${profile.height}` : ""}
                   {profile.dominant_hand ? ` • ${profile.dominant_hand} foot` : ""}
@@ -319,7 +344,10 @@ export function TradingCard({ profile, season, games, photoUrl }: TradingCardPro
 
               {/* Stat strip */}
               <div className="relative z-10 px-[10px] pb-1 pt-2">
-                <div className="grid grid-cols-4 overflow-hidden rounded-md border border-border/70">
+                <div
+                  className="grid grid-cols-4 overflow-hidden rounded-md"
+                  style={{ border: "1px solid rgba(255,255,255,0.14)" }}
+                >
                   {[
                     { label: "GP", value: num(season?.games_played) },
                     { label: "G", value: num(season?.goals) },
@@ -328,19 +356,32 @@ export function TradingCard({ profile, season, games, photoUrl }: TradingCardPro
                   ].map((s, i) => (
                     <div
                       key={s.label}
-                      className={`bg-black/35 py-1.5 text-center ${i > 0 ? "border-l border-border/60" : ""}`}
+                      className="py-1.5 text-center"
+                      style={{
+                        background: "rgba(0,0,0,0.35)",
+                        ...(i > 0 ? { borderLeft: "1px solid rgba(255,255,255,0.12)" } : {}),
+                      }}
                     >
-                      <div className="font-display text-[22px] leading-none text-foreground">
+                      <div
+                        className="font-display text-[22px] leading-none"
+                        style={{ color: "#f8f8fc" }}
+                      >
                         {s.value}
                       </div>
-                      <div className="mt-0.5 text-[9px] font-bold uppercase tracking-[0.14em] text-muted-foreground">
+                      <div
+                        className="mt-0.5 text-[9px] font-bold uppercase tracking-[0.14em]"
+                        style={{ color: "#a3a8bd" }}
+                      >
                         {s.label}
                       </div>
                     </div>
                   ))}
                 </div>
 
-                <div className="mt-1 grid grid-cols-3 overflow-hidden rounded-md border border-border/70 text-center">
+                <div
+                  className="mt-1 grid grid-cols-3 overflow-hidden rounded-md text-center"
+                  style={{ border: "1px solid rgba(255,255,255,0.14)" }}
+                >
                   {[
                     { label: "Record", value: record(games) },
                     { label: "Min", value: num(season?.minutes_played) },
@@ -348,10 +389,19 @@ export function TradingCard({ profile, season, games, photoUrl }: TradingCardPro
                   ].map((s, i) => (
                     <div
                       key={s.label}
-                      className={`bg-black/25 py-1 ${i > 0 ? "border-l border-border/60" : ""}`}
+                      className="py-1"
+                      style={{
+                        background: "rgba(0,0,0,0.25)",
+                        ...(i > 0 ? { borderLeft: "1px solid rgba(255,255,255,0.12)" } : {}),
+                      }}
                     >
-                      <div className="text-[13px] font-semibold text-foreground">{s.value}</div>
-                      <div className="text-[9px] uppercase tracking-[0.14em] text-muted-foreground">
+                      <div className="text-[13px] font-semibold" style={{ color: "#f8f8fc" }}>
+                        {s.value}
+                      </div>
+                      <div
+                        className="text-[9px] uppercase tracking-[0.14em]"
+                        style={{ color: "#a3a8bd" }}
+                      >
                         {s.label}
                       </div>
                     </div>
@@ -362,10 +412,16 @@ export function TradingCard({ profile, season, games, photoUrl }: TradingCardPro
               {/* Footer / serial + QR */}
               <div className="relative z-10 flex items-end justify-between gap-2 px-[12px] pb-2 pt-1">
                 <div>
-                  <span className="block font-display text-[12px] tracking-[0.28em] text-yellow-200/80">
+                  <span
+                    className="block font-display text-[12px] tracking-[0.28em]"
+                    style={{ color: "rgba(254,240,138,0.8)" }}
+                  >
                     FOOTY KPI
                   </span>
-                  <span className="text-[9px] font-medium uppercase tracking-[0.16em] text-muted-foreground">
+                  <span
+                    className="text-[9px] font-medium uppercase tracking-[0.16em]"
+                    style={{ color: "#a3a8bd" }}
+                  >
                     No. {(profile.jersey_number ?? 1).toString().padStart(3, "0")} · Official Rookie
                   </span>
                 </div>
@@ -374,9 +430,13 @@ export function TradingCard({ profile, season, games, photoUrl }: TradingCardPro
                     <img
                       src={qrDataUrl}
                       alt={`Scan to view ${fullName}'s profile`}
-                      className="h-[52px] w-[52px] rounded-[3px] border border-yellow-200/60 bg-white p-[3px]"
+                      className="h-[52px] w-[52px] rounded-[3px] p-[3px]"
+                      style={{ background: "#ffffff", border: "1px solid rgba(254,240,138,0.6)" }}
                     />
-                    <span className="text-[7px] font-bold uppercase tracking-[0.12em] text-muted-foreground">
+                    <span
+                      className="text-[7px] font-bold uppercase tracking-[0.12em]"
+                      style={{ color: "#a3a8bd" }}
+                    >
                       Scan profile
                     </span>
                   </div>

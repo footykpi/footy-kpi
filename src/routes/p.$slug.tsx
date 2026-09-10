@@ -1,4 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
+import { useState } from "react";
+import { toast } from "sonner";
 import { useSuspenseQuery } from "@tanstack/react-query";
 import { queryOptions } from "@tanstack/react-query";
 import { z } from "zod";
@@ -141,10 +143,10 @@ function PublicProfilePage() {
                   games={games.filter((g) => g.sport === SPORT)}
                   photoUrl={profile.photo_url ?? playerPhoto}
                 />
-                <button className="inline-flex items-center gap-2 rounded-full border border-border bg-background px-4 py-2 text-sm font-medium text-foreground transition-colors hover:bg-surface-elevated">
-                  <Share2 className="h-4 w-4" />
-                  Share Profile
-                </button>
+                <ShareProfileButton
+                  name={`${profile.first_name} ${profile.last_name}`}
+                  slug={profile.slug}
+                />
               </>
             )}
           </div>
@@ -372,6 +374,43 @@ function PublicProfilePage() {
         </div>
       </footer>
     </div>
+  );
+}
+
+function ShareProfileButton({ name, slug }: { name: string; slug: string }) {
+  const [copied, setCopied] = useState(false);
+
+  async function share() {
+    const url = `${window.location.origin}/p/${slug}`;
+    const nav = navigator as Navigator & { share?: (data: ShareData) => Promise<void> };
+    try {
+      if (nav.share) {
+        await nav.share({ title: `${name} | Footy KPI`, text: `${name}'s soccer portfolio`, url });
+        return;
+      }
+    } catch {
+      // sharing cancelled or unavailable — fall back to copying
+    }
+    try {
+      await navigator.clipboard.writeText(url);
+    } catch {
+      window.prompt("Copy this profile link", url);
+      return;
+    }
+    setCopied(true);
+    toast.success("Profile link copied");
+    setTimeout(() => setCopied(false), 2000);
+  }
+
+  return (
+    <button
+      type="button"
+      onClick={() => void share()}
+      className="inline-flex items-center gap-2 rounded-full border border-border bg-background px-4 py-2 text-sm font-medium text-foreground transition-colors hover:bg-surface-elevated"
+    >
+      <Share2 className="h-4 w-4" />
+      {copied ? "Link copied" : "Share Profile"}
+    </button>
   );
 }
 

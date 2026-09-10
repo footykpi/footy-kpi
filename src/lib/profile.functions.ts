@@ -2,6 +2,8 @@ import { createServerFn } from "@tanstack/react-start";
 import { createClient } from "@supabase/supabase-js";
 import { z } from "zod";
 
+import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
+
 const profileInputSchema = z.object({ slug: z.string() });
 
 export interface Profile {
@@ -123,7 +125,7 @@ export interface Highlight {
 }
 
 
-export type ViewerRole = "public" | "recruiter" | "coach";
+export type ViewerRole = "public" | "recruiter" | "coach" | "owner";
 
 /** What the current visitor is allowed to see, derived from their unlock link. */
 export interface ViewerAccess {
@@ -198,6 +200,84 @@ const PUBLIC_ACCESS: ViewerAccess = {
   gameLog: false,
   highlights: false,
 };
+
+/**
+ * The signed-in athlete's own portfolio — nothing is hidden from the owner, even
+ * while their profile is private. The public view stays gated in getPublicProfile.
+ */
+export const getMyPortfolio = createServerFn({ method: "GET" })
+  .middleware([requireSupabaseAuth])
+  .handler(async ({ context }): Promise<PublicProfile> => {
+    const { supabase, userId } = context;
+
+    const { data: profile, error } = await supabase
+      .from("profiles")
+      .select("*")
+      .eq("user_id", userId)
+      .maybeSingle();
+
+    if (error) throw new Error(error.message);
+    if (!profile) throw new Response("Profile not found", { status: 404 });
+
+    const [{ data: stats }, { data: achievements }, { data: allGames }, { data: allHighlights }] =
+      await Promise.all([
+        supabase
+          .from("season_stats")
+          .select("*")
+          .eq("profile_id", profile.id)
+          .order("season", { ascending: false }),
+        supabase
+          .from("achievements")
+          .select("*")
+          .eq("profile_id", profile.id)
+          .order("date", { ascending: false }),
+        supabase
+          .from("games")
+          .select("*, game_media(*)")
+          .eq("profile_id", profile.id)
+          .order("game_date", { ascending: false }),
+        supabase
+          .from("highlights")
+          .select("*")
+          .eq("profile_id", profile.id)
+          .order("sort_order", { ascending: true }),
+      ]);
+
+    const highlights: Highlight[] = await Promise.all(
+      ((allHighlights ?? []) as Highlight[]).map(async (row) => ({
+        ...row,
+        url: await signHighlightUrl(row.url),
+        thumbnail_url: row.thumbnail_url ? await signHighlightUrl(row.thumbnail_url) : null,
+        proof_url: row.proof_url ? await signHighlightUrl(row.proof_url) : null,
+      })),
+    );
+
+    const games: Game[] = ((allGames ?? []) as Record<string, unknown>[]).map((row) => {
+      const { game_media, ...game } = row as Record<string, unknown> & {
+        game_media?: GameMedia[];
+      };
+      return {
+        ...(game as unknown as Omit<Game, "media">),
+        media: [...(game_media ?? [])].sort((a, b) => a.sort_order - b.sort_order),
+      };
+    });
+
+    return {
+      profile: {
+        ...(profile as unknown as Profile),
+        photo_url: profile.photo_url ? await signHighlightUrl(profile.photo_url) : null,
+      } as Profile,
+      isPrivate: (profile as { visibility?: string }).visibility === "private",
+      access: { role: "owner", linkLabel: null, invalidKey: false, contact: true, gameLog: true, highlights: true },
+      privateDetails: null,
+      stats: (stats ?? []) as SeasonStats[],
+      achievements: (achievements ?? []) as Achievement[],
+      games,
+      gamesLocked: 0,
+      highlights,
+      highlightsLocked: 0,
+    };
+  });
 
 export const getPublicProfile = createServerFn({ method: "GET" })
   .validator(z.object({ slug: z.string(), key: z.string().trim().max(120).optional() }))

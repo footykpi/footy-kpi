@@ -7,6 +7,7 @@ import { ExternalLink, ImagePlus, Loader2, Mail, Trash2, UserPlus } from "lucide
 import { AppHeader } from "@/components/AppHeader";
 import { AccessLinks } from "@/components/AccessLinks";
 import { AiInsights } from "@/components/AiInsights";
+import { GameEntryForm } from "@/components/GameEntryForm";
 import { GameLog } from "@/components/GameLog";
 import { HighlightsReel } from "@/components/HighlightsReel";
 import { ProgressCharts } from "@/components/ProgressCharts";
@@ -16,7 +17,7 @@ import { TradingCard } from "@/components/TradingCard";
 import { getMyAccount, saveMyProfile } from "@/lib/account.functions";
 import { removeProfilePhoto, uploadProfilePhoto } from "@/lib/profile-photo.functions";
 import { inviteCoach, listMyCoaches, removeCoachLink } from "@/lib/coach.functions";
-import { getPublicProfile } from "@/lib/profile.functions";
+import { getMyPortfolio } from "@/lib/profile.functions";
 import playerPhoto from "@/assets/player-photo.jpg";
 
 export const Route = createFileRoute("/_authenticated/athlete")({
@@ -85,10 +86,11 @@ function AthleteDashboard() {
   const { data: account } = useQuery({ queryKey: ["my-account"], queryFn: () => fetchAccount({}) });
   const slug = account?.profileSlug ?? null;
 
+  const fetchPortfolio = useServerFn(getMyPortfolio);
   const { data: portfolio, isLoading } = useQuery({
     queryKey: ["my-portfolio", slug],
     enabled: Boolean(slug),
-    queryFn: () => getPublicProfile({ data: { slug: slug as string } }),
+    queryFn: () => fetchPortfolio({}),
   });
 
   const { data: coaches = [] } = useQuery({
@@ -340,6 +342,8 @@ function AthleteDashboard() {
             <AiInsights profileId={profile.id} />
 
             <ProgressCharts games={games} />
+
+            <GameEntryForm />
 
             <GameLog games={games} />
 

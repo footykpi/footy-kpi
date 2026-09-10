@@ -1,0 +1,1 @@
+DELETE FROM public.games WHERE opponent = 'Playwright FC';
