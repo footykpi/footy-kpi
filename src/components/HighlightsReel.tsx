@@ -116,13 +116,11 @@ export function HighlightsReel({
 
     try {
       for (const file of Array.from(files)) {
-        await uploadHighlightFn({
-          data: {
-            file,
-            category: uploadCategory,
-            title: title.trim() || undefined,
-          },
-        });
+        const body = new FormData();
+        body.set("file", file);
+        body.set("category", uploadCategory);
+        if (title.trim()) body.set("title", title.trim());
+        await uploadHighlightFn({ data: body });
       }
 
       setTitle("");
