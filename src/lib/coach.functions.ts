@@ -150,25 +150,31 @@ export const listCoachAthletes = createServerFn({ method: "GET" })
       .select("profile_id")
       .eq("verification_status", "pending");
 
-    return rows.flatMap((link) => {
-      const profile = (profiles ?? []).find((p) => p.id === link.athlete_profile_id);
-      if (!profile) return [];
-      return [
-        {
-          linkId: link.id,
-          status: link.status,
-          profileId: profile.id,
-          slug: profile.slug,
-          firstName: profile.first_name,
-          lastName: profile.last_name,
-          team: profile.team,
-          position: profile.position,
-          graduationYear: profile.graduation_year,
-          photoUrl: profile.photo_url,
-          pendingProofs: (pending ?? []).filter((h) => h.profile_id === profile.id).length,
-        },
-      ];
-    });
+    const { signStoragePath } = await import("@/lib/storage.server");
+
+    return (
+      await Promise.all(
+        rows.map(async (link) => {
+          const profile = (profiles ?? []).find((p) => p.id === link.athlete_profile_id);
+          if (!profile) return [];
+          return [
+            {
+              linkId: link.id,
+              status: link.status,
+              profileId: profile.id,
+              slug: profile.slug,
+              firstName: profile.first_name,
+              lastName: profile.last_name,
+              team: profile.team,
+              position: profile.position,
+              graduationYear: profile.graduation_year,
+              photoUrl: await signStoragePath(profile.photo_url, 60 * 60 * 6),
+              pendingProofs: (pending ?? []).filter((h) => h.profile_id === profile.id).length,
+            },
+          ];
+        }),
+      )
+    ).flat();
   });
 
 export const respondToInvite = createServerFn({ method: "POST" })
@@ -248,7 +254,10 @@ export const getCoachAthlete = createServerFn({ method: "GET" })
     });
 
     return {
-      profile: profile as unknown as Profile,
+      profile: {
+        ...(profile as unknown as Profile),
+        photo_url: await sign(profile.photo_url),
+      } as Profile,
       stats: (stats ?? []) as unknown as SeasonStats[],
       games: gameList,
       highlights: signedHighlights,

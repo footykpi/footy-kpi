@@ -218,6 +218,13 @@ export const getPublicProfile = createServerFn({ method: "GET" })
       throw new Response("Profile not found", { status: 404 });
     }
 
+    // Uploaded photos live in the private bucket: hand out a signed URL.
+    const signedProfile = {
+      ...(profile as unknown as Profile),
+      photo_url: profile.photo_url ? await signHighlightUrl(profile.photo_url) : null,
+    } as Profile;
+
+
     // Resolve the visitor's role from their unlock link.
     let access: ViewerAccess = PUBLIC_ACCESS;
     if (data.key) {
@@ -257,7 +264,7 @@ export const getPublicProfile = createServerFn({ method: "GET" })
     if (isPrivate && !unlocked) {
       // Teaser only — no stats, games, media, or achievements leave the server.
       return {
-        profile: profile as Profile,
+        profile: signedProfile,
         isPrivate: true,
         access,
         privateDetails: null,
@@ -341,7 +348,7 @@ export const getPublicProfile = createServerFn({ method: "GET" })
     });
 
     return {
-      profile: profile as Profile,
+      profile: signedProfile,
       isPrivate,
       access,
       privateDetails,

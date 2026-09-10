@@ -58,5 +58,12 @@ export const searchAthletes = createServerFn({ method: "GET" })
 
     const { data: rows, error } = await query;
     if (error) throw new Error(error.message);
-    return (rows ?? []) as AthleteSearchResult[];
+
+    const { signStoragePath } = await import("@/lib/storage.server");
+    return Promise.all(
+      ((rows ?? []) as AthleteSearchResult[]).map(async (row) => ({
+        ...row,
+        photo_url: await signStoragePath(row.photo_url, 60 * 60 * 6),
+      })),
+    );
   });
