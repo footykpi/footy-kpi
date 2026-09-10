@@ -130,6 +130,7 @@ export function TradingCard({ profile, season, games, photoUrl }: TradingCardPro
     const options = {
       pixelRatio: 2,
       cacheBust: true,
+      backgroundColor: "#16142b",
       width: node.offsetWidth,
       height: node.offsetHeight,
     } as const;
