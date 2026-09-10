@@ -37,6 +37,7 @@ import { AccessLinks } from "@/components/AccessLinks";
 import { SeasonStatsEditor } from "@/components/SeasonStatsEditor";
 import { TradingCard } from "@/components/TradingCard";
 import playerPhoto from "@/assets/player-photo.jpg";
+import footyKpiLogo from "@/assets/footy-kpi-logo.png.asset.json";
 
 const SLUG = "demo-athlete";
 
@@ -48,9 +49,9 @@ export const Route = createFileRoute("/")({
   },
   head: () => ({
     meta: [
-      { title: "Marcus Chen | Soccer Portfolio" },
+      { title: "Marcus Chen | Footy KPI" },
       { name: "description", content: "Season stats, achievements, and game log for Marcus Chen — youth soccer athlete." },
-      { property: "og:title", content: "Marcus Chen | Soccer Portfolio" },
+      { property: "og:title", content: "Marcus Chen | Footy KPI" },
       { property: "og:description", content: "Season stats, achievements, and game log for Marcus Chen — youth soccer athlete." },
       { property: "og:type", content: "profile" },
       { name: "twitter:card", content: "summary_large_image" },
@@ -114,9 +115,7 @@ function Index() {
       <header className="border-b border-border/50 bg-surface">
         <div className="mx-auto flex max-w-6xl items-center justify-between px-6 py-4">
           <div className="flex items-center gap-3">
-            <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-primary text-primary-foreground">
-              <SoccerBallIcon className="h-6 w-6" />
-            </div>
+            <img src={footyKpiLogo.url} alt="Footy KPI shield" className="h-10 w-10 rounded-lg object-cover" />
             <span className="font-display text-2xl tracking-wide text-foreground">FOOTY KPI</span>
           </div>
           <div className="flex items-center gap-3">
@@ -380,9 +379,7 @@ function Index() {
       <footer className="border-t border-border/50 bg-surface py-8">
         <div className="mx-auto flex max-w-6xl items-center justify-between px-6">
           <div className="flex items-center gap-3">
-            <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary text-primary-foreground">
-              <Shield className="h-4 w-4" />
-            </div>
+            <img src={footyKpiLogo.url} alt="" className="h-8 w-8 rounded-lg object-cover" />
             <span className="font-display text-lg tracking-wide text-foreground">FOOTY KPI</span>
           </div>
           <p className="text-sm text-muted-foreground">
