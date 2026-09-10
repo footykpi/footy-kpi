@@ -48,6 +48,32 @@ export function TradingCard({ profile, season, games, photoUrl }: TradingCardPro
     typeof window !== "undefined" ? `${window.location.origin}/?slug=${profile.slug}` : "";
   const shareText = `${fullName} — ${profile.position ?? "Soccer"} · ${profile.team} · Class of ${profile.graduation_year ?? ""}`.trim();
   const [qrDataUrl, setQrDataUrl] = useState<string | null>(null);
+  const [photoDataUrl, setPhotoDataUrl] = useState<string | null>(null);
+
+  /** The portrait lives on a signed remote URL; inline it so the export can never miss it. */
+  useEffect(() => {
+    if (!photoUrl) return;
+    let active = true;
+    setPhotoDataUrl(null);
+    (async () => {
+      try {
+        const res = await fetch(photoUrl, { mode: "cors", cache: "reload" });
+        const blob = await res.blob();
+        const dataUrl = await new Promise<string>((resolve, reject) => {
+          const reader = new FileReader();
+          reader.onload = () => resolve(String(reader.result));
+          reader.onerror = () => reject(reader.error);
+          reader.readAsDataURL(blob);
+        });
+        if (active) setPhotoDataUrl(dataUrl);
+      } catch {
+        if (active) setPhotoDataUrl(null);
+      }
+    })();
+    return () => {
+      active = false;
+    };
+  }, [photoUrl]);
 
   useEffect(() => {
     if (!shareUrl) return;
