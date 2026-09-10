@@ -15,9 +15,9 @@ const ROLE_META = {
   coach: { label: "College coach", icon: Telescope },
 } as const;
 
-function linkUrl(token: string): string {
-  if (typeof window === "undefined") return `?key=${token}`;
-  return `${window.location.origin}${window.location.pathname}?key=${token}`;
+function linkUrl(token: string, slug: string): string {
+  if (typeof window === "undefined") return `/p/${slug}?key=${token}`;
+  return `${window.location.origin}/p/${slug}?key=${token}`;
 }
 
 export function AccessLinks({ slug }: { slug: string }) {
@@ -36,7 +36,7 @@ export function AccessLinks({ slug }: { slug: string }) {
 
   const { data: links = [], isLoading } = useQuery({
     queryKey: ["unlock-links", slug],
-    queryFn: () => fetchLinks({ data: { slug } }),
+    queryFn: () => fetchLinks({}),
   });
 
   const invalidate = () => queryClient.invalidateQueries({ queryKey: ["unlock-links", slug] });
@@ -45,7 +45,6 @@ export function AccessLinks({ slug }: { slug: string }) {
     mutationFn: () =>
       createLink({
         data: {
-          slug,
           role,
           ...(label.trim() ? { label: label.trim() } : {}),
           unlock_contact: contact,
@@ -67,7 +66,7 @@ export function AccessLinks({ slug }: { slug: string }) {
   });
 
   async function copy(token: string) {
-    await navigator.clipboard.writeText(linkUrl(token));
+    await navigator.clipboard.writeText(linkUrl(token, slug));
     setCopied(token);
     setTimeout(() => setCopied(null), 2000);
   }
