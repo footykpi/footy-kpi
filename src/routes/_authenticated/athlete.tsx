@@ -141,6 +141,7 @@ function AthleteDashboard() {
       }),
     onSuccess: async () => {
       setSaved(true);
+      setEditing(false);
       await queryClient.invalidateQueries({ queryKey: ["my-portfolio"] });
       setTimeout(() => setSaved(false), 2500);
     },
