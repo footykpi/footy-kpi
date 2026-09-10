@@ -21,7 +21,7 @@ function parsePhotoForm(data: unknown) {
 /** Athlete uploads their own profile photo from their device. */
 export const uploadProfilePhoto = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
-  .validator(uploadSchema)
+  .validator(parsePhotoForm)
   .handler(async ({ data, context }): Promise<{ path: string; url: string }> => {
     const { supabase, userId } = context;
     const own = await requireOwnProfile(supabase, userId);
