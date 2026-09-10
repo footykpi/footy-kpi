@@ -1,6 +1,7 @@
 # Project Roadmap
 
 ## In progress
+- [ ] Use the uploaded shield as the Footy KPI logo and app icon.
 - [ ] Publish Footy KPI to a live Lovable URL.
 
 ## Completed
