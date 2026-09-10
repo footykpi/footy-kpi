@@ -156,6 +156,17 @@ function AthleteDashboard() {
     onSuccess: () => queryClient.invalidateQueries({ queryKey: ["my-coaches"] }),
   });
 
+  const uploadPhoto = useMutation({
+    mutationFn: (file: File) => sendPhoto({ data: { file } }),
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: ["my-portfolio"] }),
+  });
+
+  const dropPhoto = useMutation({
+    mutationFn: () => clearPhoto({}),
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: ["my-portfolio"] }),
+  });
+
+
   const set = (key: keyof FormState, value: string) =>
     setForm((prev) => ({ ...prev, [key]: value }) as FormState);
 
