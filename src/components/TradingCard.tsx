@@ -48,6 +48,32 @@ export function TradingCard({ profile, season, games, photoUrl }: TradingCardPro
     typeof window !== "undefined" ? `${window.location.origin}/?slug=${profile.slug}` : "";
   const shareText = `${fullName} — ${profile.position ?? "Soccer"} · ${profile.team} · Class of ${profile.graduation_year ?? ""}`.trim();
   const [qrDataUrl, setQrDataUrl] = useState<string | null>(null);
+  const [photoDataUrl, setPhotoDataUrl] = useState<string | null>(null);
+
+  /** The portrait lives on a signed remote URL; inline it so the export can never miss it. */
+  useEffect(() => {
+    if (!photoUrl) return;
+    let active = true;
+    setPhotoDataUrl(null);
+    (async () => {
+      try {
+        const res = await fetch(photoUrl, { mode: "cors", cache: "reload" });
+        const blob = await res.blob();
+        const dataUrl = await new Promise<string>((resolve, reject) => {
+          const reader = new FileReader();
+          reader.onload = () => resolve(String(reader.result));
+          reader.onerror = () => reject(reader.error);
+          reader.readAsDataURL(blob);
+        });
+        if (active) setPhotoDataUrl(dataUrl);
+      } catch {
+        if (active) setPhotoDataUrl(null);
+      }
+    })();
+    return () => {
+      active = false;
+    };
+  }, [photoUrl]);
 
   useEffect(() => {
     if (!shareUrl) return;
@@ -69,13 +95,53 @@ export function TradingCard({ profile, season, games, photoUrl }: TradingCardPro
 
 
 
+  /** Everything on the card must be loaded before the pixels are captured. */
+  async function waitForCardReady(node: HTMLElement) {
+    if (typeof document !== "undefined" && "fonts" in document) {
+      try {
+        await (document as Document & { fonts: FontFaceSet }).fonts.ready;
+      } catch {
+        // fonts unavailable — fall through to the bundled fallback family
+      }
+    }
+    const images = Array.from(node.querySelectorAll("img"));
+    await Promise.all(
+      images.map(
+        (img) =>
+          new Promise<void>((resolve) => {
+            if (img.complete && img.naturalWidth > 0) {
+              resolve();
+              return;
+            }
+            img.addEventListener("load", () => resolve(), { once: true });
+            img.addEventListener("error", () => resolve(), { once: true });
+            setTimeout(resolve, 4000);
+          }),
+      ),
+    );
+    await new Promise((resolve) => requestAnimationFrame(() => requestAnimationFrame(resolve)));
+  }
+
   async function renderBlob(): Promise<Blob | null> {
-    if (!cardRef.current) return null;
-    const dataUrl = await toPng(cardRef.current, {
+    const node = cardRef.current;
+    if (!node) return null;
+    await waitForCardReady(node);
+
+    const options = {
       pixelRatio: 2,
       cacheBust: true,
-      skipFonts: false,
-    });
+      width: node.offsetWidth,
+      height: node.offsetHeight,
+    } as const;
+
+    // The first pass primes caches — some browsers return a blank canvas otherwise.
+    await toPng(node, options).catch(() => "");
+    let dataUrl = await toPng(node, options).catch(() => "");
+    // Remote font stylesheets can't always be inlined; retry without them rather than fail.
+    if (!dataUrl || dataUrl.length < 5000) {
+      dataUrl = await toPng(node, { ...options, skipFonts: true });
+    }
+    if (!dataUrl || dataUrl.length < 5000) throw new Error("Empty card render");
     const res = await fetch(dataUrl);
     return await res.blob();
   }
@@ -209,9 +275,9 @@ export function TradingCard({ profile, season, games, photoUrl }: TradingCardPro
                   }}
                 />
                 <img
-                  src={photoUrl}
+                  src={photoDataUrl ?? photoUrl}
                   alt={fullName}
-                  crossOrigin="anonymous"
+                  {...(photoDataUrl ? {} : { crossOrigin: "anonymous" as const })}
                   className="relative h-[290px] w-full object-cover"
                 />
                 {/* position tab */}
