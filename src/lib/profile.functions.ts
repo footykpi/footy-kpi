@@ -264,7 +264,7 @@ export const getPublicProfile = createServerFn({ method: "GET" })
     if (isPrivate && !unlocked) {
       // Teaser only — no stats, games, media, or achievements leave the server.
       return {
-        profile: profile as Profile,
+        profile: signedProfile,
         isPrivate: true,
         access,
         privateDetails: null,
@@ -348,7 +348,7 @@ export const getPublicProfile = createServerFn({ method: "GET" })
     });
 
     return {
-      profile: profile as Profile,
+      profile: signedProfile,
       isPrivate,
       access,
       privateDetails,
