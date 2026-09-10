@@ -369,7 +369,25 @@ function AthleteDashboard() {
             ))}
             <button
               type="button"
-              onClick={() => setEditing(false)}
+              onClick={() => {
+                if (profile) {
+                  setForm({
+                    first_name: profile.first_name ?? "",
+                    last_name: profile.last_name ?? "",
+                    team: profile.team ?? "",
+                    jersey_number: profile.jersey_number ?? "",
+                    position: profile.position ?? "",
+                    graduation_year: profile.graduation_year ? String(profile.graduation_year) : "",
+                    height: profile.height ?? "",
+                    weight: profile.weight ?? "",
+                    dominant_hand: profile.dominant_hand ?? "",
+                    gpa: profile.gpa ? String(profile.gpa) : "",
+                    bio: profile.bio ?? "",
+                    visibility: profile.visibility === "public" ? "public" : "private",
+                  });
+                }
+                setEditing(false);
+              }}
               className="ml-auto inline-flex items-center gap-2 rounded-full border border-border bg-background px-5 py-2.5 text-sm font-semibold text-foreground hover:bg-surface-elevated"
             >
               Cancel
