@@ -228,7 +228,8 @@ export function TradingCard({ profile, season, games, photoUrl }: TradingCardPro
         </DialogHeader>
 
         <div className="flex justify-center">
-          {/* Foil border frame */}
+          {/* Foil border frame — colors are literal hex so the exported PNG never
+              depends on CSS theme variables resolving inside the capture. */}
           <div
             ref={cardRef}
             className="w-[330px] rounded-[20px] p-[6px]"
@@ -242,7 +243,7 @@ export function TradingCard({ profile, season, games, photoUrl }: TradingCardPro
               className="relative overflow-hidden rounded-[15px] border border-black/40"
               style={{
                 background:
-                  "radial-gradient(120% 90% at 50% 0%, var(--surface-elevated) 0%, var(--background) 60%, #05050f 100%)",
+                  "radial-gradient(120% 90% at 50% 0%, #322c5a 0%, #16142b 60%, #05050f 100%)",
               }}
             >
               {/* holographic sheen */}
@@ -256,22 +257,34 @@ export function TradingCard({ profile, season, games, photoUrl }: TradingCardPro
               />
 
               {/* Team banner */}
-              <div className="relative z-10 flex items-center justify-between bg-primary px-3 py-1.5">
-                <span className="font-display text-[15px] tracking-[0.22em] text-primary-foreground">
+              <div
+                className="relative z-10 flex items-center justify-between px-3 py-1.5"
+                style={{ background: "#6d4bf6" }}
+              >
+                <span
+                  className="font-display text-[15px] tracking-[0.22em]"
+                  style={{ color: "#ffffff" }}
+                >
                   {(profile.team ?? "").toUpperCase()}
                 </span>
-                <span className="font-display text-[13px] tracking-[0.18em] text-primary-foreground/80">
+                <span
+                  className="font-display text-[13px] tracking-[0.18em]"
+                  style={{ color: "rgba(255,255,255,0.8)" }}
+                >
                   {season?.season ?? "SEASON"}
                 </span>
               </div>
 
               {/* Portrait window */}
-              <div className="relative mx-[10px] mt-[10px] overflow-hidden rounded-[10px] border-2 border-yellow-200/50">
+              <div
+                className="relative mx-[10px] mt-[10px] overflow-hidden rounded-[10px]"
+                style={{ border: "2px solid rgba(254,240,138,0.5)" }}
+              >
                 <div
                   className="absolute inset-0"
                   style={{
                     background:
-                      "radial-gradient(90% 70% at 50% 20%, color-mix(in oklab, var(--primary) 45%, transparent) 0%, transparent 70%)",
+                      "radial-gradient(90% 70% at 50% 20%, rgba(109,75,246,0.45) 0%, rgba(109,75,246,0) 70%)",
                   }}
                 />
                 <img
