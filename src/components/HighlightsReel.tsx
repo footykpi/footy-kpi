@@ -425,7 +425,10 @@ function VerificationPanel({
     setBusy(true);
     setError(null);
     try {
-      await uploadProofFn({ data: { highlightId: highlight.id, file } });
+      const body = new FormData();
+      body.set("file", file);
+      body.set("highlightId", highlight.id);
+      await uploadProofFn({ data: body });
       await refresh();
     } catch (err) {
       setError(err instanceof Error ? err.message : "Could not submit proof.");
