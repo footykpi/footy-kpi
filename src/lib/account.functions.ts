@@ -126,7 +126,7 @@ const profileSchema = z.object({
   dominant_hand: z.string().trim().max(20).nullable(),
   gpa: z.string().trim().max(10).nullable(),
   bio: z.string().trim().max(2000).nullable(),
-  photo_url: z.string().trim().max(500).nullable(),
+  // photo_url is set only by the photo upload flow, never from this form.
   visibility: z.enum(["public", "private"]),
 });
 
