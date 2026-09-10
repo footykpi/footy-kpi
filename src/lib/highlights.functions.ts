@@ -6,18 +6,30 @@ import { requireOwnProfile } from "@/lib/auth-helpers.server";
 
 const categorySchema = z.enum(["moment", "award", "certificate", "medal"]);
 
-const uploadHighlightSchema = z.object({
-  file: z.instanceof(File),
-  category: categorySchema,
-  title: z.string().trim().max(200).optional(),
-});
-
 const deleteHighlightSchema = z.object({ highlightId: z.string().uuid() });
 
-const uploadProofSchema = z.object({
-  highlightId: z.string().uuid(),
-  file: z.instanceof(File),
-});
+/** Files must travel as FormData: File objects can't cross the RPC serializer. */
+function parseUploadForm(data: unknown) {
+  if (!(data instanceof FormData)) throw new Error("Expected form data");
+  const file = data.get("file");
+  if (!(file instanceof File)) throw new Error("Please choose a file to upload.");
+  const title = data.get("title");
+  return {
+    file,
+    category: categorySchema.parse(data.get("category")),
+    title: typeof title === "string" && title.trim() ? title.trim().slice(0, 200) : undefined,
+  };
+}
+
+function parseProofForm(data: unknown) {
+  if (!(data instanceof FormData)) throw new Error("Expected form data");
+  const file = data.get("file");
+  if (!(file instanceof File)) throw new Error("Please choose a file to upload.");
+  return {
+    file,
+    highlightId: z.string().uuid().parse(data.get("highlightId")),
+  };
+}
 
 type StorageClient = {
   storage: {
