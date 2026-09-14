@@ -461,13 +461,16 @@ export type Database = {
         Row: {
           assists: number | null
           batting_average: number | null
+          catches: number | null
           clean_sheets: number | null
           created_at: string
           era: number | null
           fouls: number | null
           games_played: number | null
           goals: number | null
+          goals_conceded: number | null
           headers_won: number | null
+          high_claims: number | null
           hits: number | null
           home_runs: number | null
           id: string
@@ -476,13 +479,16 @@ export type Database = {
           mvp_awards: number | null
           pass_completion: number | null
           penalty_kicks: number | null
+          pk_faced: number | null
           pk_saves: number | null
           profile_id: string
+          punches: number | null
           rbi: number | null
           red_cards: number | null
           saves: number | null
           season: string
           shots: number | null
+          shots_faced: number | null
           shots_on_goal: number | null
           sport: string
           stolen_bases: number | null
@@ -495,13 +501,16 @@ export type Database = {
         Insert: {
           assists?: number | null
           batting_average?: number | null
+          catches?: number | null
           clean_sheets?: number | null
           created_at?: string
           era?: number | null
           fouls?: number | null
           games_played?: number | null
           goals?: number | null
+          goals_conceded?: number | null
           headers_won?: number | null
+          high_claims?: number | null
           hits?: number | null
           home_runs?: number | null
           id?: string
@@ -510,13 +519,16 @@ export type Database = {
           mvp_awards?: number | null
           pass_completion?: number | null
           penalty_kicks?: number | null
+          pk_faced?: number | null
           pk_saves?: number | null
           profile_id: string
+          punches?: number | null
           rbi?: number | null
           red_cards?: number | null
           saves?: number | null
           season: string
           shots?: number | null
+          shots_faced?: number | null
           shots_on_goal?: number | null
           sport?: string
           stolen_bases?: number | null
@@ -529,13 +541,16 @@ export type Database = {
         Update: {
           assists?: number | null
           batting_average?: number | null
+          catches?: number | null
           clean_sheets?: number | null
           created_at?: string
           era?: number | null
           fouls?: number | null
           games_played?: number | null
           goals?: number | null
+          goals_conceded?: number | null
           headers_won?: number | null
+          high_claims?: number | null
           hits?: number | null
           home_runs?: number | null
           id?: string
@@ -544,13 +559,16 @@ export type Database = {
           mvp_awards?: number | null
           pass_completion?: number | null
           penalty_kicks?: number | null
+          pk_faced?: number | null
           pk_saves?: number | null
           profile_id?: string
+          punches?: number | null
           rbi?: number | null
           red_cards?: number | null
           saves?: number | null
           season?: string
           shots?: number | null
+          shots_faced?: number | null
           shots_on_goal?: number | null
           sport?: string
           stolen_bases?: number | null
