@@ -59,10 +59,12 @@ function toNumber(value: string): number | null {
   return Number.isFinite(parsed) ? parsed : null;
 }
 
-export function GameEntryForm() {
+export function GameEntryForm({ position }: { position?: string | null }) {
+  const keeper = isGoalkeeper(position);
   const queryClient = useQueryClient();
   const submitGame = useServerFn(addGame);
   const [open, setOpen] = useState(false);
+  const [showKeeper, setShowKeeper] = useState(keeper);
   const [form, setForm] = useState({ ...EMPTY });
   const [stats, setStats] = useState<Record<string, string>>({});
 
