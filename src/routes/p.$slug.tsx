@@ -233,6 +233,42 @@ function PublicProfilePage() {
                       <StatCard label="Games Played" value={formatNumber(season.games_played)} />
                     </div>
                   )}
+
+                  {season && showKeeper && (
+                    <div className="mt-8 border-t border-border/60 pt-6">
+                      <h3 className="font-display text-xl text-foreground">Goalkeeping</h3>
+                      <div className="mt-4 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+                        <StatCard label="Goals Against" value={formatNumber(season.goals_conceded)} />
+                        <StatCard
+                          label="Goals Against Avg"
+                          value={
+                            goalsAgainstAverage(season.goals_conceded, season.games_played) === null
+                              ? "—"
+                              : formatNumber(
+                                  goalsAgainstAverage(season.goals_conceded, season.games_played),
+                                  2,
+                                )
+                          }
+                        />
+                        <StatCard label="Shots Faced" value={formatNumber(season.shots_faced)} />
+                        <StatCard label="Saves" value={formatNumber(season.saves)} />
+                        <StatCard
+                          label="Save %"
+                          value={
+                            savePercentage(season.saves, season.shots_faced, season.goals_conceded) === null
+                              ? "—"
+                              : `${formatNumber(savePercentage(season.saves, season.shots_faced, season.goals_conceded), 1)}%`
+                          }
+                        />
+                        <StatCard label="Clean Sheets" value={formatNumber(season.clean_sheets)} />
+                        <StatCard label="PKs Faced" value={formatNumber(season.pk_faced)} />
+                        <StatCard label="PKs Saved" value={formatNumber(season.pk_saves)} />
+                        <StatCard label="High Claims" value={formatNumber(season.high_claims)} />
+                        <StatCard label="Punches" value={formatNumber(season.punches)} />
+                        <StatCard label="Catches" value={formatNumber(season.catches)} />
+                      </div>
+                    </div>
+                  )}
                 </div>
 
                 <HighlightsReel highlights={highlights} mode="public" />
