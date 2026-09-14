@@ -7,6 +7,9 @@ import { toast } from "sonner";
 import { saveSeasonStats } from "@/lib/season-stats.functions";
 import {
   crossFieldErrors,
+  goalsAgainstAverage,
+  KEEPER_FIELD_KEYS,
+  savePercentage,
   STAT_FIELD_KEYS,
   STAT_RULES,
   validateField,
@@ -24,8 +27,12 @@ const GROUPS: { title: string; fields: FieldKey[] }[] = [
     fields: ["goals", "assists", "shots", "shots_on_goal", "penalty_kicks", "headers_won"],
   },
   {
-    title: "Defending & goalkeeping",
-    fields: ["tackles", "interceptions", "saves", "pk_saves", "clean_sheets", "fouls"],
+    title: "Defending",
+    fields: ["tackles", "interceptions", "fouls"],
+  },
+  {
+    title: "Goalkeeping",
+    fields: [...KEEPER_FIELD_KEYS],
   },
   {
     title: "Playing time & discipline",
