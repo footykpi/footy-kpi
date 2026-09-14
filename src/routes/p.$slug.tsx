@@ -13,6 +13,11 @@ import {
 } from "lucide-react";
 
 import { getPublicProfile, type PublicProfile } from "@/lib/profile.functions";
+import {
+  goalsAgainstAverage,
+  isGoalkeeper,
+  savePercentage,
+} from "@/lib/season-stats-validation";
 import { GameLog } from "@/components/GameLog";
 import { HighlightsReel } from "@/components/HighlightsReel";
 import playerPhoto from "@/assets/player-photo.jpg";
