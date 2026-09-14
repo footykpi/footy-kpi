@@ -211,6 +211,39 @@ export function GameEntryForm({ position }: { position?: string | null }) {
             </div>
           </div>
 
+          <div>
+            <div className="flex flex-wrap items-center justify-between gap-2">
+              <p className="text-sm font-semibold text-foreground">Goalkeeping</p>
+              {!keeper && (
+                <button
+                  type="button"
+                  onClick={() => setShowKeeper((prev) => !prev)}
+                  className="text-xs font-semibold text-primary hover:underline"
+                >
+                  {showKeeper ? "Hide keeper stats" : "Add keeper stats"}
+                </button>
+              )}
+            </div>
+            {showKeeper && (
+              <div className="mt-3 grid gap-3 sm:grid-cols-3">
+                {KEEPER_STATS.map((stat) => (
+                  <label key={stat.key} className="text-xs font-medium text-muted-foreground">
+                    {stat.label}
+                    <input
+                      type="number"
+                      min={0}
+                      value={stats[stat.key] ?? ""}
+                      onChange={(event) =>
+                        setStats((prev) => ({ ...prev, [stat.key]: event.target.value }))
+                      }
+                      className={inputClass}
+                    />
+                  </label>
+                ))}
+              </div>
+            )}
+          </div>
+
           <div className="grid gap-4 sm:grid-cols-2">
             <label className="text-sm font-medium text-foreground">
               Performance rating (1–5)
