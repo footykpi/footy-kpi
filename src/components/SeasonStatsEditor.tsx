@@ -233,6 +233,18 @@ export function SeasonStatsEditor({
                 );
               })}
             </div>
+            {group.title === "Goalkeeping" ? (
+              <p className="mt-1 text-xs text-muted-foreground">
+                Calculated for you — GAA:{" "}
+                <span className="font-semibold text-foreground">
+                  {keeperDerived.gaa === null ? "—" : keeperDerived.gaa.toFixed(2)}
+                </span>{" "}
+                · Save %:{" "}
+                <span className="font-semibold text-foreground">
+                  {keeperDerived.savePct === null ? "—" : `${keeperDerived.savePct.toFixed(1)}%`}
+                </span>
+              </p>
+            ) : null}
           </fieldset>
         ))}
       </div>
