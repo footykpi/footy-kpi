@@ -49,6 +49,9 @@ export function TradingCard({ profile, season, games, photoUrl }: TradingCardPro
   const cardRef = useRef<HTMLDivElement>(null);
   const [busy, setBusy] = useState(false);
   const fullName = `${profile.first_name} ${profile.last_name}`;
+  const keeper = isGoalkeeper(profile.position);
+  const gaa = goalsAgainstAverage(season?.goals_conceded, season?.games_played);
+  const savePct = savePercentage(season?.saves, season?.shots_faced, season?.goals_conceded);
   const shareUrl =
     typeof window !== "undefined" ? `${window.location.origin}/?slug=${profile.slug}` : "";
   const shareText = `${fullName} — ${profile.position ?? "Soccer"} · ${profile.team} · Class of ${profile.graduation_year ?? ""}`.trim();
