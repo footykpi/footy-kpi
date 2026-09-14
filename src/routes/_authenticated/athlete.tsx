@@ -434,7 +434,7 @@ function AthleteDashboard() {
 
             <ProgressCharts games={games} />
 
-            <GameEntryForm />
+            <GameEntryForm position={profile.position} />
 
             <GameLog games={games} />
 
