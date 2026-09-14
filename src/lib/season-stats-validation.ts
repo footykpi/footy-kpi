@@ -140,6 +140,18 @@ export function crossFieldErrors(values: StatValues): Partial<Record<StatFieldKe
       errors.mvp_awards = "MVP awards can't exceed games played.";
     }
   }
+  // Goalkeeping consistency
+  if (values.shots_faced !== null) {
+    if (values.saves !== null && values.saves > values.shots_faced) {
+      errors.saves = "Saves can't exceed shots faced.";
+    }
+    if (values.goals_conceded !== null && values.goals_conceded > values.shots_faced) {
+      errors.goals_conceded = "Goals conceded can't exceed shots faced.";
+    }
+  }
+  if (values.pk_faced !== null && values.pk_saves !== null && values.pk_saves > values.pk_faced) {
+    errors.pk_saves = "PK saves can't exceed PKs faced.";
+  }
   return errors;
 }
 
@@ -208,6 +220,12 @@ export const seasonStatsSchema = z
     interceptions: optionalCount("interceptions"),
     headers_won: optionalCount("headers_won"),
     mvp_awards: optionalCount("mvp_awards"),
+    goals_conceded: optionalCount("goals_conceded"),
+    shots_faced: optionalCount("shots_faced"),
+    pk_faced: optionalCount("pk_faced"),
+    high_claims: optionalCount("high_claims"),
+    punches: optionalCount("punches"),
+    catches: optionalCount("catches"),
     pass_completion: z
       .number()
       .min(0)
