@@ -58,6 +58,12 @@ export interface SeasonStats {
   headers_won: number | null;
   pass_completion: number | null;
   mvp_awards: number | null;
+  goals_conceded: number | null;
+  shots_faced: number | null;
+  pk_faced: number | null;
+  high_claims: number | null;
+  punches: number | null;
+  catches: number | null;
 }
 
 

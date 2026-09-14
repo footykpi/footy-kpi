@@ -14,6 +14,11 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import type { Game, Profile, SeasonStats } from "@/lib/profile.functions";
+import {
+  goalsAgainstAverage,
+  isGoalkeeper,
+  savePercentage,
+} from "@/lib/season-stats-validation";
 
 interface TradingCardProps {
   profile: Profile;
@@ -44,6 +49,9 @@ export function TradingCard({ profile, season, games, photoUrl }: TradingCardPro
   const cardRef = useRef<HTMLDivElement>(null);
   const [busy, setBusy] = useState(false);
   const fullName = `${profile.first_name} ${profile.last_name}`;
+  const keeper = isGoalkeeper(profile.position);
+  const gaa = goalsAgainstAverage(season?.goals_conceded, season?.games_played);
+  const savePct = savePercentage(season?.saves, season?.shots_faced, season?.goals_conceded);
   const shareUrl =
     typeof window !== "undefined" ? `${window.location.origin}/?slug=${profile.slug}` : "";
   const shareText = `${fullName} — ${profile.position ?? "Soccer"} · ${profile.team} · Class of ${profile.graduation_year ?? ""}`.trim();
@@ -348,12 +356,20 @@ export function TradingCard({ profile, season, games, photoUrl }: TradingCardPro
                   className="grid grid-cols-4 overflow-hidden rounded-md"
                   style={{ border: "1px solid rgba(255,255,255,0.14)" }}
                 >
-                  {[
-                    { label: "GP", value: num(season?.games_played) },
-                    { label: "G", value: num(season?.goals) },
-                    { label: "A", value: num(season?.assists) },
-                    { label: "MVP", value: num(season?.mvp_awards) },
-                  ].map((s, i) => (
+                  {(keeper
+                    ? [
+                        { label: "GP", value: num(season?.games_played) },
+                        { label: "SV", value: num(season?.saves) },
+                        { label: "GA", value: num(season?.goals_conceded) },
+                        { label: "CS", value: num(season?.clean_sheets) },
+                      ]
+                    : [
+                        { label: "GP", value: num(season?.games_played) },
+                        { label: "G", value: num(season?.goals) },
+                        { label: "A", value: num(season?.assists) },
+                        { label: "MVP", value: num(season?.mvp_awards) },
+                      ]
+                  ).map((s, i) => (
                     <div
                       key={s.label}
                       className="py-1.5 text-center"
@@ -382,11 +398,24 @@ export function TradingCard({ profile, season, games, photoUrl }: TradingCardPro
                   className="mt-1 grid grid-cols-3 overflow-hidden rounded-md text-center"
                   style={{ border: "1px solid rgba(255,255,255,0.14)" }}
                 >
-                  {[
-                    { label: "Record", value: record(games) },
-                    { label: "Min", value: num(season?.minutes_played) },
-                    { label: "Pass %", value: num(season?.pass_completion) },
-                  ].map((s, i) => (
+                  {(keeper
+                    ? [
+                        { label: "Record", value: record(games) },
+                        {
+                          label: "GAA",
+                          value: gaa === null ? "—" : gaa.toFixed(2),
+                        },
+                        {
+                          label: "Save %",
+                          value: savePct === null ? "—" : `${savePct.toFixed(1)}%`,
+                        },
+                      ]
+                    : [
+                        { label: "Record", value: record(games) },
+                        { label: "Min", value: num(season?.minutes_played) },
+                        { label: "Pass %", value: num(season?.pass_completion) },
+                      ]
+                  ).map((s, i) => (
                     <div
                       key={s.label}
                       className="py-1"

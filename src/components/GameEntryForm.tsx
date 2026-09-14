@@ -5,6 +5,7 @@ import { Loader2, Plus } from "lucide-react";
 import { toast } from "sonner";
 
 import { addGame } from "@/lib/games.functions";
+import { isGoalkeeper } from "@/lib/season-stats-validation";
 
 const GAME_STATS = [
   { key: "goals", label: "Goals" },
@@ -14,9 +15,20 @@ const GAME_STATS = [
   { key: "minutes_played", label: "Minutes" },
   { key: "tackles", label: "Tackles" },
   { key: "interceptions", label: "Interceptions" },
-  { key: "saves", label: "Saves" },
   { key: "yellow_cards", label: "Yellow cards" },
   { key: "red_cards", label: "Red cards" },
+] as const;
+
+const KEEPER_STATS = [
+  { key: "goals_conceded", label: "Goals against" },
+  { key: "shots_faced", label: "Shots faced" },
+  { key: "saves", label: "Saves" },
+  { key: "clean_sheets", label: "Clean sheet (1/0)" },
+  { key: "pk_faced", label: "PKs faced" },
+  { key: "pk_saves", label: "PKs saved" },
+  { key: "high_claims", label: "High claims" },
+  { key: "punches", label: "Punches" },
+  { key: "catches", label: "Catches" },
 ] as const;
 
 const MOODS = ["confident", "proud", "focused", "frustrated", "tired", "nervous"] as const;
@@ -47,10 +59,12 @@ function toNumber(value: string): number | null {
   return Number.isFinite(parsed) ? parsed : null;
 }
 
-export function GameEntryForm() {
+export function GameEntryForm({ position }: { position?: string | null }) {
+  const keeper = isGoalkeeper(position);
   const queryClient = useQueryClient();
   const submitGame = useServerFn(addGame);
   const [open, setOpen] = useState(false);
+  const [showKeeper, setShowKeeper] = useState(keeper);
   const [form, setForm] = useState({ ...EMPTY });
   const [stats, setStats] = useState<Record<string, string>>({});
 
@@ -195,6 +209,39 @@ export function GameEntryForm() {
                 </label>
               ))}
             </div>
+          </div>
+
+          <div>
+            <div className="flex flex-wrap items-center justify-between gap-2">
+              <p className="text-sm font-semibold text-foreground">Goalkeeping</p>
+              {!keeper && (
+                <button
+                  type="button"
+                  onClick={() => setShowKeeper((prev) => !prev)}
+                  className="text-xs font-semibold text-primary hover:underline"
+                >
+                  {showKeeper ? "Hide keeper stats" : "Add keeper stats"}
+                </button>
+              )}
+            </div>
+            {showKeeper && (
+              <div className="mt-3 grid gap-3 sm:grid-cols-3">
+                {KEEPER_STATS.map((stat) => (
+                  <label key={stat.key} className="text-xs font-medium text-muted-foreground">
+                    {stat.label}
+                    <input
+                      type="number"
+                      min={0}
+                      value={stats[stat.key] ?? ""}
+                      onChange={(event) =>
+                        setStats((prev) => ({ ...prev, [stat.key]: event.target.value }))
+                      }
+                      className={inputClass}
+                    />
+                  </label>
+                ))}
+              </div>
+            )}
           </div>
 
           <div className="grid gap-4 sm:grid-cols-2">

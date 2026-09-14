@@ -37,6 +37,12 @@ const STAT_LABELS: Record<string, string> = {
   headers_won: "Headers",
   penalty_kicks: "PK",
   pk_saves: "PK Saves",
+  goals_conceded: "Goals Against",
+  shots_faced: "Shots Faced",
+  pk_faced: "PKs Faced",
+  high_claims: "High Claims",
+  punches: "Punches",
+  catches: "Catches",
 };
 
 const MOOD_EMOJI: Record<string, string> = {

@@ -20,7 +20,13 @@ export type StatFieldKey =
   | "interceptions"
   | "headers_won"
   | "mvp_awards"
-  | "pass_completion";
+  | "pass_completion"
+  | "goals_conceded"
+  | "shots_faced"
+  | "pk_faced"
+  | "high_claims"
+  | "punches"
+  | "catches";
 
 export type StatFieldRule = {
   label: string;
@@ -51,7 +57,56 @@ export const STAT_RULES: Record<StatFieldKey, StatFieldRule> = {
   headers_won: { label: "Headers won", min: 0, max: 2000, decimals: 0 },
   mvp_awards: { label: "MVP awards", min: 0, max: 200, decimals: 0 },
   pass_completion: { label: "Pass completion", min: 0, max: 100, decimals: 1, suffix: "%" },
+  goals_conceded: { label: "Goals conceded", min: 0, max: 1000, decimals: 0 },
+  shots_faced: { label: "Shots faced", min: 0, max: 5000, decimals: 0 },
+  pk_faced: { label: "PKs faced", min: 0, max: 200, decimals: 0 },
+  high_claims: { label: "High claims", min: 0, max: 2000, decimals: 0 },
+  punches: { label: "Punches", min: 0, max: 2000, decimals: 0 },
+  catches: { label: "Catches", min: 0, max: 2000, decimals: 0 },
 };
+
+/** Keeper-only fields, shown under the Goalkeeping section. */
+export const KEEPER_FIELD_KEYS = [
+  "goals_conceded",
+  "shots_faced",
+  "saves",
+  "clean_sheets",
+  "pk_faced",
+  "pk_saves",
+  "high_claims",
+  "punches",
+  "catches",
+] as const satisfies readonly StatFieldKey[];
+
+/** Goals against average — goals conceded per game played. */
+export function goalsAgainstAverage(
+  goalsConceded: number | null | undefined,
+  gamesPlayed: number | null | undefined,
+): number | null {
+  if (goalsConceded === null || goalsConceded === undefined) return null;
+  if (!gamesPlayed) return null;
+  return Math.round((goalsConceded / gamesPlayed) * 100) / 100;
+}
+
+/** Save percentage — saves out of shots faced (falls back to saves + goals conceded). */
+export function savePercentage(
+  saves: number | null | undefined,
+  shotsFaced: number | null | undefined,
+  goalsConceded?: number | null | undefined,
+): number | null {
+  if (saves === null || saves === undefined) return null;
+  const faced =
+    shotsFaced ??
+    (goalsConceded === null || goalsConceded === undefined ? null : saves + goalsConceded);
+  if (!faced) return null;
+  return Math.round((saves / faced) * 1000) / 10;
+}
+
+/** True when the athlete's position is a goalkeeper variant. */
+export function isGoalkeeper(position: string | null | undefined): boolean {
+  if (!position) return false;
+  return /goal\s*keeper|goalie|\bgk\b|\bkeeper\b/i.test(position.trim());
+}
 
 export const STAT_FIELD_KEYS = Object.keys(STAT_RULES) as StatFieldKey[];
 
@@ -84,6 +139,18 @@ export function crossFieldErrors(values: StatValues): Partial<Record<StatFieldKe
     if (values.mvp_awards !== null && values.mvp_awards > gp) {
       errors.mvp_awards = "MVP awards can't exceed games played.";
     }
+  }
+  // Goalkeeping consistency
+  if (values.shots_faced !== null) {
+    if (values.saves !== null && values.saves > values.shots_faced) {
+      errors.saves = "Saves can't exceed shots faced.";
+    }
+    if (values.goals_conceded !== null && values.goals_conceded > values.shots_faced) {
+      errors.goals_conceded = "Goals conceded can't exceed shots faced.";
+    }
+  }
+  if (values.pk_faced !== null && values.pk_saves !== null && values.pk_saves > values.pk_faced) {
+    errors.pk_saves = "PK saves can't exceed PKs faced.";
   }
   return errors;
 }
@@ -153,6 +220,12 @@ export const seasonStatsSchema = z
     interceptions: optionalCount("interceptions"),
     headers_won: optionalCount("headers_won"),
     mvp_awards: optionalCount("mvp_awards"),
+    goals_conceded: optionalCount("goals_conceded"),
+    shots_faced: optionalCount("shots_faced"),
+    pk_faced: optionalCount("pk_faced"),
+    high_claims: optionalCount("high_claims"),
+    punches: optionalCount("punches"),
+    catches: optionalCount("catches"),
     pass_completion: z
       .number()
       .min(0)

@@ -7,6 +7,9 @@ import { toast } from "sonner";
 import { saveSeasonStats } from "@/lib/season-stats.functions";
 import {
   crossFieldErrors,
+  goalsAgainstAverage,
+  KEEPER_FIELD_KEYS,
+  savePercentage,
   STAT_FIELD_KEYS,
   STAT_RULES,
   validateField,
@@ -24,8 +27,12 @@ const GROUPS: { title: string; fields: FieldKey[] }[] = [
     fields: ["goals", "assists", "shots", "shots_on_goal", "penalty_kicks", "headers_won"],
   },
   {
-    title: "Defending & goalkeeping",
-    fields: ["tackles", "interceptions", "saves", "pk_saves", "clean_sheets", "fouls"],
+    title: "Defending",
+    fields: ["tackles", "interceptions", "fouls"],
+  },
+  {
+    title: "Goalkeeping",
+    fields: [...KEEPER_FIELD_KEYS],
   },
   {
     title: "Playing time & discipline",
@@ -97,6 +104,13 @@ export function SeasonStatsEditor({
   const [submitted, setSubmitted] = useState(false);
 
   const errors = useMemo(() => validateAll(form), [form]);
+  const keeperDerived = useMemo(() => {
+    const values = parsed(form);
+    return {
+      gaa: goalsAgainstAverage(values.goals_conceded, values.games_played),
+      savePct: savePercentage(values.saves, values.shots_faced, values.goals_conceded),
+    };
+  }, [form]);
   const errorCount = Object.keys(errors).length;
   const showError = (key: FieldKey | "season") =>
     (submitted || touched[key]) && errors[key] ? errors[key] : null;
@@ -226,6 +240,18 @@ export function SeasonStatsEditor({
                 );
               })}
             </div>
+            {group.title === "Goalkeeping" ? (
+              <p className="mt-1 text-xs text-muted-foreground">
+                Calculated for you — GAA:{" "}
+                <span className="font-semibold text-foreground">
+                  {keeperDerived.gaa === null ? "—" : keeperDerived.gaa.toFixed(2)}
+                </span>{" "}
+                · Save %:{" "}
+                <span className="font-semibold text-foreground">
+                  {keeperDerived.savePct === null ? "—" : `${keeperDerived.savePct.toFixed(1)}%`}
+                </span>
+              </p>
+            ) : null}
           </fieldset>
         ))}
       </div>

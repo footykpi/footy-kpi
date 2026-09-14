@@ -13,6 +13,11 @@ import {
 } from "lucide-react";
 
 import { getPublicProfile, type PublicProfile } from "@/lib/profile.functions";
+import {
+  goalsAgainstAverage,
+  isGoalkeeper,
+  savePercentage,
+} from "@/lib/season-stats-validation";
 import { GameLog } from "@/components/GameLog";
 import { HighlightsReel } from "@/components/HighlightsReel";
 import playerPhoto from "@/assets/player-photo.jpg";
@@ -88,6 +93,19 @@ function PublicProfilePage() {
     access = { role: "public", linkLabel: null, invalidKey: false, contact: false, gameLog: false, highlights: false },
   } = (data ?? {}) as Partial<PublicProfile>;
   const season = stats.find((s) => s.sport === SPORT);
+  const showKeeper =
+    isGoalkeeper(profile?.position) ||
+    [
+      season?.goals_conceded,
+      season?.shots_faced,
+      season?.saves,
+      season?.clean_sheets,
+      season?.pk_faced,
+      season?.pk_saves,
+      season?.high_claims,
+      season?.punches,
+      season?.catches,
+    ].some((value) => value !== null && value !== undefined);
   const unlocked = access.role !== "public";
   const locked = isPrivate && !unlocked;
 
@@ -226,14 +244,47 @@ function PublicProfilePage() {
                       <StatCard label="Interceptions" value={formatNumber(season.interceptions)} />
                       <StatCard label="Headers Won" value={formatNumber(season.headers_won)} />
                       <StatCard label="Penalty Kicks" value={formatNumber(season.penalty_kicks)} />
-                      <StatCard label="PK Saves" value={formatNumber(season.pk_saves)} />
-                      <StatCard label="Saves" value={formatNumber(season.saves)} />
-                      <StatCard label="Clean Sheets" value={formatNumber(season.clean_sheets)} />
                       <StatCard label="Fouls" value={formatNumber(season.fouls)} />
                       <StatCard label="Yellow Cards" value={formatNumber(season.yellow_cards)} />
                       <StatCard label="Red Cards" value={formatNumber(season.red_cards)} />
                       <StatCard label="MVP Awards" value={formatNumber(season.mvp_awards)} />
                       <StatCard label="Games Played" value={formatNumber(season.games_played)} />
+                    </div>
+                  )}
+
+                  {season && showKeeper && (
+                    <div className="mt-8 border-t border-border/60 pt-6">
+                      <h3 className="font-display text-xl text-foreground">Goalkeeping</h3>
+                      <div className="mt-4 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+                        <StatCard label="Goals Against" value={formatNumber(season.goals_conceded)} />
+                        <StatCard
+                          label="Goals Against Avg"
+                          value={
+                            goalsAgainstAverage(season.goals_conceded, season.games_played) === null
+                              ? "—"
+                              : formatNumber(
+                                  goalsAgainstAverage(season.goals_conceded, season.games_played),
+                                  2,
+                                )
+                          }
+                        />
+                        <StatCard label="Shots Faced" value={formatNumber(season.shots_faced)} />
+                        <StatCard label="Saves" value={formatNumber(season.saves)} />
+                        <StatCard
+                          label="Save %"
+                          value={
+                            savePercentage(season.saves, season.shots_faced, season.goals_conceded) === null
+                              ? "—"
+                              : `${formatNumber(savePercentage(season.saves, season.shots_faced, season.goals_conceded), 1)}%`
+                          }
+                        />
+                        <StatCard label="Clean Sheets" value={formatNumber(season.clean_sheets)} />
+                        <StatCard label="PKs Faced" value={formatNumber(season.pk_faced)} />
+                        <StatCard label="PKs Saved" value={formatNumber(season.pk_saves)} />
+                        <StatCard label="High Claims" value={formatNumber(season.high_claims)} />
+                        <StatCard label="Punches" value={formatNumber(season.punches)} />
+                        <StatCard label="Catches" value={formatNumber(season.catches)} />
+                      </div>
                     </div>
                   )}
                 </div>
