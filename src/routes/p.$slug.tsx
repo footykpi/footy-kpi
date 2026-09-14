@@ -93,6 +93,19 @@ function PublicProfilePage() {
     access = { role: "public", linkLabel: null, invalidKey: false, contact: false, gameLog: false, highlights: false },
   } = (data ?? {}) as Partial<PublicProfile>;
   const season = stats.find((s) => s.sport === SPORT);
+  const showKeeper =
+    isGoalkeeper(profile?.position) ||
+    [
+      season?.goals_conceded,
+      season?.shots_faced,
+      season?.saves,
+      season?.clean_sheets,
+      season?.pk_faced,
+      season?.pk_saves,
+      season?.high_claims,
+      season?.punches,
+      season?.catches,
+    ].some((value) => value !== null && value !== undefined);
   const unlocked = access.role !== "public";
   const locked = isPrivate && !unlocked;
 
