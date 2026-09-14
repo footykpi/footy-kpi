@@ -104,6 +104,13 @@ export function SeasonStatsEditor({
   const [submitted, setSubmitted] = useState(false);
 
   const errors = useMemo(() => validateAll(form), [form]);
+  const keeperDerived = useMemo(() => {
+    const values = parsed(form);
+    return {
+      gaa: goalsAgainstAverage(values.goals_conceded, values.games_played),
+      savePct: savePercentage(values.saves, values.shots_faced, values.goals_conceded),
+    };
+  }, [form]);
   const errorCount = Object.keys(errors).length;
   const showError = (key: FieldKey | "season") =>
     (submitted || touched[key]) && errors[key] ? errors[key] : null;
