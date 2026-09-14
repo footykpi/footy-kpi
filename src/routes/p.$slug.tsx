@@ -226,9 +226,6 @@ function PublicProfilePage() {
                       <StatCard label="Interceptions" value={formatNumber(season.interceptions)} />
                       <StatCard label="Headers Won" value={formatNumber(season.headers_won)} />
                       <StatCard label="Penalty Kicks" value={formatNumber(season.penalty_kicks)} />
-                      <StatCard label="PK Saves" value={formatNumber(season.pk_saves)} />
-                      <StatCard label="Saves" value={formatNumber(season.saves)} />
-                      <StatCard label="Clean Sheets" value={formatNumber(season.clean_sheets)} />
                       <StatCard label="Fouls" value={formatNumber(season.fouls)} />
                       <StatCard label="Yellow Cards" value={formatNumber(season.yellow_cards)} />
                       <StatCard label="Red Cards" value={formatNumber(season.red_cards)} />
