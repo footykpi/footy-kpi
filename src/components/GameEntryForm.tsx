@@ -5,6 +5,7 @@ import { Loader2, Plus } from "lucide-react";
 import { toast } from "sonner";
 
 import { addGame } from "@/lib/games.functions";
+import { isGoalkeeper } from "@/lib/season-stats-validation";
 
 const GAME_STATS = [
   { key: "goals", label: "Goals" },
@@ -14,9 +15,20 @@ const GAME_STATS = [
   { key: "minutes_played", label: "Minutes" },
   { key: "tackles", label: "Tackles" },
   { key: "interceptions", label: "Interceptions" },
-  { key: "saves", label: "Saves" },
   { key: "yellow_cards", label: "Yellow cards" },
   { key: "red_cards", label: "Red cards" },
+] as const;
+
+const KEEPER_STATS = [
+  { key: "goals_conceded", label: "Goals against" },
+  { key: "shots_faced", label: "Shots faced" },
+  { key: "saves", label: "Saves" },
+  { key: "clean_sheets", label: "Clean sheet (1/0)" },
+  { key: "pk_faced", label: "PKs faced" },
+  { key: "pk_saves", label: "PKs saved" },
+  { key: "high_claims", label: "High claims" },
+  { key: "punches", label: "Punches" },
+  { key: "catches", label: "Catches" },
 ] as const;
 
 const MOODS = ["confident", "proud", "focused", "frustrated", "tired", "nervous"] as const;
