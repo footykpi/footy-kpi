@@ -616,7 +616,7 @@ const SECTIONS = [
 function TermsPage() {
   return (
     <div className="flex min-h-screen flex-col bg-background">
-      <header className="border-b border-border/50 bg-surface">
+      <header className="border-b border-border/50 bg-surface pt-safe">
         <div className="mx-auto flex max-w-6xl items-center justify-between px-6 py-4">
           <Link to="/" className="flex items-center gap-3">
             <img
@@ -704,7 +704,7 @@ function TermsPage() {
         </div>
       </main>
 
-      <footer className="border-t border-border/50 bg-surface py-6">
+      <footer className="border-t border-border/50 bg-surface py-6 pb-safe">
         <div className="mx-auto flex max-w-6xl flex-wrap items-center justify-between gap-3 px-6">
           <p className="text-sm text-muted-foreground">&copy; {new Date().getFullYear()} Footy KPI</p>
           <div className="flex items-center gap-4 text-sm text-muted-foreground">
