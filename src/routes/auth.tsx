@@ -245,6 +245,10 @@ function AuthPage() {
 
             <p className="mt-4 text-center text-xs text-muted-foreground">
               By continuing, you agree to our{" "}
+              <Link to="/terms" className="font-medium text-primary hover:underline">
+                Terms of Service
+              </Link>{" "}
+              and{" "}
               <Link to="/privacy" className="font-medium text-primary hover:underline">
                 Privacy Policy
               </Link>
@@ -279,6 +283,9 @@ function AuthPage() {
 
       <footer className="border-t border-border/50 bg-surface py-6">
         <div className="mx-auto flex max-w-md items-center justify-center gap-4 px-6 text-sm text-muted-foreground">
+          <Link to="/terms" className="font-medium text-foreground hover:underline">
+            Terms of Service
+          </Link>
           <Link to="/privacy" className="font-medium text-foreground hover:underline">
             Privacy Policy
           </Link>
