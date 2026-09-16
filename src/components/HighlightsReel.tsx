@@ -320,7 +320,7 @@ export function HighlightsReel({
         <div
           role="dialog"
           aria-modal="true"
-          className="fixed inset-0 z-50 flex items-center justify-center bg-background/90 p-6"
+          className="fixed inset-0 z-50 flex items-center justify-center bg-background/90 p-6 pt-safe pb-safe pl-safe pr-safe"
           onClick={() => setLightbox(null)}
         >
           <div
