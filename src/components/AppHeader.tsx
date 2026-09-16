@@ -23,7 +23,7 @@ export function AppHeader({
   }
 
   return (
-    <header className="border-b border-border/50 bg-surface">
+    <header className="border-b border-border/50 bg-surface pt-safe">
       <div className="mx-auto flex max-w-6xl flex-wrap items-center justify-between gap-3 px-6 py-4">
         <Link to="/" className="flex items-center gap-3">
           <img
