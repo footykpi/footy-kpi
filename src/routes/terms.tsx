@@ -20,326 +20,584 @@ export const Route = createFileRoute("/terms")({
 
 const SECTIONS = [
   {
-    id: "acceptance",
-    title: "1. ACCEPTANCE OF TERMS",
+    id: "about-footy-kpi",
+    title: "1. ABOUT FOOTY KPI",
     content: (
       <>
         <p>
-          By accessing or using the Footy KPI mobile application, website, and related services
-          (collectively, the “Services”), you agree to be bound by these Terms of Service (“Terms”).
-          If you do not agree to these Terms, you may not use the Services.
+          Footy KPI is a sports performance tracking platform designed to help athletes, parents,
+          coaches, and authorized users record, organize, track, and share soccer statistics and
+          athletic achievements.
         </p>
         <p>
-          If you are a parent or legal guardian creating or managing an account for a minor athlete,
-          you agree to these Terms on behalf of yourself and the minor, and you are responsible for
-          the minor’s use of the Services.
+          Footy KPI is a technology platform. Footy KPI does not provide professional coaching,
+          medical advice, recruiting guarantees, scholarship guarantees, or professional scouting
+          services unless expressly stated otherwise.
         </p>
       </>
     ),
   },
   {
-    id: "description",
-    title: "2. DESCRIPTION OF SERVICE",
+    id: "eligibility",
+    title: "2. ELIGIBILITY",
     content: (
       <>
+        <p>You must provide accurate information when creating an account.</p>
         <p>
-          Footy KPI provides tools for youth soccer athletes, parents, guardians, coaches, and
-          recruiters to build, manage, share, and discover digital athletic portfolios. Features
-          include athlete profiles, season statistics, game logs, highlight uploads, coach
-          verification, journal entries, shareable public profiles, and recruiter discovery tools.
+          If you are under the age of 18, you must have the permission and involvement of your
+          parent or legal guardian where required.
         </p>
         <p>
-          We may modify, suspend, or discontinue any part of the Services at any time. We will attempt
-          to provide notice for material changes when reasonably practicable.
+          Users under 13 may only use Footy KPI through an account or process authorized by a parent
+          or legal guardian and subject to applicable children’s privacy laws.
         </p>
+        <p>Parents and legal guardians are responsible for supervising a minor’s use of the Services.</p>
       </>
     ),
   },
   {
-    id: "accounts",
-    title: "3. ACCOUNTS AND ELIGIBILITY",
+    id: "parent-and-guardian-accounts",
+    title: "3. PARENT AND GUARDIAN ACCOUNTS",
     content: (
       <>
         <p>
-          To use many features of the Services, you must create an account and provide accurate,
-          current, and complete information. You are responsible for maintaining the security of
-          your account credentials and for all activity that occurs under your account.
+          A parent or legal guardian may create and manage an account for a minor athlete. By creating
+          an account for a minor, you represent that:
         </p>
         <ul>
           <li>
-            <strong>Age requirements.</strong> Users under 13 may not create an account without
-            verifiable parental consent and involvement, as required by law. Accounts for minors must
-            be created or supervised by a parent or legal guardian.
+            You are the child’s parent or legal guardian, or are otherwise authorized to act on the
+            child’s behalf;
           </li>
+          <li>You have authority to provide any required consent;</li>
+          <li>The information you provide is accurate; and</li>
           <li>
-            <strong>Account types.</strong> Athlete, coach, and recruiter accounts each have different
-            permissions and dashboards. You may not misrepresent your role or create multiple
-            accounts to circumvent restrictions.
-          </li>
-          <li>
-            <strong>Termination.</strong> We may suspend or terminate your account if you violate these
-            Terms, abuse the Services, or create risk or legal exposure for Footy KPI.
+            You understand how the athlete’s information may be displayed based on the profile’s
+            privacy settings.
           </li>
         </ul>
-      </>
-    ),
-  },
-  {
-    id: "user-content",
-    title: "4. USER CONTENT AND CONDUCT",
-    content: (
-      <>
         <p>
-          You retain ownership of the content you upload, including photos, videos, stats, awards,
-          bio information, and journal entries (“User Content”). By uploading User Content, you grant
-          Footy KPI a limited, non-exclusive license to host, display, process, and share that
-          content solely to provide the Services.
-        </p>
-        <p>You agree that you will not upload, share, or promote content that:</p>
-        <ul>
-          <li>Is unlawful, harmful, threatening, abusive, harassing, defamatory, or obscene.</li>
-          <li>Infringes the intellectual property, privacy, or publicity rights of others.</li>
-          <li>Contains personal information about another person without appropriate consent.</li>
-          <li>Misrepresents athletic achievements, awards, or statistics.</li>
-          <li>Contains viruses, malware, or other harmful code.</li>
-          <li>Violates any applicable law or regulation.</li>
-        </ul>
-        <p>
-          Parents and guardians are responsible for reviewing and approving any content uploaded by
-          a minor athlete in their care.
+          Parents and guardians are responsible for reviewing and managing the athlete’s profile and
+          privacy settings.
         </p>
       </>
     ),
   },
   {
     id: "athlete-profiles",
-    title: "5. ATHLETE PROFILES AND MINORS",
+    title: "4. ATHLETE PROFILES",
     content: (
       <>
         <p>
-          Athlete profiles may include personal information such as name, photo, birth year, position,
-          team, height, weight, graduation year, statistics, and achievements. Parents and guardians
-          must carefully review profile visibility settings before allowing any profile information
-          to be made public.
+          Users may create athlete profiles containing information such as statistics, achievements,
+          photographs, videos, team information, and other permitted content.
+        </p>
+        <p>Users are responsible for the accuracy and appropriateness of information they add.</p>
+        <p>You agree not to create a profile for another person without appropriate authorization.</p>
+      </>
+    ),
+  },
+  {
+    id: "public-and-private-profiles",
+    title: "5. PUBLIC AND PRIVATE PROFILES",
+    content: (
+      <>
+        <p>Footy KPI may allow users to designate profiles as public or private.</p>
+        <p>
+          You understand that information intentionally placed in a public profile may be accessible
+          to people outside your immediate team or family.
         </p>
         <p>
-          Footy KPI does not knowingly collect personal information from children under 13 without
-          verifiable parental consent. Parents and guardians may review, edit, or request deletion of
-          a minor’s personal information by contacting us.
+          For minors, we strongly encourage parents and guardians to review public-profile settings
+          carefully.
+        </p>
+        <p>
+          Footy KPI does not guarantee that information shared publicly can be completely removed
+          from the internet after publication.
         </p>
       </>
     ),
   },
   {
-    id: "coach-verification",
-    title: "6. COACH VERIFICATION",
+    id: "user-content",
+    title: "6. USER CONTENT",
     content: (
       <>
         <p>
-          Coaches may be invited by athletes or parents to review and verify certain achievements,
-          awards, certificates, and medals. Verification is provided at the coach’s discretion and
-          does not constitute an endorsement by Footy KPI.
+          “User Content” means information, statistics, photographs, videos, comments, biographies,
+          achievements, or other materials submitted to Footy KPI.
+        </p>
+        <p>You retain ownership of your User Content.</p>
+        <p>
+          By submitting User Content, you grant Footy KPI a limited, non-exclusive, worldwide,
+          royalty-free license to host, store, reproduce, process, display, and transmit that content
+          solely as reasonably necessary to provide, operate, maintain, and improve the Services.
         </p>
         <p>
-          Coaches agree to provide accurate and truthful information when verifying achievements.
-          Misuse of the verification feature, including false verifications or harassment of athletes,
-          may result in account suspension or termination.
+          If you make content public, you authorize Footy KPI to display that content according to
+          your selected privacy settings.
+        </p>
+        <p>
+          You represent that you have the rights and permissions necessary to submit the User
+          Content.
         </p>
       </>
     ),
   },
   {
-    id: "public-profiles",
-    title: "7. PUBLIC AND PRIVATE PROFILES",
+    id: "photographs-and-videos-of-minors",
+    title: "7. PHOTOGRAPHS AND VIDEOS OF MINORS",
     content: (
       <>
         <p>
-          Athletes may choose to keep their portfolio private or make portions of it publicly visible.
-          When a profile or specific content is set to public, it may be discoverable by coaches,
-          recruiters, family members, and other visitors through a shareable link or search features.
+          Users must not upload photographs or videos of another person, including another minor,
+          without appropriate permission or authorization.
         </p>
         <p>
-          You understand that making content public means it may be viewed, shared, or indexed by
-          others outside of Footy KPI. Footy KPI is not responsible for how third parties use or
-          distribute public profile content once it has been shared.
+          Parents and guardians are responsible for determining whether photographs and videos
+          involving their children may be uploaded or shared.
+        </p>
+        <p>
+          Footy KPI may remove content that we reasonably believe violates these Terms, privacy
+          rights, applicable law, or the safety of users.
+        </p>
+      </>
+    ),
+  },
+  {
+    id: "accuracy-of-statistics",
+    title: "8. ACCURACY OF STATISTICS",
+    content: (
+      <>
+        <p>
+          Footy KPI allows users to enter and track sports statistics. Unless specifically identified
+          as verified, statistics are user-submitted and may not have been independently confirmed.
+        </p>
+        <p>
+          A “Verified” statistic means that the applicable verification process has been completed
+          according to Footy KPI’s verification system.
+        </p>
+        <p>
+          Verification does not guarantee that a statistic is objectively correct or that it will be
+          accepted by a league, school, club, college, recruiter, governing body, or other
+          organization.
+        </p>
+        <p>
+          Footy KPI may correct, remove, or investigate statistics that appear fraudulent,
+          inaccurate, manipulated, or improperly verified.
+        </p>
+      </>
+    ),
+  },
+  {
+    id: "verification",
+    title: "9. VERIFICATION",
+    content: (
+      <>
+        <p>
+          Premium or other eligible users may request verification of certain statistics.
+          Verification may require confirmation by a coach, team administrator, league
+          representative, scorekeeper, or other authorized individual.
+        </p>
+        <p>Footy KPI reserves the right to:</p>
+        <ul>
+          <li>Approve verification</li>
+          <li>Reject verification</li>
+          <li>Request additional information</li>
+          <li>Remove verification</li>
+          <li>Suspend verification privileges</li>
+        </ul>
+        <p>
+          Users must not impersonate coaches, team administrators, leagues, or other authorized
+          individuals.
+        </p>
+      </>
+    ),
+  },
+  {
+    id: "prohibited-conduct",
+    title: "10. PROHIBITED CONDUCT",
+    content: (
+      <>
+        <p>You may not:</p>
+        <ul>
+          <li>Provide false information</li>
+          <li>Impersonate another person</li>
+          <li>Create unauthorized profiles</li>
+          <li>Falsify statistics</li>
+          <li>Manipulate verification</li>
+          <li>Upload content you do not have permission to use</li>
+          <li>Upload unlawful, abusive, threatening, or harmful content</li>
+          <li>Harass or target another user</li>
+          <li>Attempt to access another user’s account</li>
+          <li>Attempt to bypass security measures</li>
+          <li>Reverse engineer the Services</li>
+          <li>Copy or reproduce Footy KPI’s software or design without authorization</li>
+          <li>Use the Services to violate applicable laws</li>
+          <li>Use the Services to exploit, harm, or endanger minors</li>
+          <li>Collect personal information about other users without authorization</li>
+          <li>Use automated systems to scrape the Services without permission</li>
+        </ul>
+      </>
+    ),
+  },
+  {
+    id: "subscriptions",
+    title: "11. SUBSCRIPTIONS",
+    content: (
+      <>
+        <p>Footy KPI may offer free and paid subscription plans.</p>
+        <p>
+          Paid plans may provide additional features such as enhanced statistics, verified
+          statistics, advanced analytics, additional storage, recruiting profiles, or other premium
+          functionality.
+        </p>
+        <p>Subscription pricing and features will be disclosed at the time of purchase.</p>
+      </>
+    ),
+  },
+  {
+    id: "automatic-renewal",
+    title: "12. AUTOMATIC RENEWAL",
+    content: (
+      <>
+        <p>
+          Unless otherwise stated, paid subscriptions may automatically renew at the end of each
+          billing period.
+        </p>
+        <p>
+          By purchasing a subscription, you authorize the applicable payment provider or app store
+          to charge the applicable subscription fee.
+        </p>
+        <p>
+          You may cancel your subscription according to the cancellation process provided by Footy
+          KPI or the applicable app store.
+        </p>
+      </>
+    ),
+  },
+  {
+    id: "refunds",
+    title: "13. REFUNDS",
+    content: (
+      <>
+        <p>
+          Payments and refunds may be governed by the policies of the applicable app store or
+          payment processor.
+        </p>
+        <p>
+          Unless otherwise required by law, subscription fees are non-refundable after the applicable
+          billing period begins.
+        </p>
+        <p>
+          Nothing in these Terms limits any mandatory refund rights provided by applicable law.
+        </p>
+      </>
+    ),
+  },
+  {
+    id: "free-features",
+    title: "14. FREE FEATURES",
+    content: (
+      <>
+        <p>Footy KPI may offer certain Services at no cost.</p>
+        <p>
+          We may modify, discontinue, or limit free features at any time, subject to applicable law.
         </p>
       </>
     ),
   },
   {
     id: "intellectual-property",
-    title: "8. INTELLECTUAL PROPERTY",
+    title: "15. INTELLECTUAL PROPERTY",
     content: (
       <>
         <p>
-          Footy KPI and its licensors own all rights, title, and interest in the Services, including
-          software, designs, trademarks, logos, and content provided by Footy KPI (excluding User
-          Content). You may not copy, modify, distribute, sell, or lease any part of the Services
-          without our prior written consent.
+          The Footy KPI Services, including the software, design, trademarks, logos, graphics,
+          interfaces, text, functionality, and other original materials, are owned by or licensed to
+          Footy KPI and are protected by applicable intellectual property laws.
         </p>
         <p>
-          The Footy KPI name, logo, and shield mark are trademarks of Footy KPI. You may not use
-          these marks without our prior written permission.
+          Except as expressly permitted by these Terms, you may not copy, reproduce, modify,
+          distribute, sell, license, reverse engineer, or create derivative works from the Services.
+        </p>
+        <p>
+          “Footy KPI” and associated logos and branding are trademarks or proposed trademarks of
+          Footy KPI or its owner.
         </p>
       </>
     ),
   },
   {
-    id: "prohibited-activities",
-    title: "9. PROHIBITED ACTIVITIES",
+    id: "feedback",
+    title: "16. FEEDBACK",
     content: (
       <>
-        <p>In connection with the Services, you may not:</p>
+        <p>
+          If you submit suggestions, ideas, recommendations, or feedback regarding Footy KPI, you
+          agree that we may use that feedback without compensation or obligation to you, provided
+          that doing so does not disclose your confidential information or violate applicable law.
+        </p>
+      </>
+    ),
+  },
+  {
+    id: "third-party-services",
+    title: "17. THIRD-PARTY SERVICES",
+    content: (
+      <>
+        <p>The Services may integrate with third-party services.</p>
+        <p>
+          Footy KPI is not responsible for third-party services, websites, payment processors,
+          hosting providers, app stores, or other external services.
+        </p>
+        <p>
+          Your use of third-party services may be subject to separate terms and privacy policies.
+        </p>
+      </>
+    ),
+  },
+  {
+    id: "app-store-terms",
+    title: "18. APP STORE TERMS",
+    content: (
+      <>
+        <p>
+          If you download Footy KPI through Apple’s App Store or Google Play, additional terms
+          imposed by the applicable platform may apply.
+        </p>
+        <p>Your use of the application must comply with applicable app-store rules.</p>
+      </>
+    ),
+  },
+  {
+    id: "no-guarantee-of-results",
+    title: "19. NO GUARANTEE OF ATHLETIC OR RECRUITING RESULTS",
+    content: (
+      <>
+        <p>Footy KPI does not guarantee:</p>
         <ul>
-          <li>Attempt to access accounts, data, or systems that you are not authorized to access.</li>
-          <li>Use automated scripts, bots, scrapers, or similar tools to access or collect data.</li>
-          <li>Interfere with or disrupt the integrity or performance of the Services.</li>
-          <li>Circumvent security features, rate limits, or access controls.</li>
-          <li>Use the Services to send spam, unsolicited messages, or phishing attempts.</li>
-          <li>Impersonate another person, athlete, coach, recruiter, or organization.</li>
-          <li>Upload content that violates any third-party rights or applicable law.</li>
+          <li>Athletic improvement</li>
+          <li>Team selection</li>
+          <li>Starting position</li>
+          <li>Tournament selection</li>
+          <li>College recruitment</li>
+          <li>Scholarships</li>
+          <li>Professional opportunities</li>
+          <li>NIL opportunities</li>
+          <li>Scout interest</li>
+          <li>Recruiting success</li>
+        </ul>
+        <p>
+          Statistics and profiles are intended to help athletes organize and present their athletic
+          history.
+        </p>
+      </>
+    ),
+  },
+  {
+    id: "no-medical-advice",
+    title: "20. NO MEDICAL ADVICE",
+    content: (
+      <>
+        <p>Footy KPI is not a medical provider.</p>
+        <p>
+          Information within the Services should not be considered medical advice, diagnosis,
+          treatment, or a substitute for consultation with a qualified healthcare professional.
+        </p>
+      </>
+    ),
+  },
+  {
+    id: "service-availability",
+    title: "21. SERVICE AVAILABILITY",
+    content: (
+      <>
+        <p>
+          We will make reasonable efforts to keep Footy KPI available, but we do not guarantee
+          uninterrupted or error-free operation.
+        </p>
+        <p>The Services may occasionally be unavailable because of:</p>
+        <ul>
+          <li>Maintenance</li>
+          <li>Updates</li>
+          <li>Technical problems</li>
+          <li>Security incidents</li>
+          <li>Third-party service interruptions</li>
+          <li>Internet or telecommunications failures</li>
+          <li>Circumstances outside our reasonable control</li>
         </ul>
       </>
     ),
   },
   {
-    id: "payments",
-    title: "10. PAYMENTS AND SUBSCRIPTIONS",
+    id: "account-suspension-or-termination",
+    title: "22. ACCOUNT SUSPENSION OR TERMINATION",
     content: (
       <>
         <p>
-          Footy KPI may offer paid features, subscriptions, or one-time purchases in the future. Any
-          payment terms, pricing, and billing cycles will be presented to you before you confirm a
-          purchase. All payments are processed by third-party payment processors.
+          We may suspend or terminate an account if we reasonably believe that the user:
         </p>
-        <p>
-          Unless otherwise stated, fees are non-refundable except where required by applicable law.
-          You are responsible for any taxes associated with your purchase.
-        </p>
+        <ul>
+          <li>Violated these Terms</li>
+          <li>Violated applicable law</li>
+          <li>Provided fraudulent information</li>
+          <li>Manipulated statistics or verification</li>
+          <li>Created a safety or security risk</li>
+          <li>Misused the Services</li>
+          <li>Engaged in conduct harmful to another user</li>
+        </ul>
+        <p>Parents or guardians may request deletion of a minor’s account.</p>
       </>
     ),
   },
   {
-    id: "termination",
-    title: "11. TERMINATION",
+    id: "user-safety",
+    title: "23. USER SAFETY",
     content: (
       <>
+        <p>Footy KPI is committed to maintaining a safe environment for youth athletes.</p>
+        <p>Users may not use the Services to:</p>
+        <ul>
+          <li>Harass minors</li>
+          <li>Solicit minors</li>
+          <li>Groom minors</li>
+          <li>Request inappropriate photographs</li>
+          <li>Attempt to obtain a minor’s private information</li>
+          <li>Arrange inappropriate contact with minors</li>
+          <li>Engage in sexually explicit or exploitative conduct</li>
+        </ul>
         <p>
-          You may stop using the Services or delete your account at any time by contacting us at{" "}
-          <a href="mailto:footykpi@gmail.com" className="text-primary hover:underline">
-            footykpi@gmail.com
-          </a>
-          .
-        </p>
-        <p>
-          We may suspend or terminate your access to the Services at any time, with or without
-          notice, for conduct that we believe violates these Terms or is harmful to other users,
-          Footy KPI, or third parties.
-        </p>
-        <p>
-          Upon termination, your right to use the Services immediately ceases. Certain provisions
-          of these Terms, including ownership, disclaimers, limitation of liability, and
-          indemnification, survive termination.
+          We may report suspected illegal activity to appropriate authorities when required or
+          reasonably appropriate.
         </p>
       </>
     ),
   },
   {
     id: "disclaimers",
-    title: "12. DISCLAIMERS",
+    title: "24. DISCLAIMERS",
     content: (
       <>
         <p>
-          THE SERVICES ARE PROVIDED “AS IS” AND “AS AVAILABLE” WITHOUT WARRANTIES OF ANY KIND,
-          EITHER EXPRESS OR IMPLIED. TO THE FULLEST EXTENT PERMITTED BY LAW, FOOTY KPI DISCLAIMS ALL
-          WARRANTIES, INCLUDING IMPLIED WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR
-          PURPOSE, NON-INFRINGEMENT, AND ACCURACY.
+          TO THE MAXIMUM EXTENT PERMITTED BY LAW, THE SERVICES ARE PROVIDED “AS IS” AND “AS
+          AVAILABLE.”
         </p>
         <p>
-          Footy KPI does not guarantee that the Services will be uninterrupted, secure, error-free, or
-          free of viruses or other harmful components. Statistics, ratings, and insights provided
-          through the Services are generated from user-submitted data and are not guaranteed to be
-          accurate or complete.
+          FOOTY KPI DISCLAIMS WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE,
+          NON-INFRINGEMENT, AND ANY WARRANTIES ARISING FROM COURSE OF DEALING OR USAGE OF TRADE,
+          EXCEPT WHERE SUCH DISCLAIMERS ARE PROHIBITED BY LAW.
         </p>
       </>
     ),
   },
   {
     id: "limitation-of-liability",
-    title: "13. LIMITATION OF LIABILITY",
+    title: "25. LIMITATION OF LIABILITY",
     content: (
       <>
         <p>
-          TO THE FULLEST EXTENT PERMITTED BY LAW, FOOTY KPI AND ITS OFFICERS, EMPLOYEES, AGENTS,
-          LICENSORS, AND SERVICE PROVIDERS WILL NOT BE LIABLE FOR ANY INDIRECT, INCIDENTAL,
-          SPECIAL, CONSEQUENTIAL, OR PUNITIVE DAMAGES, INCLUDING LOSS OF PROFITS, DATA, GOODWILL,
-          OR USE, ARISING OUT OF OR RELATED TO YOUR USE OF THE SERVICES.
+          TO THE MAXIMUM EXTENT PERMITTED BY LAW, FOOTY KPI AND ITS OWNERS, OFFICERS, EMPLOYEES,
+          CONTRACTORS, AND SERVICE PROVIDERS WILL NOT BE LIABLE FOR INDIRECT, INCIDENTAL, SPECIAL,
+          CONSEQUENTIAL, EXEMPLARY, OR PUNITIVE DAMAGES ARISING FROM OR RELATED TO YOUR USE OF THE
+          SERVICES.
         </p>
         <p>
-          OUR TOTAL LIABILITY FOR ANY CLAIM ARISING OUT OF OR RELATING TO THESE TERMS OR THE
-          SERVICES WILL NOT EXCEED THE GREATER OF (A) THE AMOUNT YOU PAID TO FOOTY KPI FOR THE
-          SERVICES IN THE TWELVE (12) MONTHS PRECEDING THE CLAIM, OR (B) ONE HUNDRED U.S. DOLLARS
-          (US $100).
+          TO THE MAXIMUM EXTENT PERMITTED BY LAW, FOOTY KPI’S TOTAL LIABILITY ARISING OUT OF OR
+          RELATING TO THE SERVICES WILL NOT EXCEED THE GREATER OF THE AMOUNT YOU PAID TO FOOTY KPI
+          DURING THE TWELVE MONTHS PRECEDING THE EVENT GIVING RISE TO THE CLAIM OR $100.
+        </p>
+        <p>
+          Some jurisdictions do not permit certain limitations, so some provisions may not apply to
+          you.
         </p>
       </>
     ),
   },
   {
     id: "indemnification",
-    title: "14. INDEMNIFICATION",
+    title: "26. INDEMNIFICATION",
     content: (
       <>
         <p>
-          You agree to indemnify, defend, and hold harmless Footy KPI and its officers, employees,
-          agents, licensors, and service providers from any claims, liabilities, damages, losses,
-          and expenses (including reasonable attorneys’ fees) arising out of or relating to your use
-          of the Services, your User Content, your violation of these Terms, or your violation of any
-          third-party rights.
+          To the extent permitted by law, you agree to defend, indemnify, and hold harmless Footy
+          KPI and its owners, officers, employees, contractors, and service providers from claims,
+          damages, liabilities, and expenses arising from:
+        </p>
+        <ul>
+          <li>Your violation of these Terms</li>
+          <li>Your User Content</li>
+          <li>Your violation of another person’s rights</li>
+          <li>Your unauthorized use of the Services</li>
+          <li>Your violation of applicable law</li>
+        </ul>
+      </>
+    ),
+  },
+  {
+    id: "changes-to-these-terms",
+    title: "27. CHANGES TO THESE TERMS",
+    content: (
+      <>
+        <p>We may update these Terms from time to time.</p>
+        <p>
+          If we make material changes, we may provide notice through the Services, by email, or by
+          other reasonable means.
+        </p>
+        <p>
+          Your continued use of the Services after the effective date of updated Terms constitutes
+          acceptance of the revised Terms to the extent permitted by law.
         </p>
       </>
     ),
   },
   {
     id: "governing-law",
-    title: "15. GOVERNING LAW AND DISPUTES",
+    title: "28. GOVERNING LAW",
     content: (
       <>
         <p>
-          These Terms are governed by the laws of the State of Arizona, United States, without
-          regard to its conflict of laws principles. Any dispute arising out of or relating to these
-          Terms or the Services will be resolved exclusively in the state or federal courts located in
-          Maricopa County, Arizona.
+          These Terms will be governed by the laws of the State of Arizona, without regard to its
+          conflict-of-law principles, except where applicable law requires otherwise.
         </p>
         <p>
-          Before filing a claim, you agree to attempt to resolve the dispute informally by contacting
-          Footy KPI at{" "}
-          <a href="mailto:footykpi@gmail.com" className="text-primary hover:underline">
-            footykpi@gmail.com
-          </a>
-          .
+          Any dispute will be handled in the courts having appropriate jurisdiction in Maricopa
+          County, Arizona, unless applicable law requires a different venue.
         </p>
       </>
     ),
   },
   {
-    id: "changes",
-    title: "16. CHANGES TO THESE TERMS",
+    id: "severability",
+    title: "29. SEVERABILITY",
     content: (
       <>
         <p>
-          We may update these Terms from time to time. When we make material changes, we will update
-          the effective date at the top of the page and may notify you through the app or by email.
-          Your continued use of the Services after the updated Terms are posted means you accept the
-          changes.
+          If any provision of these Terms is determined to be invalid or unenforceable, the
+          remaining provisions will remain in effect to the fullest extent permitted by law.
+        </p>
+      </>
+    ),
+  },
+  {
+    id: "entire-agreement",
+    title: "30. ENTIRE AGREEMENT",
+    content: (
+      <>
+        <p>
+          These Terms, together with the Privacy Policy and any additional terms incorporated by
+          reference, constitute the agreement between you and Footy KPI regarding your use of the
+          Services.
         </p>
       </>
     ),
   },
   {
     id: "contact",
-    title: "17. CONTACT US",
+    title: "31. CONTACT",
     content: (
       <>
+        <p>Questions regarding these Terms may be sent to:</p>
         <p>
           <strong>Footy KPI</strong>
           <br />
@@ -408,10 +666,16 @@ function TermsPage() {
                   <strong className="text-foreground">Last Updated:</strong> September 10, 2026
                 </p>
               </div>
-              <p className="mt-5 text-muted-foreground">
+              <p className="mt-5 text-muted-foreground">Welcome to Footy KPI.</p>
+              <p className="mt-3 text-muted-foreground">
                 These Terms of Service (“Terms”) govern your access to and use of the Footy KPI
                 mobile application, website, and related services (collectively, the “Services”).
-                Please read these Terms carefully before using the Services.
+              </p>
+              <p className="mt-3 text-muted-foreground">
+                By creating an account or using the Services, you agree to these Terms.
+              </p>
+              <p className="mt-3 text-muted-foreground">
+                If you do not agree with these Terms, do not use Footy KPI.
               </p>
             </div>
 
@@ -424,6 +688,17 @@ function TermsPage() {
                   </div>
                 </section>
               ))}
+            </div>
+
+            <div className="mt-12 rounded-2xl border border-border bg-card p-6">
+              <h2 className="font-display text-xl text-foreground">IMPORTANT NOTICE</h2>
+              <p className="mt-3 text-muted-foreground">
+                These Terms are a business/legal drafting starting point and are not a substitute for
+                advice from a qualified attorney. Before launch, Footy KPI should have counsel
+                review these Terms together with the actual app functionality, privacy practices,
+                parental-consent workflow, subscription structure, and applicable state and federal
+                children’s privacy requirements.
+              </p>
             </div>
           </article>
         </div>
