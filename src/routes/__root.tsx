@@ -78,7 +78,7 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
   head: () => ({
     meta: [
       { charSet: "utf-8" },
-      { name: "viewport", content: "width=device-width, initial-scale=1" },
+      { name: "viewport", content: "width=device-width, initial-scale=1, viewport-fit=cover" },
       { title: "Footy KPI — Youth Football (Soccer) Portfolios" },
       { name: "description", content: "A digital football (soccer) portfolio for youth players. Every game, stat, and achievement in one shareable profile." },
       { name: "author", content: "Footy KPI" },

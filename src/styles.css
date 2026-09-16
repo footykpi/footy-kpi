@@ -126,6 +126,7 @@
   body {
     background-color: var(--color-background);
     color: var(--color-foreground);
+    min-height: 100dvh;
   }
 
   h1, h2, h3, h4, h5, h6 {
@@ -149,5 +150,39 @@
 
   .glow-indigo {
     box-shadow: 0 0 40px -10px color-mix(in oklab, var(--color-indigo) 40%, transparent);
+  }
+}
+
+@layer utilities {
+  .pt-safe {
+    padding-top: env(safe-area-inset-top, 0px);
+  }
+  .pb-safe {
+    padding-bottom: env(safe-area-inset-bottom, 0px);
+  }
+  .pl-safe {
+    padding-left: env(safe-area-inset-left, 0px);
+  }
+  .pr-safe {
+    padding-right: env(safe-area-inset-right, 0px);
+  }
+  .mt-safe {
+    margin-top: env(safe-area-inset-top, 0px);
+  }
+  .mb-safe {
+    margin-bottom: env(safe-area-inset-bottom, 0px);
+  }
+  .p-safe-modal {
+    max-height: calc(100dvh - env(safe-area-inset-top, 0px) - env(safe-area-inset-bottom, 0px) - 2rem);
+    padding-top: max(1.5rem, env(safe-area-inset-top, 0px));
+    padding-right: max(1.5rem, env(safe-area-inset-right, 0px));
+    padding-bottom: max(1.5rem, env(safe-area-inset-bottom, 0px));
+    padding-left: max(1.5rem, env(safe-area-inset-left, 0px));
+  }
+  .p-safe-overlay {
+    padding-top: max(1.5rem, env(safe-area-inset-top, 0px));
+    padding-right: max(1.5rem, env(safe-area-inset-right, 0px));
+    padding-bottom: max(1.5rem, env(safe-area-inset-bottom, 0px));
+    padding-left: max(1.5rem, env(safe-area-inset-left, 0px));
   }
 }

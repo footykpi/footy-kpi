@@ -57,7 +57,7 @@ function ResetPassword() {
 
   return (
     <div className="flex min-h-screen flex-col bg-background">
-      <header className="border-b border-border/50 bg-surface">
+      <header className="border-b border-border/50 bg-surface pt-safe">
         <div className="mx-auto flex max-w-6xl items-center px-6 py-4">
           <Link to="/" className="flex items-center gap-3">
             <img

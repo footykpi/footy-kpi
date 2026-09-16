@@ -326,7 +326,7 @@ const SECTIONS = [
 function PrivacyPage() {
   return (
     <div className="flex min-h-screen flex-col bg-background">
-      <header className="border-b border-border/50 bg-surface">
+      <header className="border-b border-border/50 bg-surface pt-safe">
         <div className="mx-auto flex max-w-6xl items-center justify-between px-6 py-4">
           <Link to="/" className="flex items-center gap-3">
             <img
@@ -342,7 +342,7 @@ function PrivacyPage() {
       <main className="mx-auto w-full max-w-6xl flex-1 px-6 py-12">
         <div className="grid gap-10 lg:grid-cols-[280px_1fr]">
           {/* Table of contents */}
-          <aside className="lg:sticky lg:top-8 lg:self-start">
+          <aside className="lg:sticky lg:top-[calc(theme(spacing.8)+env(safe-area-inset-top))] lg:self-start">
             <div className="rounded-2xl border border-border bg-card p-5">
               <h2 className="font-display text-lg text-foreground">Contents</h2>
               <nav aria-label="Privacy policy sections" className="mt-4">
@@ -403,7 +403,7 @@ function PrivacyPage() {
         </div>
       </main>
 
-      <footer className="border-t border-border/50 bg-surface py-6">
+      <footer className="border-t border-border/50 bg-surface py-6 pb-safe">
         <div className="mx-auto flex max-w-6xl flex-wrap items-center justify-between gap-3 px-6">
           <p className="text-sm text-muted-foreground">
             &copy; {new Date().getFullYear()} Footy KPI

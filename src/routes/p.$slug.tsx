@@ -119,7 +119,7 @@ function PublicProfilePage() {
 
   return (
     <div className="min-h-screen bg-background">
-      <header className="border-b border-border/50 bg-surface">
+      <header className="border-b border-border/50 bg-surface pt-safe">
         <div className="mx-auto flex max-w-6xl items-center justify-between px-6 py-4">
           <a href="/" className="flex items-center gap-3">
             <img src={footyKpiLogo.url} alt="Footy KPI shield" className="h-10 w-10 rounded-lg object-cover" />
@@ -131,7 +131,7 @@ function PublicProfilePage() {
       <main className="mx-auto max-w-6xl px-6 py-10">
         <section className="grid gap-8 lg:grid-cols-12">
           <div className="lg:col-span-4">
-            <div className="sticky top-6 overflow-hidden rounded-2xl border border-border bg-card glow-indigo">
+            <div className="sticky top-[calc(theme(spacing.6)+env(safe-area-inset-top))] overflow-hidden rounded-2xl border border-border bg-card glow-indigo">
               <div className="aspect-square">
                 <img
                   src={profile.photo_url ?? playerPhoto}
@@ -298,7 +298,7 @@ function PublicProfilePage() {
         </section>
       </main>
 
-      <footer className="border-t border-border/50 bg-surface py-8">
+      <footer className="border-t border-border/50 bg-surface py-8 pb-safe">
         <div className="mx-auto flex max-w-6xl items-center justify-between px-6">
           <div className="flex items-center gap-3">
             <img src={footyKpiLogo.url} alt="" className="h-8 w-8 rounded-lg object-cover" />
