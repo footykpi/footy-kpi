@@ -366,7 +366,7 @@ const SidebarFooter = React.forwardRef<HTMLDivElement, React.ComponentProps<"div
       <div
         ref={ref}
         data-sidebar="footer"
-        className={cn("flex flex-col gap-2 p-2 pt-safe", className)}
+        className={cn("flex flex-col gap-2 p-2 pb-safe", className)}
         {...props}
       />
     );
