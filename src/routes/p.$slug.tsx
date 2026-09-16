@@ -131,7 +131,7 @@ function PublicProfilePage() {
       <main className="mx-auto max-w-6xl px-6 py-10">
         <section className="grid gap-8 lg:grid-cols-12">
           <div className="lg:col-span-4">
-            <div className="sticky top-6 overflow-hidden rounded-2xl border border-border bg-card glow-indigo">
+            <div className="sticky top-[calc(theme(spacing.6)+env(safe-area-inset-top))] overflow-hidden rounded-2xl border border-border bg-card glow-indigo">
               <div className="aspect-square">
                 <img
                   src={profile.photo_url ?? playerPhoto}
