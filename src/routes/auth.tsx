@@ -243,6 +243,14 @@ function AuthPage() {
               {mode === "signup" ? "Create account" : "Log in"}
             </button>
 
+            <p className="mt-4 text-center text-xs text-muted-foreground">
+              By continuing, you agree to our{" "}
+              <Link to="/privacy" className="font-medium text-primary hover:underline">
+                Privacy Policy
+              </Link>
+              .
+            </p>
+
             <div className="mt-5 flex flex-wrap items-center justify-between gap-3 text-sm">
               <button
                 type="button"
@@ -268,6 +276,14 @@ function AuthPage() {
           </form>
         )}
       </main>
+
+      <footer className="border-t border-border/50 bg-surface py-6">
+        <div className="mx-auto flex max-w-md items-center justify-center gap-4 px-6 text-sm text-muted-foreground">
+          <Link to="/privacy" className="font-medium text-foreground hover:underline">
+            Privacy Policy
+          </Link>
+        </div>
+      </footer>
     </div>
   );
 }

@@ -153,9 +153,12 @@ function Landing() {
             <img src={footyKpiLogo.url} alt="" className="h-8 w-8 rounded-lg object-cover" />
             <span className="font-display text-lg tracking-wide text-foreground">FOOTY KPI</span>
           </div>
-          <p className="text-sm text-muted-foreground">
-            Built for players, families, coaches, and recruiters.
-          </p>
+          <div className="flex flex-wrap items-center gap-4 text-sm text-muted-foreground">
+            <span>Built for players, families, coaches, and recruiters.</span>
+            <Link to="/privacy" className="font-medium text-foreground hover:underline">
+              Privacy Policy
+            </Link>
+          </div>
         </div>
       </footer>
     </div>
