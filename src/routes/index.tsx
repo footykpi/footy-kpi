@@ -34,7 +34,7 @@ const FEATURES = [
   {
     icon: ShieldCheck,
     title: "Coach-verified proof",
-    body: "Invite your coach to review awards and certificates so they carry a Verified badge.",
+    body: "Invite your coach to review your stats and awards so they carry a Verified badge.",
   },
   {
     icon: Share2,
@@ -52,7 +52,7 @@ const ROLES = [
   {
     icon: Telescope,
     title: "Coaches",
-    body: "Review the athletes who invite you and approve their proof of awards.",
+    body: "Review the athletes who invite you and approve their proof of stats and awards.",
   },
   {
     icon: UserSearch,
