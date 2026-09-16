@@ -3,6 +3,7 @@
 ## In progress
 
 ## Completed
+- [x] Add iOS safe-area spacing for status bars, notches, Dynamic Island, overlays, and bottom panels.
 - [x] Publish again so the new accounts and dashboards go live.
 - [x] Connect custom domain footykpi.com (active; www redirects to footykpi.com).
 - [x] Add sign up / log in with athlete, coach, and recruiter dashboards.
