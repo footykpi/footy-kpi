@@ -446,8 +446,8 @@ function AthleteDashboard() {
                 Your coaches
               </h2>
               <p className="mt-2 text-sm text-muted-foreground">
-                Invite a coach by email. Once they accept, they can review your stats and awards
-                and approve the proof you submit.
+                Invite a coach by email. Once they accept, they can review your portfolio and
+                approve your stats and awards/certificates.
               </p>
               <div className="mt-4 flex flex-col gap-3 sm:flex-row">
                 <input
