@@ -2,7 +2,7 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import footyKpiLogo from "@/assets/footy-kpi-logo.png.asset.json";
 
 const DESCRIPTION =
-  "Footy KPI privacy policy: what we collect, how we use it, how sharing and visibility work, and how to request data removal.";
+  "Official Footy KPI Privacy Policy: how we collect, use, disclose, store, and protect your information.";
 
 export const Route = createFileRoute("/privacy")({
   head: () => ({
@@ -18,11 +18,316 @@ export const Route = createFileRoute("/privacy")({
   component: PrivacyPage,
 });
 
+const SECTIONS = [
+  {
+    id: "who-may-use",
+    title: "1. WHO MAY USE FOOTY KPI",
+    content: (
+      <>
+        <p>
+          Footy KPI is designed for youth athletes, parents, guardians, coaches, and authorized
+          users. Users under 13 require parental involvement and verifiable consent where required
+          by law. Parents and legal guardians may review, correct, or request deletion of their
+          child&apos;s personal information at any time.
+        </p>
+      </>
+    ),
+  },
+  {
+    id: "information-we-collect",
+    title: "2. INFORMATION WE COLLECT",
+    content: (
+      <>
+        <p>We collect the following types of information through the Services:</p>
+        <ul>
+          <li>
+            <strong>A. Account Information.</strong> Name, email address, username, password and
+            authentication information, account type, parent or guardian information, date of
+            birth/age range, and location.
+          </li>
+          <li>
+            <strong>B. Athlete Profile Information.</strong> Player name, photo, birth year, position,
+            jersey number, team or club, dominant foot, height, achievements and awards, bio, and
+            graduation year.
+          </li>
+          <li>
+            <strong>C. Sports Performance Information.</strong> Goals, assists, shots, shots on
+            goal, minutes played, cards, fouls, saves, games played, match results, performance
+            ratings, reflections, and coach notes.
+          </li>
+          <li>
+            <strong>D. Photos and Videos.</strong> Photos, highlight videos, and other media you
+            choose to upload. If you are a parent or guardian of a minor, you are responsible for
+            any content your child uploads.
+          </li>
+          <li>
+            <strong>E. Verification Information.</strong> Coach verification details and history
+            related to awards, certificates, and achievements.
+          </li>
+          <li>
+            <strong>F. Payment Information.</strong> Any payment information is processed by
+            third-party payment processors and is not stored directly by Footy KPI.
+          </li>
+          <li>
+            <strong>G. Device and Technical Information.</strong> Device type, operating system, app
+            version, IP address, browser or app logs, and other technical data used to maintain and
+            secure the Services.
+          </li>
+        </ul>
+      </>
+    ),
+  },
+  {
+    id: "how-we-use-information",
+    title: "3. HOW WE USE INFORMATION",
+    content: (
+      <>
+        <p>We use the information we collect to:</p>
+        <ul>
+          <li>Create, manage, and secure your account.</li>
+          <li>Build and display athlete profiles and portfolio showcases.</li>
+          <li>Calculate, graph, and present sports performance statistics.</li>
+          <li>Enable sharing with coaches, recruiters, family, and other invited users.</li>
+          <li>Provide customer support and respond to inquiries.</li>
+          <li>Maintain the integrity, security, and performance of the Services.</li>
+        </ul>
+      </>
+    ),
+  },
+  {
+    id: "public-and-private-profiles",
+    title: "4. PUBLIC AND PRIVATE PROFILES",
+    content: (
+      <>
+        <p>
+          Athletes may choose to keep their portfolio private or make portions of it publicly
+          visible. Private profiles are visible only to the athlete, their parent or guardian, and
+          users they specifically invite. Public profiles may be discoverable by coaches,
+          recruiters, and other visitors through a shareable link.
+        </p>
+        <p>
+          We encourage parents and guardians to carefully review privacy and sharing settings for
+          minors before making any profile information public.
+        </p>
+      </>
+    ),
+  },
+  {
+    id: "childrens-privacy",
+    title: "5. CHILDREN’S PRIVACY",
+    content: (
+      <>
+        <p>
+          Footy KPI complies with the Children&apos;s Online Privacy Protection Act (COPPA) and
+          similar laws. We do not knowingly collect personal information from children under 13
+          without verifiable parental consent. Parents and legal guardians have the right to review,
+          delete, and withdraw consent for the collection of their child&apos;s personal
+          information at any time by contacting us.
+        </p>
+      </>
+    ),
+  },
+  {
+    id: "information-sharing",
+    title: "6. INFORMATION SHARING",
+    content: (
+      <>
+        <p>We may share information in the following circumstances:</p>
+        <ul>
+          <li>
+            <strong>Service providers.</strong> With trusted vendors who help us operate, host, and
+            secure the Services under strict confidentiality obligations.
+          </li>
+          <li>
+            <strong>Public profiles.</strong> Information you choose to make public may be visible to
+            visitors, coaches, and recruiters.
+          </li>
+          <li>
+            <strong>Legal compliance.</strong> When required by law, regulation, legal process, or to
+            protect the safety, rights, or property of users and others.
+          </li>
+          <li>
+            <strong>Business transfers.</strong> In connection with a merger, acquisition, or sale
+            of assets, subject to continued privacy protections.
+          </li>
+        </ul>
+      </>
+    ),
+  },
+  {
+    id: "we-do-not-sell",
+    title: "7. WE DO NOT SELL CHILDREN’S PERSONAL INFORMATION",
+    content: (
+      <>
+        <p>
+          Footy KPI does not sell the personal information of children or any user. We do not use
+          children&apos;s personal information for behavioral advertising or marketing purposes.
+        </p>
+      </>
+    ),
+  },
+  {
+    id: "advertising",
+    title: "8. ADVERTISING",
+    content: (
+      <>
+        <p>
+          Footy KPI does not currently display third-party behavioral advertising. If Footy KPI
+          introduces advertising in the future, this Privacy Policy will be updated prior to launch.
+        </p>
+      </>
+    ),
+  },
+  {
+    id: "data-security",
+    title: "9. DATA SECURITY",
+    content: (
+      <>
+        <p>
+          We use reasonable administrative, technical, and physical safeguards to protect your
+          information. This includes encrypted cloud storage, private storage buckets with signed
+          URLs, authenticated access controls, and role-based permissions. No security system is
+          completely impenetrable, and we cannot guarantee absolute security.
+        </p>
+      </>
+    ),
+  },
+  {
+    id: "data-retention",
+    title: "10. DATA RETENTION",
+    content: (
+      <>
+        <p>
+          We retain personal information for as long as necessary to provide the Services, fulfill
+          the purposes described in this Privacy Policy, comply with legal obligations, resolve
+          disputes, and enforce our agreements.
+        </p>
+      </>
+    ),
+  },
+  {
+    id: "deleting-an-account",
+    title: "11. DELETING AN ACCOUNT",
+    content: (
+      <>
+        <p>
+          To delete your account or request removal of personal information, contact us at{" "}
+          <a href="mailto:footykpi@gmail.com" className="text-primary hover:underline">
+            footykpi@gmail.com
+          </a>{" "}
+          or{" "}
+          <a href="mailto:privacy@footykpi.com" className="text-primary hover:underline">
+            privacy@footykpi.com
+          </a>
+          . We will verify your identity and process the request in accordance with applicable law.
+          Some information may remain in backups for a limited time as required for legal or
+          operational purposes.
+        </p>
+      </>
+    ),
+  },
+  {
+    id: "your-privacy-rights",
+    title: "12. YOUR PRIVACY RIGHTS",
+    content: (
+      <>
+        <p>
+          Depending on where you live, you may have rights to access, correct, delete, restrict, or
+          object to the processing of your personal information. You may also have the right to
+          data portability and to withdraw consent where processing is based on consent. To
+          exercise these rights, contact us using the information below.
+        </p>
+      </>
+    ),
+  },
+  {
+    id: "california-privacy-rights",
+    title: "13. CALIFORNIA PRIVACY RIGHTS",
+    content: (
+      <>
+        <p>
+          California residents may have additional rights under the California Consumer Privacy Act
+          (CCPA) and California Privacy Rights Act (CPRA), including the right to know, delete, and
+          opt out of the sale or sharing of personal information. Footy KPI does not sell personal
+          information. To exercise your California privacy rights, email us at{" "}
+          <a href="mailto:privacy@footykpi.com" className="text-primary hover:underline">
+            privacy@footykpi.com
+          </a>
+          .
+        </p>
+      </>
+    ),
+  },
+  {
+    id: "cookies-and-tracking",
+    title: "14. COOKIES AND TRACKING TECHNOLOGIES",
+    content: (
+      <>
+        <p>
+          We may use cookies and similar technologies to operate and secure the Services, understand
+          usage, and improve performance. You can control cookies through your browser or device
+          settings.
+        </p>
+      </>
+    ),
+  },
+  {
+    id: "third-party-services",
+    title: "15. THIRD-PARTY SERVICES",
+    content: (
+      <>
+        <p>
+          The Services may contain links or integrations to third-party websites or services. This
+          Privacy Policy does not apply to those third parties. We encourage you to review the
+          privacy policies of any third-party service you use.
+        </p>
+      </>
+    ),
+  },
+  {
+    id: "changes",
+    title: "16. CHANGES TO THIS PRIVACY POLICY",
+    content: (
+      <>
+        <p>
+          We may update this Privacy Policy from time to time. When we make material changes, we
+          will update the effective date at the top of the page and may notify you through the app
+          or by email. Your continued use of the Services after the updated Privacy Policy is posted
+          means you accept the changes.
+        </p>
+      </>
+    ),
+  },
+  {
+    id: "contact-us",
+    title: "17. CONTACT US",
+    content: (
+      <>
+        <p>
+          <strong>Footy KPI</strong>
+          <br />
+          Gilbert, AZ
+          <br />
+          Email:{" "}
+          <a href="mailto:footykpi@gmail.com" className="text-primary hover:underline">
+            footykpi@gmail.com
+          </a>
+          <br />
+          Parent/Guardian Privacy Requests:{" "}
+          <a href="mailto:footykpi@gmail.com" className="text-primary hover:underline">
+            footykpi@gmail.com
+          </a>
+        </p>
+      </>
+    ),
+  },
+];
+
 function PrivacyPage() {
   return (
     <div className="flex min-h-screen flex-col bg-background">
       <header className="border-b border-border/50 bg-surface">
-        <div className="mx-auto flex max-w-4xl items-center justify-between px-6 py-4">
+        <div className="mx-auto flex max-w-6xl items-center justify-between px-6 py-4">
           <Link to="/" className="flex items-center gap-3">
             <img
               src={footyKpiLogo.url}
@@ -34,165 +339,75 @@ function PrivacyPage() {
         </div>
       </header>
 
-      <main className="mx-auto w-full max-w-3xl flex-1 px-6 py-12">
-        <article className="prose prose-invert max-w-none">
-          <h1 className="font-display text-4xl text-foreground">Privacy Policy</h1>
-          <p className="text-sm text-muted-foreground">Last updated: September 16, 2026</p>
+      <main className="mx-auto w-full max-w-6xl flex-1 px-6 py-12">
+        <div className="grid gap-10 lg:grid-cols-[280px_1fr]">
+          {/* Table of contents */}
+          <aside className="lg:sticky lg:top-8 lg:self-start">
+            <div className="rounded-2xl border border-border bg-card p-5">
+              <h2 className="font-display text-lg text-foreground">Contents</h2>
+              <nav aria-label="Privacy policy sections" className="mt-4">
+                <ol className="space-y-2 text-sm">
+                  {SECTIONS.map((section) => (
+                    <li key={section.id}>
+                      <a
+                        href={`#${section.id}`}
+                        className="block text-muted-foreground transition-colors hover:text-foreground"
+                      >
+                        {section.title}
+                      </a>
+                    </li>
+                  ))}
+                </ol>
+              </nav>
+            </div>
+          </aside>
 
-          <section className="mt-8">
-            <h2 className="font-display text-2xl text-foreground">1. Information we collect</h2>
-            <p className="mt-3 text-muted-foreground">
-              Footy KPI collects the information you provide when creating and using your account and
-              portfolio:
-            </p>
-            <ul className="mt-3 list-disc space-y-2 pl-5 text-muted-foreground">
-              <li>
-                <strong className="text-foreground">Account details:</strong> email address,
-                password, full name, and the role you select (athlete, coach, or recruiter).
-              </li>
-              <li>
-                <strong className="text-foreground">Athlete profile information:</strong> player
-                photo, team name, jersey number, position, graduation year, height, weight,
-                dominant foot, GPA (optional), and bio.
-              </li>
-              <li>
-                <strong className="text-foreground">Match statistics:</strong> goals, assists,
-                shots, minutes played, cards, saves, clean sheets, and other soccer stats you enter
-                per game or season.
-              </li>
-              <li>
-                <strong className="text-foreground">Media uploads:</strong> photos, highlight
-                videos, awards, certificates, and medals you choose to upload.
-              </li>
-              <li>
-                <strong className="text-foreground">Journal entries:</strong> post-game
-                reflections, mood selections, and performance ratings.
-              </li>
-              <li>
-                <strong className="text-foreground">Usage data:</strong> browser type, device
-                information, and log data used to keep the service secure and reliable.
-              </li>
-            </ul>
-          </section>
+          {/* Policy body */}
+          <article className="max-w-3xl">
+            <div className="border-b border-border/60 pb-8">
+              <h1 className="font-display text-4xl text-foreground sm:text-5xl">Privacy Policy</h1>
+              <div className="mt-4 space-y-1 text-sm text-muted-foreground">
+                <p>
+                  <strong className="text-foreground">Effective Date:</strong> September 10, 2026
+                </p>
+                <p>
+                  <strong className="text-foreground">Last Updated:</strong> September 10, 2026
+                </p>
+              </div>
+              <p className="mt-5 text-muted-foreground">
+                Footy KPI (“Footy KPI,” “we,” “us,” or “our”) respects your privacy and is committed
+                to protecting the personal information of our users, including youth athletes and
+                their parents or legal guardians. This Privacy Policy explains how we collect, use,
+                disclose, store, and protect information when you use the Footy KPI mobile
+                application, website, and related services (collectively, the “Services”).
+              </p>
+              <p className="mt-3 text-muted-foreground">
+                By using the Services, you acknowledge that you have read this Privacy Policy. If
+                you are a parent or legal guardian creating or managing an account for a minor, you
+                are responsible for reviewing this Privacy Policy and providing any consent required
+                by applicable law.
+              </p>
+            </div>
 
-          <section className="mt-8">
-            <h2 className="font-display text-2xl text-foreground">2. How we use your information</h2>
-            <p className="mt-3 text-muted-foreground">We use your information to:</p>
-            <ul className="mt-3 list-disc space-y-2 pl-5 text-muted-foreground">
-              <li>Build and display your digital football portfolio.</li>
-              <li>Let coaches review and verify the achievements you invite them to check.</li>
-              <li>Enable recruiters and college coaches to discover public player profiles.</li>
-              <li>Generate progress charts, insights, and season summaries.</li>
-              <li>Maintain account security, respond to support requests, and improve the app.</li>
-            </ul>
-          </section>
-
-          <section className="mt-8">
-            <h2 className="font-display text-2xl text-foreground">3. Data sharing and visibility</h2>
-            <p className="mt-3 text-muted-foreground">
-              You control how much of your portfolio is visible:
-            </p>
-            <ul className="mt-3 list-disc space-y-2 pl-5 text-muted-foreground">
-              <li>
-                <strong className="text-foreground">Private profiles:</strong> only you and anyone
-                you specifically invite can view your full dashboard.
-              </li>
-              <li>
-                <strong className="text-foreground">Public profiles:</strong> when you set your
-                portfolio to public, visitors with your share link can see the profile details,
-                bio, season stats, highlights, and game log you choose to display.
-              </li>
-              <li>
-                <strong className="text-foreground">Coach invites:</strong> inviting a coach lets
-                them review and verify your awards and certificates. Coaches cannot edit your
-                profile unless you explicitly invite them.
-              </li>
-              <li>
-                <strong className="text-foreground">Unlock links:</strong> you can generate links
-                that reveal extra details to specific recruiters or coaches without making the
-                entire profile public.
-              </li>
-            </ul>
-            <p className="mt-3 text-muted-foreground">
-              We do not sell your personal information to third parties.
-            </p>
-          </section>
-
-          <section className="mt-8">
-            <h2 className="font-display text-2xl text-foreground">4. Storage and security</h2>
-            <p className="mt-3 text-muted-foreground">
-              Footy KPI stores data through encrypted, industry-standard cloud services. Uploaded
-              photos and videos are kept in private storage buckets and served through signed,
-              time-limited URLs. We use row-level security, authenticated access checks, and
-              role-based permissions to help protect your information.
-            </p>
-          </section>
-
-          <section className="mt-8">
-            <h2 className="font-display text-2xl text-foreground">5. Your choices</h2>
-            <p className="mt-3 text-muted-foreground">You can:</p>
-            <ul className="mt-3 list-disc space-y-2 pl-5 text-muted-foreground">
-              <li>Edit or delete profile information, stats, games, and media from your dashboard.</li>
-              <li>Switch your portfolio between private and public visibility at any time.</li>
-              <li>Revoke coach invites and disable unlock links.</li>
-              <li>Request a full export or deletion of your account data.</li>
-            </ul>
-          </section>
-
-          <section className="mt-8">
-            <h2 className="font-display text-2xl text-foreground">
-              6. Account deletion and data removal
-            </h2>
-            <p className="mt-3 text-muted-foreground">
-              To delete your account and remove your data, email us at{" "}
-              <a
-                href="mailto:support@footykpi.com"
-                className="text-primary underline underline-offset-2"
-              >
-                support@footykpi.com
-              </a>
-              . We will confirm your identity and process the deletion within 30 days. Some
-              information may be retained in backups for a limited period as required by law.
-            </p>
-          </section>
-
-          <section className="mt-8">
-            <h2 className="font-display text-2xl text-foreground">7. Children's privacy</h2>
-            <p className="mt-3 text-muted-foreground">
-              Footy KPI is designed for youth athletes. We encourage parents or guardians to
-              supervise account creation and profile sharing. If you believe a child has provided
-              information without appropriate consent, contact us and we will delete it.
-            </p>
-          </section>
-
-          <section className="mt-8">
-            <h2 className="font-display text-2xl text-foreground">8. Changes to this policy</h2>
-            <p className="mt-3 text-muted-foreground">
-              We may update this Privacy Policy from time to time. When we do, we will revise the
-              "Last updated" date at the top of the page and notify you of material changes through
-              the app or by email.
-            </p>
-          </section>
-
-          <section className="mt-8">
-            <h2 className="font-display text-2xl text-foreground">9. Contact us</h2>
-            <p className="mt-3 text-muted-foreground">
-              Questions or concerns about privacy? Reach out to{" "}
-              <a
-                href="mailto:support@footykpi.com"
-                className="text-primary underline underline-offset-2"
-              >
-                support@footykpi.com
-              </a>
-              .
-            </p>
-          </section>
-        </article>
+            <div className="mt-10 space-y-12">
+              {SECTIONS.map((section) => (
+                <section key={section.id} id={section.id}>
+                  <h2 className="font-display text-2xl text-foreground">{section.title}</h2>
+                  <div className="prose prose-invert mt-4 max-w-none text-muted-foreground">
+                    {section.content}
+                  </div>
+                </section>
+              ))}
+            </div>
+          </article>
+        </div>
       </main>
 
       <footer className="border-t border-border/50 bg-surface py-6">
-        <div className="mx-auto flex max-w-4xl flex-wrap items-center justify-between gap-3 px-6">
-          <p className="text-sm text-muted-foreground">&copy; {new Date().getFullYear()} Footy KPI</p>
+        <div className="mx-auto flex max-w-6xl flex-wrap items-center justify-between gap-3 px-6">
+          <p className="text-sm text-muted-foreground">
+            &copy; {new Date().getFullYear()} Footy KPI
+          </p>
           <div className="flex items-center gap-4 text-sm text-muted-foreground">
             <Link to="/privacy" className="hover:text-foreground">
               Privacy Policy
