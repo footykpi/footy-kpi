@@ -7,6 +7,7 @@ import { toast } from "sonner";
 
 import { deleteMyAccount } from "@/lib/account.functions";
 import { supabase } from "@/integrations/supabase/client";
+import { Checkbox } from "@/components/ui/checkbox";
 import {
   Dialog,
   DialogContent,
@@ -22,11 +23,18 @@ export function DangerZone() {
   const removeAccount = useServerFn(deleteMyAccount);
   const [open, setOpen] = useState(false);
   const [confirmText, setConfirmText] = useState("");
+  const [checked, setChecked] = useState(false);
+
+  const resetConfirmation = () => {
+    setConfirmText("");
+    setChecked(false);
+  };
 
   const remove = useMutation({
     mutationFn: () => removeAccount({}),
     onSuccess: async () => {
       setOpen(false);
+      resetConfirmation();
       await queryClient.cancelQueries();
       queryClient.clear();
       await supabase.auth.signOut();
@@ -38,6 +46,8 @@ export function DangerZone() {
       toast.error(error instanceof Error ? error.message : "Could not delete your account.");
     },
   });
+
+  const canDelete = confirmText.trim() === "DELETE" && checked && !remove.isPending;
 
   return (
     <section className="rounded-2xl border border-destructive/40 bg-card p-6">
@@ -52,7 +62,7 @@ export function DangerZone() {
       <button
         type="button"
         onClick={() => {
-          setConfirmText("");
+          resetConfirmation();
           setOpen(true);
         }}
         className="mt-5 inline-flex items-center gap-2 rounded-full bg-destructive px-5 py-2.5 text-sm font-semibold text-destructive-foreground transition-opacity hover:opacity-90"
@@ -61,22 +71,61 @@ export function DangerZone() {
         Delete account
       </button>
 
-      <Dialog open={open} onOpenChange={setOpen}>
-        <DialogContent>
+      <Dialog
+        open={open}
+        onOpenChange={(nextOpen) => {
+          setOpen(nextOpen);
+          if (!nextOpen) resetConfirmation();
+        }}
+      >
+        <DialogContent aria-describedby="delete-account-description">
           <DialogHeader>
-            <DialogTitle>Delete your account?</DialogTitle>
-            <DialogDescription>
+            <DialogTitle className="text-destructive">Delete your account?</DialogTitle>
+            <DialogDescription id="delete-account-description">
               This permanently erases everything on your Footy KPI account, including uploaded
-              photos and videos. Type DELETE below to confirm.
+              photos and videos. You will not be able to recover this data.
             </DialogDescription>
           </DialogHeader>
-          <input
-            value={confirmText}
-            onChange={(event) => setConfirmText(event.target.value)}
-            placeholder="DELETE"
-            aria-label="Type DELETE to confirm"
-            className="w-full rounded-lg border border-border bg-background px-3 py-2 text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-destructive/40"
-          />
+
+          <div className="space-y-4 py-2">
+            <div className="rounded-lg border border-destructive/30 bg-destructive/5 p-3 text-sm text-destructive">
+              <p>
+                <strong>This action cannot be undone.</strong> Your profile, stats, game log,
+                highlights, and coach links will be permanently removed.
+              </p>
+            </div>
+
+            <div className="space-y-2">
+              <label htmlFor="delete-confirm" className="text-sm font-medium text-foreground">
+                Type DELETE to confirm
+              </label>
+              <input
+                id="delete-confirm"
+                value={confirmText}
+                onChange={(event) => setConfirmText(event.target.value)}
+                placeholder="DELETE"
+                autoComplete="off"
+                className="w-full rounded-lg border border-border bg-background px-3 py-2 text-sm text-foreground focus:outline-none focus:ring-2 focus:ring-destructive/40"
+              />
+              <p className="text-xs text-muted-foreground">
+                Please type <span className="font-semibold text-foreground">DELETE</span> in all
+                caps to continue.
+              </p>
+            </div>
+
+            <label className="flex items-start gap-3 text-sm text-foreground">
+              <Checkbox
+                checked={checked}
+                onCheckedChange={(value) => setChecked(value === true)}
+                aria-label="I understand that my account and data will be permanently deleted"
+              />
+              <span className="leading-snug">
+                I understand that deleting my account is permanent and all of my data will be
+                removed.
+              </span>
+            </label>
+          </div>
+
           <DialogFooter>
             <button
               type="button"
@@ -87,7 +136,7 @@ export function DangerZone() {
             </button>
             <button
               type="button"
-              disabled={confirmText.trim() !== "DELETE" || remove.isPending}
+              disabled={!canDelete}
               onClick={() => remove.mutate()}
               className="inline-flex items-center justify-center gap-2 rounded-full bg-destructive px-5 py-2.5 text-sm font-semibold text-destructive-foreground transition-opacity hover:opacity-90 disabled:opacity-50"
             >
