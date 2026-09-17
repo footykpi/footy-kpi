@@ -614,8 +614,7 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
-      is_accepted_coach: { Args: { _profile_id: string }; Returns: boolean }
-      owns_profile: { Args: { _profile_id: string }; Returns: boolean }
+      [_ in never]: never
     }
     Enums: {
       app_role: "athlete" | "coach" | "recruiter"
