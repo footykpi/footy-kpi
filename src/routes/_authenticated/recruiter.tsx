@@ -5,6 +5,7 @@ import { useServerFn } from "@tanstack/react-start";
 import { Loader2, Search } from "lucide-react";
 
 import { AppHeader } from "@/components/AppHeader";
+import { DangerZone } from "@/components/DangerZone";
 import { getMyAccount } from "@/lib/account.functions";
 import { searchAthletes } from "@/lib/recruiter.functions";
 import playerPhoto from "@/assets/player-photo.jpg";
@@ -132,6 +133,8 @@ function RecruiterDashboard() {
             </ul>
           )}
         </section>
+
+        <DangerZone />
       </main>
     </div>
   );
