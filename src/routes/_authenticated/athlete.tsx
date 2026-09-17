@@ -5,6 +5,7 @@ import { useServerFn } from "@tanstack/react-start";
 import { ExternalLink, ImagePlus, Loader2, Mail, Pencil, Trash2, UserPlus } from "lucide-react";
 
 import { AppHeader } from "@/components/AppHeader";
+import { DangerZone } from "@/components/DangerZone";
 import { AccessLinks } from "@/components/AccessLinks";
 import { AiInsights } from "@/components/AiInsights";
 import { GameEntryForm } from "@/components/GameEntryForm";
@@ -506,6 +507,8 @@ function AthleteDashboard() {
             </section>
 
             <AccessLinks slug={profile.slug} />
+
+            <DangerZone />
           </>
         )}
       </main>

@@ -140,3 +140,71 @@ export const saveMyProfile = createServerFn({ method: "POST" })
     if (error) throw new Error(error.message);
     return { ok: true };
   });
+
+/**
+ * Permanently deletes the signed-in user: their profile and every row that hangs
+ * off it, their uploaded media, their coach links, their role, and the auth user.
+ */
+export const deleteMyAccount = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .handler(async ({ context }): Promise<{ ok: true }> => {
+    const { userId, claims } = context;
+    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+
+    const { data: profile } = await supabaseAdmin
+      .from("profiles")
+      .select("id, slug")
+      .eq("user_id", userId)
+      .maybeSingle();
+
+    if (profile) {
+      // Uploaded photos and videos live under the athlete's slug prefix.
+      const paths: string[] = [];
+      const walk = async (prefix: string): Promise<void> => {
+        const { data: entries } = await supabaseAdmin.storage
+          .from("highlights")
+          .list(prefix, { limit: 1000 });
+        for (const entry of entries ?? []) {
+          const full = prefix ? `${prefix}/${entry.name}` : entry.name;
+          if (entry.id) paths.push(full);
+          else await walk(full);
+        }
+      };
+      await walk(profile.slug);
+      if (paths.length > 0) {
+        await supabaseAdmin.storage.from("highlights").remove(paths);
+      }
+
+      const { data: games } = await supabaseAdmin
+        .from("games")
+        .select("id")
+        .eq("profile_id", profile.id);
+      const gameIds = (games ?? []).map((game) => game.id);
+      if (gameIds.length > 0) {
+        await supabaseAdmin.from("game_media").delete().in("game_id", gameIds);
+      }
+
+      await supabaseAdmin.from("games").delete().eq("profile_id", profile.id);
+      await supabaseAdmin.from("highlights").delete().eq("profile_id", profile.id);
+      await supabaseAdmin.from("achievements").delete().eq("profile_id", profile.id);
+      await supabaseAdmin.from("season_stats").delete().eq("profile_id", profile.id);
+      await supabaseAdmin.from("profile_private_details").delete().eq("profile_id", profile.id);
+      await supabaseAdmin.from("profile_unlock_links").delete().eq("profile_id", profile.id);
+      await supabaseAdmin.from("coach_links").delete().eq("athlete_profile_id", profile.id);
+      await supabaseAdmin.from("profiles").delete().eq("id", profile.id);
+    }
+
+    // Invites that named this user as the coach.
+    await supabaseAdmin.from("coach_links").delete().eq("coach_user_id", userId);
+    const email = (claims as { email?: string }).email;
+    if (email) {
+      await supabaseAdmin.from("coach_links").delete().ilike("coach_email", email);
+    }
+
+    await supabaseAdmin.from("user_roles").delete().eq("user_id", userId);
+
+    const { error } = await supabaseAdmin.auth.admin.deleteUser(userId);
+    if (error) throw new Error(error.message);
+
+    return { ok: true };
+  });

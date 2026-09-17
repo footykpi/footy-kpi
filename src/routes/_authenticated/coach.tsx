@@ -4,6 +4,7 @@ import { useServerFn } from "@tanstack/react-start";
 import { Check, Loader2, ShieldCheck, X } from "lucide-react";
 
 import { AppHeader } from "@/components/AppHeader";
+import { DangerZone } from "@/components/DangerZone";
 import { getMyAccount } from "@/lib/account.functions";
 import { listCoachAthletes, respondToInvite } from "@/lib/coach.functions";
 
@@ -136,6 +137,8 @@ function CoachDashboard() {
             </ul>
           )}
         </section>
+
+        <DangerZone />
       </main>
     </div>
   );
