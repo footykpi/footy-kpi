@@ -1,0 +1,1 @@
+DROP POLICY IF EXISTS "Public highlight files are readable" ON storage.objects;
