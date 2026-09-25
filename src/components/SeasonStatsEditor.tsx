@@ -8,44 +8,49 @@ import { saveSeasonStats } from "@/lib/season-stats.functions";
 import {
   crossFieldErrors,
   goalsAgainstAverage,
-  KEEPER_FIELD_KEYS,
+  GROUP_EDIT_FIELDS,
+  POSITION_GROUPS,
+  positionGroup,
   savePercentage,
   STAT_FIELD_KEYS,
   STAT_RULES,
   validateField,
   validateSeasonLabel,
+  type PositionGroup,
   type StatFieldKey,
   type StatValues,
 } from "@/lib/season-stats-validation";
 import type { SeasonStats } from "@/lib/profile.functions";
 
 type FieldKey = StatFieldKey;
+type EditorTab = "all" | PositionGroup;
 
-const GROUPS: { title: string; fields: FieldKey[] }[] = [
-  {
-    title: "Attacking",
-    fields: ["goals", "assists", "shots", "shots_on_goal", "penalty_kicks", "headers_won"],
-  },
-  {
-    title: "Defending",
-    fields: ["tackles", "interceptions", "fouls"],
-  },
-  {
-    title: "Goalkeeping",
-    fields: [...KEEPER_FIELD_KEYS],
-  },
-  {
-    title: "Playing time & discipline",
-    fields: [
-      "games_played",
-      "minutes_played",
-      "pass_completion",
-      "yellow_cards",
-      "red_cards",
-      "mvp_awards",
-    ],
-  },
+const GENERAL_FIELDS: FieldKey[] = [
+  "games_played",
+  "minutes_played",
+  "mvp_awards",
+  "yellow_cards",
+  "red_cards",
 ];
+
+function groupsFor(tab: EditorTab): { title: string; fields: FieldKey[] }[] {
+  if (tab === "all") {
+    const seen = new Set<FieldKey>(GENERAL_FIELDS);
+    return [
+      { title: "General", fields: GENERAL_FIELDS },
+      ...POSITION_GROUPS.map((g) => {
+        const fields = GROUP_EDIT_FIELDS[g.id].filter((f) => !seen.has(f));
+        fields.forEach((f) => seen.add(f));
+        return { title: g.label, fields };
+      }),
+    ].filter((g) => g.fields.length > 0);
+  }
+  const label = POSITION_GROUPS.find((g) => g.id === tab)!.label;
+  return [
+    { title: "General", fields: GENERAL_FIELDS.filter((f) => !GROUP_EDIT_FIELDS[tab].includes(f)) },
+    { title: label, fields: GROUP_EDIT_FIELDS[tab] },
+  ];
+}
 
 type FormState = Record<FieldKey, string> & { season: string };
 
@@ -92,10 +97,13 @@ function validateAll(form: FormState): Errors {
 export function SeasonStatsEditor({
   profileId,
   season,
+  position,
 }: {
   profileId: string;
   season: SeasonStats | undefined;
+  position?: string | null;
 }) {
+  const [tab, setTab] = useState<EditorTab>(() => positionGroup(position) ?? "all");
   const queryClient = useQueryClient();
   const save = useServerFn(saveSeasonStats);
   const [open, setOpen] = useState(false);
@@ -201,8 +209,27 @@ export function SeasonStatsEditor({
         </button>
       </div>
 
+      <div role="tablist" aria-label="Stat group" className="mt-5 flex flex-wrap gap-2">
+        {([{ id: "all", label: "All Stats" }, ...POSITION_GROUPS] as { id: EditorTab; label: string }[]).map((t) => (
+          <button
+            key={t.id}
+            type="button"
+            role="tab"
+            aria-selected={tab === t.id}
+            onClick={() => setTab(t.id)}
+            className={`rounded-full px-4 py-1.5 text-sm font-semibold transition-colors ${
+              tab === t.id
+                ? "bg-primary text-primary-foreground"
+                : "border border-border bg-background text-muted-foreground hover:text-foreground"
+            }`}
+          >
+            {t.label}
+          </button>
+        ))}
+      </div>
+
       <div className="mt-6 space-y-6">
-        {GROUPS.map((group) => (
+        {groupsFor(tab).map((group) => (
           <fieldset key={group.title}>
             <legend className="font-display text-lg tracking-wide text-foreground">
               {group.title}
@@ -240,7 +267,7 @@ export function SeasonStatsEditor({
                 );
               })}
             </div>
-            {group.title === "Goalkeeping" ? (
+            {group.title === "Goalkeeper" ? (
               <p className="mt-1 text-xs text-muted-foreground">
                 Calculated for you — GAA:{" "}
                 <span className="font-semibold text-foreground">

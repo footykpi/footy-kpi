@@ -1,0 +1,1 @@
+ALTER TABLE public.season_stats ADD COLUMN IF NOT EXISTS key_passes integer;

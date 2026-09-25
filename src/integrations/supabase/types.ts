@@ -475,6 +475,7 @@ export type Database = {
           home_runs: number | null
           id: string
           interceptions: number | null
+          key_passes: number | null
           minutes_played: number | null
           mvp_awards: number | null
           pass_completion: number | null
@@ -515,6 +516,7 @@ export type Database = {
           home_runs?: number | null
           id?: string
           interceptions?: number | null
+          key_passes?: number | null
           minutes_played?: number | null
           mvp_awards?: number | null
           pass_completion?: number | null
@@ -555,6 +557,7 @@ export type Database = {
           home_runs?: number | null
           id?: string
           interceptions?: number | null
+          key_passes?: number | null
           minutes_played?: number | null
           mvp_awards?: number | null
           pass_completion?: number | null
