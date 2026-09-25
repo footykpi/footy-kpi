@@ -8,44 +8,49 @@ import { saveSeasonStats } from "@/lib/season-stats.functions";
 import {
   crossFieldErrors,
   goalsAgainstAverage,
-  KEEPER_FIELD_KEYS,
+  GROUP_EDIT_FIELDS,
+  POSITION_GROUPS,
+  positionGroup,
   savePercentage,
   STAT_FIELD_KEYS,
   STAT_RULES,
   validateField,
   validateSeasonLabel,
+  type PositionGroup,
   type StatFieldKey,
   type StatValues,
 } from "@/lib/season-stats-validation";
 import type { SeasonStats } from "@/lib/profile.functions";
 
 type FieldKey = StatFieldKey;
+type EditorTab = "all" | PositionGroup;
 
-const GROUPS: { title: string; fields: FieldKey[] }[] = [
-  {
-    title: "Attacking",
-    fields: ["goals", "assists", "shots", "shots_on_goal", "penalty_kicks", "headers_won"],
-  },
-  {
-    title: "Defending",
-    fields: ["tackles", "interceptions", "fouls"],
-  },
-  {
-    title: "Goalkeeping",
-    fields: [...KEEPER_FIELD_KEYS],
-  },
-  {
-    title: "Playing time & discipline",
-    fields: [
-      "games_played",
-      "minutes_played",
-      "pass_completion",
-      "yellow_cards",
-      "red_cards",
-      "mvp_awards",
-    ],
-  },
+const GENERAL_FIELDS: FieldKey[] = [
+  "games_played",
+  "minutes_played",
+  "mvp_awards",
+  "yellow_cards",
+  "red_cards",
 ];
+
+function groupsFor(tab: EditorTab): { title: string; fields: FieldKey[] }[] {
+  if (tab === "all") {
+    const seen = new Set<FieldKey>(GENERAL_FIELDS);
+    return [
+      { title: "General", fields: GENERAL_FIELDS },
+      ...POSITION_GROUPS.map((g) => {
+        const fields = GROUP_EDIT_FIELDS[g.id].filter((f) => !seen.has(f));
+        fields.forEach((f) => seen.add(f));
+        return { title: g.label, fields };
+      }),
+    ].filter((g) => g.fields.length > 0);
+  }
+  const label = POSITION_GROUPS.find((g) => g.id === tab)!.label;
+  return [
+    { title: "General", fields: GENERAL_FIELDS.filter((f) => f !== "minutes_played" || !GROUP_EDIT_FIELDS[tab].includes(f)) },
+    { title: label, fields: GROUP_EDIT_FIELDS[tab].filter((f) => !GENERAL_FIELDS.includes(f) || f === "minutes_played") },
+  ];
+}
 
 type FormState = Record<FieldKey, string> & { season: string };
 

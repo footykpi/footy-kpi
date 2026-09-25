@@ -14,6 +14,7 @@ import { HighlightsReel } from "@/components/HighlightsReel";
 import { ProgressCharts } from "@/components/ProgressCharts";
 import { SeasonJournal } from "@/components/SeasonJournal";
 import { SeasonStatsEditor } from "@/components/SeasonStatsEditor";
+import { SeasonStatsBreakdown } from "@/components/SeasonStatsBreakdown";
 import { TradingCard } from "@/components/TradingCard";
 import { getMyAccount, saveMyProfile } from "@/lib/account.functions";
 import { removeProfilePhoto, uploadProfilePhoto } from "@/lib/profile-photo.functions";
@@ -424,8 +425,9 @@ function AthleteDashboard() {
                   photoUrl={profile.photo_url ?? playerPhoto}
                 />
               </div>
+              {season && <SeasonStatsBreakdown season={season} position={profile.position} />}
               <div className="mt-5">
-                <SeasonStatsEditor profileId={profile.id} season={season} />
+                <SeasonStatsEditor profileId={profile.id} season={season} position={profile.position} />
               </div>
             </section>
 
