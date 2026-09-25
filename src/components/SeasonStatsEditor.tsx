@@ -47,8 +47,8 @@ function groupsFor(tab: EditorTab): { title: string; fields: FieldKey[] }[] {
   }
   const label = POSITION_GROUPS.find((g) => g.id === tab)!.label;
   return [
-    { title: "General", fields: GENERAL_FIELDS.filter((f) => f !== "minutes_played" || !GROUP_EDIT_FIELDS[tab].includes(f)) },
-    { title: label, fields: GROUP_EDIT_FIELDS[tab].filter((f) => !GENERAL_FIELDS.includes(f) || f === "minutes_played") },
+    { title: "General", fields: GENERAL_FIELDS.filter((f) => !GROUP_EDIT_FIELDS[tab].includes(f)) },
+    { title: label, fields: GROUP_EDIT_FIELDS[tab] },
   ];
 }
 
@@ -97,10 +97,13 @@ function validateAll(form: FormState): Errors {
 export function SeasonStatsEditor({
   profileId,
   season,
+  position,
 }: {
   profileId: string;
   season: SeasonStats | undefined;
+  position?: string | null;
 }) {
+  const [tab, setTab] = useState<EditorTab>(() => positionGroup(position) ?? "all");
   const queryClient = useQueryClient();
   const save = useServerFn(saveSeasonStats);
   const [open, setOpen] = useState(false);
@@ -206,8 +209,27 @@ export function SeasonStatsEditor({
         </button>
       </div>
 
+      <div role="tablist" aria-label="Stat group" className="mt-5 flex flex-wrap gap-2">
+        {([{ id: "all", label: "All Stats" }, ...POSITION_GROUPS] as { id: EditorTab; label: string }[]).map((t) => (
+          <button
+            key={t.id}
+            type="button"
+            role="tab"
+            aria-selected={tab === t.id}
+            onClick={() => setTab(t.id)}
+            className={`rounded-full px-4 py-1.5 text-sm font-semibold transition-colors ${
+              tab === t.id
+                ? "bg-primary text-primary-foreground"
+                : "border border-border bg-background text-muted-foreground hover:text-foreground"
+            }`}
+          >
+            {t.label}
+          </button>
+        ))}
+      </div>
+
       <div className="mt-6 space-y-6">
-        {GROUPS.map((group) => (
+        {groupsFor(tab).map((group) => (
           <fieldset key={group.title}>
             <legend className="font-display text-lg tracking-wide text-foreground">
               {group.title}
@@ -245,7 +267,7 @@ export function SeasonStatsEditor({
                 );
               })}
             </div>
-            {group.title === "Goalkeeping" ? (
+            {group.title === "Goalkeeper" ? (
               <p className="mt-1 text-xs text-muted-foreground">
                 Calculated for you — GAA:{" "}
                 <span className="font-semibold text-foreground">
