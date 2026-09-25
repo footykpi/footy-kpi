@@ -29,6 +29,13 @@
       "when": 1790348366753,
       "tag": "0003_add_key_passes",
       "breakpoints": true
+    },
+    {
+      "idx": 4,
+      "version": "7",
+      "when": 1790348673787,
+      "tag": "0004_drop_public_highlight_files_policy",
+      "breakpoints": true
     }
   ]
 }
