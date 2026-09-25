@@ -64,6 +64,7 @@ export interface SeasonStats {
   high_claims: number | null;
   punches: number | null;
   catches: number | null;
+  key_passes: number | null;
 }
 
 

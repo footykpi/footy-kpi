@@ -26,7 +26,8 @@ export type StatFieldKey =
   | "pk_faced"
   | "high_claims"
   | "punches"
-  | "catches";
+  | "catches"
+  | "key_passes";
 
 export type StatFieldRule = {
   label: string;
@@ -63,6 +64,7 @@ export const STAT_RULES: Record<StatFieldKey, StatFieldRule> = {
   high_claims: { label: "High claims", min: 0, max: 2000, decimals: 0 },
   punches: { label: "Punches", min: 0, max: 2000, decimals: 0 },
   catches: { label: "Catches", min: 0, max: 2000, decimals: 0 },
+  key_passes: { label: "Key passes / chances created", min: 0, max: 2000, decimals: 0 },
 };
 
 /** Keeper-only fields, shown under the Goalkeeping section. */
@@ -226,6 +228,7 @@ export const seasonStatsSchema = z
     high_claims: optionalCount("high_claims"),
     punches: optionalCount("punches"),
     catches: optionalCount("catches"),
+    key_passes: optionalCount("key_passes"),
     pass_completion: z
       .number()
       .min(0)
@@ -246,3 +249,49 @@ export const seasonStatsSchema = z
 
 export type SeasonStatsInput = z.infer<typeof seasonStatsSchema>;
 
+
+export type PositionGroup = "goalkeeper" | "defenders" | "midfielders" | "forwards";
+
+export const POSITION_GROUPS: { id: PositionGroup; label: string }[] = [
+  { id: "goalkeeper", label: "Goalkeeper" },
+  { id: "defenders", label: "Defenders" },
+  { id: "midfielders", label: "Midfielders" },
+  { id: "forwards", label: "Forwards" },
+];
+
+/** Maps a free-text position (e.g. "CB", "Striker", "Left wing") to a position group. */
+export function positionGroup(position: string | null | undefined): PositionGroup | null {
+  if (!position) return null;
+  const p = position.trim().toLowerCase();
+  if (isGoalkeeper(p)) return "goalkeeper";
+  if (/defen|back|\b(cb|lb|rb|lwb|rwb|sw)\b|sweeper|stopper/.test(p)) return "defenders";
+  if (/mid|\b(cm|cdm|cam|dm|am|lm|rm)\b|playmaker|anchor/.test(p)) return "midfielders";
+  if (/forward|striker|wing|attack|\b(st|cf|lw|rw|fw|ss)\b|nine/.test(p)) return "forwards";
+  return null;
+}
+
+/** Editor fields per position group. */
+export const GROUP_EDIT_FIELDS: Record<PositionGroup, StatFieldKey[]> = {
+  goalkeeper: [
+    "saves", "goals_conceded", "shots_faced", "clean_sheets", "pk_faced", "pk_saves",
+    "punches", "high_claims", "catches",
+  ],
+  defenders: [
+    "tackles", "interceptions", "clean_sheets", "fouls", "headers_won", "minutes_played",
+    "pass_completion",
+  ],
+  midfielders: [
+    "assists", "pass_completion", "key_passes", "tackles", "interceptions", "goals",
+    "minutes_played",
+  ],
+  forwards: ["goals", "assists", "shots", "shots_on_goal", "penalty_kicks", "minutes_played"],
+};
+
+/** Shot accuracy — shots on goal out of total shots. */
+export function shotAccuracy(
+  shotsOnGoal: number | null | undefined,
+  shots: number | null | undefined,
+): number | null {
+  if (shotsOnGoal === null || shotsOnGoal === undefined || !shots) return null;
+  return Math.round((shotsOnGoal / shots) * 1000) / 10;
+}
