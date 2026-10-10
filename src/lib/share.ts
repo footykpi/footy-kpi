@@ -2,10 +2,13 @@ import { toast } from "sonner";
 
 const SITE = "https://footykpi.com";
 
-/** Canonical public URL for an athlete profile, e.g. https://footykpi.com/p/marcus-chen. */
+/**
+ * Canonical public URL for an athlete profile, e.g. https://footykpi.com/p/marcus-chen.
+ * Always the live domain — preview/editor origins require a Lovable login, so links
+ * and QR codes shared from there would land recipients on a sign-in page.
+ */
 export function profilePublicUrl(slug: string): string {
-  const origin = typeof window !== "undefined" ? window.location.origin : SITE;
-  return `${origin}/p/${slug}`;
+  return `${SITE}/p/${slug}`;
 }
 
 /**
