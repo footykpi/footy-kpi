@@ -3,6 +3,7 @@
 ## In progress
 
 ## Completed
+- [x] Fix trading card QR/share links to the real profile URL and add Share Profile buttons to the dashboard and public profile.
 - [x] Add iOS safe-area spacing for status bars, notches, Dynamic Island, overlays, and bottom panels.
 - [x] Publish again so the new accounts and dashboards go live.
 - [x] Connect custom domain footykpi.com (active; www redirects to footykpi.com).

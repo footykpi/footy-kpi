@@ -2,7 +2,7 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { useEffect, useRef, useState } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
-import { ExternalLink, ImagePlus, Loader2, Mail, Pencil, Trash2, UserPlus } from "lucide-react";
+import { ExternalLink, ImagePlus, Loader2, Mail, Pencil, Share2, Trash2, UserPlus } from "lucide-react";
 
 import { AppHeader } from "@/components/AppHeader";
 import { DangerZone } from "@/components/DangerZone";
@@ -20,6 +20,7 @@ import { getMyAccount, saveMyProfile } from "@/lib/account.functions";
 import { removeProfilePhoto, uploadProfilePhoto } from "@/lib/profile-photo.functions";
 import { inviteCoach, listMyCoaches, removeCoachLink } from "@/lib/coach.functions";
 import { getMyPortfolio } from "@/lib/profile.functions";
+import { profilePublicUrl, shareProfile } from "@/lib/share";
 import playerPhoto from "@/assets/player-photo.jpg";
 
 export const Route = createFileRoute("/_authenticated/athlete")({
@@ -187,14 +188,31 @@ function AthleteDashboard() {
     <div className="min-h-screen bg-background">
       <AppHeader email={account?.email ?? null}>
         {slug && (
-          <Link
-            to="/p/$slug"
-            params={{ slug }}
-            className="inline-flex items-center gap-2 rounded-full border border-border bg-background px-4 py-2 text-sm font-medium text-foreground hover:bg-surface-elevated"
-          >
-            <ExternalLink className="h-4 w-4" />
-            View public profile
-          </Link>
+          <>
+            <button
+              type="button"
+              onClick={() =>
+                void shareProfile({
+                  name: profile
+                    ? `${profile.first_name} ${profile.last_name}`.trim()
+                    : "Footy KPI profile",
+                  url: profilePublicUrl(slug),
+                })
+              }
+              className="inline-flex items-center gap-2 rounded-full bg-primary px-4 py-2 text-sm font-semibold text-primary-foreground transition-opacity hover:opacity-90"
+            >
+              <Share2 className="h-4 w-4" />
+              Share Profile
+            </button>
+            <Link
+              to="/p/$slug"
+              params={{ slug }}
+              className="inline-flex items-center gap-2 rounded-full border border-border bg-background px-4 py-2 text-sm font-medium text-foreground hover:bg-surface-elevated"
+            >
+              <ExternalLink className="h-4 w-4" />
+              View public profile
+            </Link>
+          </>
         )}
       </AppHeader>
 

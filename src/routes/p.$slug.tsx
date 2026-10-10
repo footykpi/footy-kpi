@@ -10,9 +10,11 @@ import {
   Footprints,
   TrendingUp,
   Lock,
+  Share2,
 } from "lucide-react";
 
 import { getPublicProfile, type PublicProfile } from "@/lib/profile.functions";
+import { profilePublicUrl, shareProfile } from "@/lib/share";
 import { SeasonStatsBreakdown } from "@/components/SeasonStatsBreakdown";
 import { GameLog } from "@/components/GameLog";
 import { HighlightsReel } from "@/components/HighlightsReel";
@@ -108,6 +110,19 @@ function PublicProfilePage() {
             <img src={footyKpiLogo.url} alt="Footy KPI shield" className="h-10 w-10 rounded-lg object-cover" />
             <span className="font-display text-2xl tracking-wide text-foreground">FOOTY KPI</span>
           </a>
+          <button
+            type="button"
+            onClick={() =>
+              void shareProfile({
+                name: `${profile.first_name} ${profile.last_name}`.trim(),
+                url: profilePublicUrl(slug),
+              })
+            }
+            className="inline-flex items-center gap-2 rounded-full bg-primary px-4 py-2 text-sm font-semibold text-primary-foreground transition-opacity hover:opacity-90"
+          >
+            <Share2 className="h-4 w-4" />
+            Share Profile
+          </button>
         </div>
       </header>
 
