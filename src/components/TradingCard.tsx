@@ -3,6 +3,7 @@ import { toPng } from "html-to-image";
 import QRCode from "qrcode";
 import { Download, IdCard, Share2, Link as LinkIcon, Loader2 } from "lucide-react";
 import { toast } from "sonner";
+import { profilePublicUrl } from "@/lib/share";
 
 
 import {
@@ -52,8 +53,7 @@ export function TradingCard({ profile, season, games, photoUrl }: TradingCardPro
   const keeper = isGoalkeeper(profile.position);
   const gaa = goalsAgainstAverage(season?.goals_conceded, season?.games_played);
   const savePct = savePercentage(season?.saves, season?.shots_faced, season?.goals_conceded);
-  const shareUrl =
-    typeof window !== "undefined" ? `${window.location.origin}/?slug=${profile.slug}` : "";
+  const shareUrl = profilePublicUrl(profile.slug);
   const shareText = `${fullName} — ${profile.position ?? "Soccer"} · ${profile.team} · Class of ${profile.graduation_year ?? ""}`.trim();
   const [qrDataUrl, setQrDataUrl] = useState<string | null>(null);
   const [photoDataUrl, setPhotoDataUrl] = useState<string | null>(null);

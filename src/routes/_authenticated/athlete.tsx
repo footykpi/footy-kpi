@@ -2,7 +2,7 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { useEffect, useRef, useState } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
-import { ExternalLink, ImagePlus, Loader2, Mail, Pencil, Trash2, UserPlus } from "lucide-react";
+import { ExternalLink, ImagePlus, Loader2, Mail, Pencil, Share2, Trash2, UserPlus } from "lucide-react";
 
 import { AppHeader } from "@/components/AppHeader";
 import { DangerZone } from "@/components/DangerZone";
@@ -20,6 +20,7 @@ import { getMyAccount, saveMyProfile } from "@/lib/account.functions";
 import { removeProfilePhoto, uploadProfilePhoto } from "@/lib/profile-photo.functions";
 import { inviteCoach, listMyCoaches, removeCoachLink } from "@/lib/coach.functions";
 import { getMyPortfolio } from "@/lib/profile.functions";
+import { profilePublicUrl, shareProfile } from "@/lib/share";
 import playerPhoto from "@/assets/player-photo.jpg";
 
 export const Route = createFileRoute("/_authenticated/athlete")({
