@@ -188,14 +188,31 @@ function AthleteDashboard() {
     <div className="min-h-screen bg-background">
       <AppHeader email={account?.email ?? null}>
         {slug && (
-          <Link
-            to="/p/$slug"
-            params={{ slug }}
-            className="inline-flex items-center gap-2 rounded-full border border-border bg-background px-4 py-2 text-sm font-medium text-foreground hover:bg-surface-elevated"
-          >
-            <ExternalLink className="h-4 w-4" />
-            View public profile
-          </Link>
+          <>
+            <button
+              type="button"
+              onClick={() =>
+                void shareProfile({
+                  name: profile
+                    ? `${profile.first_name} ${profile.last_name}`.trim()
+                    : "Footy KPI profile",
+                  url: profilePublicUrl(slug),
+                })
+              }
+              className="inline-flex items-center gap-2 rounded-full bg-primary px-4 py-2 text-sm font-semibold text-primary-foreground transition-opacity hover:opacity-90"
+            >
+              <Share2 className="h-4 w-4" />
+              Share Profile
+            </button>
+            <Link
+              to="/p/$slug"
+              params={{ slug }}
+              className="inline-flex items-center gap-2 rounded-full border border-border bg-background px-4 py-2 text-sm font-medium text-foreground hover:bg-surface-elevated"
+            >
+              <ExternalLink className="h-4 w-4" />
+              View public profile
+            </Link>
+          </>
         )}
       </AppHeader>
 
