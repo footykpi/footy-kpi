@@ -42,9 +42,9 @@ function CoachSettings() {
   useEffect(() => {
     if (!user) return;
     const meta = (user.user_metadata ?? {}) as Record<string, string | undefined>;
-    setName(meta.full_name ?? "");
-    setClub(meta.club ?? "");
-    setPhone(meta.phone ?? "");
+    setName(meta["full_name"] ?? "");
+    setClub(meta["club"] ?? "");
+    setPhone(meta["phone"] ?? "");
     setEmail(user.email ?? "");
   }, [user]);
 
@@ -69,8 +69,8 @@ function CoachSettings() {
   async function saveEmail(e: React.FormEvent) {
     e.preventDefault();
     const next = email.trim();
-    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(next)) return toast.error("Enter a valid email address.");
-    if (next === user?.email) return toast.info("That's already your email.");
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(next)) { toast.error("Enter a valid email address."); return; }
+    if (next === user?.email) { toast.info("That's already your email."); return; }
     setBusy("email");
     const { error } = await supabase.auth.updateUser({ email: next });
     setBusy(null);
@@ -80,8 +80,8 @@ function CoachSettings() {
 
   async function savePassword(e: React.FormEvent) {
     e.preventDefault();
-    if (password.length < 8) return toast.error("Password must be at least 8 characters.");
-    if (password !== confirm) return toast.error("Passwords don't match.");
+    if (password.length < 8) { toast.error("Password must be at least 8 characters."); return; }
+    if (password !== confirm) { toast.error("Passwords don't match."); return; }
     setBusy("password");
     const { error } = await supabase.auth.updateUser({ password });
     setBusy(null);
