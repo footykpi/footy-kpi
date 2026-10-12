@@ -92,6 +92,24 @@ export const inviteCoach = createServerFn({ method: "POST" })
       .single();
 
     if (error || !link) throw new Error(error?.message ?? "Could not send the invite.");
+
+    // Email the coach an invitation with a sign-up link. A failed send must
+    // not roll back the invite — it still appears on the coach's dashboard.
+    try {
+      const { sendTemplateEmail } = await import("@/lib/email-templates/send-email");
+      const athleteName = [profile.first_name, profile.last_name].filter(Boolean).join(" ").trim();
+      await sendTemplateEmail("coach-invite", email, {
+        templateData: {
+          athleteName: athleteName || "An athlete",
+          teamName: profile.team ?? undefined,
+          acceptUrl: "https://footykpi.com/auth?mode=signup",
+        },
+        idempotencyKey: `coach-invite-${link.id}`,
+      });
+    } catch (emailError) {
+      console.error("Coach invite email failed:", emailError);
+    }
+
     return link as CoachLink;
   });
 
