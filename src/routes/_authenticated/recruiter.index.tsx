@@ -2,7 +2,7 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
-import { Loader2, Search } from "lucide-react";
+import { Loader2, Search, Settings } from "lucide-react";
 
 import { AppHeader } from "@/components/AppHeader";
 import { DangerZone } from "@/components/DangerZone";
@@ -10,7 +10,7 @@ import { getMyAccount } from "@/lib/account.functions";
 import { searchAthletes } from "@/lib/recruiter.functions";
 import playerPhoto from "@/assets/player-photo.jpg";
 
-export const Route = createFileRoute("/_authenticated/recruiter")({
+export const Route = createFileRoute("/_authenticated/recruiter/")({
   head: () => ({
     meta: [
       { title: "Recruiter search | Footy KPI" },
@@ -53,11 +53,20 @@ function RecruiterDashboard() {
     <div className="min-h-screen bg-background">
       <AppHeader email={account?.email ?? null} />
       <main className="mx-auto max-w-5xl space-y-8 px-6 py-10">
-        <div>
-          <h1 className="font-display text-4xl text-foreground">Find players</h1>
-          <p className="mt-2 text-sm text-muted-foreground">
-            Only players who made their portfolio public appear here.
-          </p>
+        <div className="flex flex-wrap items-start justify-between gap-4">
+          <div>
+            <h1 className="font-display text-4xl text-foreground">Recruiter dashboard</h1>
+            <p className="mt-2 text-sm text-muted-foreground">
+              Find players and review their profile, stats, and highlights. Only players who made
+              their portfolio public appear here.
+            </p>
+          </div>
+          <Link
+            to="/recruiter/settings"
+            className="inline-flex items-center gap-2 rounded-full border border-border px-4 py-2 text-sm font-medium text-foreground hover:bg-surface"
+          >
+            <Settings className="h-4 w-4" /> Account settings
+          </Link>
         </div>
 
         <form
@@ -112,7 +121,7 @@ function RecruiterDashboard() {
                     />
                     <div className="min-w-0">
                       <Link
-                        to="/p/$slug"
+                        to="/recruiter/$slug"
                         params={{ slug: athlete.slug }}
                         className="font-semibold text-foreground hover:underline"
                       >
