@@ -19,11 +19,12 @@ import { Route as TermsRouteImport } from './routes/terms'
 import { Route as TermsOfServiceRouteImport } from './routes/terms-of-service'
 import { Route as AuthenticatedAthleteRouteImport } from './routes/_authenticated/athlete'
 import { Route as AuthenticatedDashboardRouteImport } from './routes/_authenticated/dashboard'
-import { Route as AuthenticatedRecruiterRouteImport } from './routes/_authenticated/recruiter'
 import { Route as PSlugRouteImport } from './routes/p.$slug'
 import { Route as AuthenticatedCoachIndexRouteImport } from './routes/_authenticated/coach.index'
 import { Route as AuthenticatedCoachSlugRouteImport } from './routes/_authenticated/coach.$slug'
 import { Route as AuthenticatedCoachSettingsRouteImport } from './routes/_authenticated/coach.settings'
+import { Route as AuthenticatedRecruiterIndexRouteImport } from './routes/_authenticated/recruiter.index'
+import { Route as AuthenticatedRecruiterSettingsRouteImport } from './routes/_authenticated/recruiter.settings'
 import { Route as LovableEmailTransactionalPreviewRouteImport } from './routes/lovable/email/transactional/preview'
 
 const IndexRoute = IndexRouteImport.update({
@@ -75,11 +76,6 @@ const AuthenticatedDashboardRoute = AuthenticatedDashboardRouteImport.update({
   path: '/dashboard',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
-const AuthenticatedRecruiterRoute = AuthenticatedRecruiterRouteImport.update({
-  id: '/recruiter',
-  path: '/recruiter',
-  getParentRoute: () => AuthenticatedRouteRoute,
-} as any)
 const PSlugRoute = PSlugRouteImport.update({
   id: '/p/$slug',
   path: '/p/$slug',
@@ -101,6 +97,18 @@ const AuthenticatedCoachSettingsRoute =
     path: '/coach/settings',
     getParentRoute: () => AuthenticatedRouteRoute,
   } as any)
+const AuthenticatedRecruiterIndexRoute =
+  AuthenticatedRecruiterIndexRouteImport.update({
+    id: '/recruiter/',
+    path: '/recruiter/',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
+const AuthenticatedRecruiterSettingsRoute =
+  AuthenticatedRecruiterSettingsRouteImport.update({
+    id: '/recruiter/settings',
+    path: '/recruiter/settings',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
 const LovableEmailTransactionalPreviewRoute =
   LovableEmailTransactionalPreviewRouteImport.update({
     id: '/lovable/email/transactional/preview',
@@ -118,11 +126,12 @@ export interface FileRoutesByFullPath {
   '/terms-of-service': typeof TermsOfServiceRoute
   '/athlete': typeof AuthenticatedAthleteRoute
   '/dashboard': typeof AuthenticatedDashboardRoute
-  '/recruiter': typeof AuthenticatedRecruiterRoute
   '/p/$slug': typeof PSlugRoute
   '/coach/$slug': typeof AuthenticatedCoachSlugRoute
   '/coach/settings': typeof AuthenticatedCoachSettingsRoute
+  '/recruiter/settings': typeof AuthenticatedRecruiterSettingsRoute
   '/coach/': typeof AuthenticatedCoachIndexRoute
+  '/recruiter/': typeof AuthenticatedRecruiterIndexRoute
   '/lovable/email/transactional/preview': typeof LovableEmailTransactionalPreviewRoute
 }
 export interface FileRoutesByTo {
@@ -135,11 +144,12 @@ export interface FileRoutesByTo {
   '/terms-of-service': typeof TermsOfServiceRoute
   '/athlete': typeof AuthenticatedAthleteRoute
   '/dashboard': typeof AuthenticatedDashboardRoute
-  '/recruiter': typeof AuthenticatedRecruiterRoute
   '/p/$slug': typeof PSlugRoute
   '/coach/$slug': typeof AuthenticatedCoachSlugRoute
   '/coach/settings': typeof AuthenticatedCoachSettingsRoute
+  '/recruiter/settings': typeof AuthenticatedRecruiterSettingsRoute
   '/coach': typeof AuthenticatedCoachIndexRoute
+  '/recruiter': typeof AuthenticatedRecruiterIndexRoute
   '/lovable/email/transactional/preview': typeof LovableEmailTransactionalPreviewRoute
 }
 export interface FileRoutesById {
@@ -154,11 +164,12 @@ export interface FileRoutesById {
   '/terms-of-service': typeof TermsOfServiceRoute
   '/_authenticated/athlete': typeof AuthenticatedAthleteRoute
   '/_authenticated/dashboard': typeof AuthenticatedDashboardRoute
-  '/_authenticated/recruiter': typeof AuthenticatedRecruiterRoute
   '/p/$slug': typeof PSlugRoute
   '/_authenticated/coach/$slug': typeof AuthenticatedCoachSlugRoute
   '/_authenticated/coach/settings': typeof AuthenticatedCoachSettingsRoute
+  '/_authenticated/recruiter/settings': typeof AuthenticatedRecruiterSettingsRoute
   '/_authenticated/coach/': typeof AuthenticatedCoachIndexRoute
+  '/_authenticated/recruiter/': typeof AuthenticatedRecruiterIndexRoute
   '/lovable/email/transactional/preview': typeof LovableEmailTransactionalPreviewRoute
 }
 export interface FileRouteTypes {
@@ -173,11 +184,12 @@ export interface FileRouteTypes {
     | '/terms-of-service'
     | '/athlete'
     | '/dashboard'
-    | '/recruiter'
     | '/p/$slug'
     | '/coach/$slug'
     | '/coach/settings'
+    | '/recruiter/settings'
     | '/coach/'
+    | '/recruiter/'
     | '/lovable/email/transactional/preview'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -190,11 +202,12 @@ export interface FileRouteTypes {
     | '/terms-of-service'
     | '/athlete'
     | '/dashboard'
-    | '/recruiter'
     | '/p/$slug'
     | '/coach/$slug'
     | '/coach/settings'
+    | '/recruiter/settings'
     | '/coach'
+    | '/recruiter'
     | '/lovable/email/transactional/preview'
   id:
     | '__root__'
@@ -208,11 +221,12 @@ export interface FileRouteTypes {
     | '/terms-of-service'
     | '/_authenticated/athlete'
     | '/_authenticated/dashboard'
-    | '/_authenticated/recruiter'
     | '/p/$slug'
     | '/_authenticated/coach/$slug'
     | '/_authenticated/coach/settings'
+    | '/_authenticated/recruiter/settings'
     | '/_authenticated/coach/'
+    | '/_authenticated/recruiter/'
     | '/lovable/email/transactional/preview'
   fileRoutesById: FileRoutesById
 }
@@ -301,13 +315,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedDashboardRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
-    '/_authenticated/recruiter': {
-      id: '/_authenticated/recruiter'
-      path: '/recruiter'
-      fullPath: '/recruiter'
-      preLoaderRoute: typeof AuthenticatedRecruiterRouteImport
-      parentRoute: typeof AuthenticatedRouteRoute
-    }
     '/p/$slug': {
       id: '/p/$slug'
       path: '/p/$slug'
@@ -336,6 +343,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedCoachSettingsRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/recruiter/': {
+      id: '/_authenticated/recruiter/'
+      path: '/recruiter'
+      fullPath: '/recruiter/'
+      preLoaderRoute: typeof AuthenticatedRecruiterIndexRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/recruiter/settings': {
+      id: '/_authenticated/recruiter/settings'
+      path: '/recruiter/settings'
+      fullPath: '/recruiter/settings'
+      preLoaderRoute: typeof AuthenticatedRecruiterSettingsRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/lovable/email/transactional/preview': {
       id: '/lovable/email/transactional/preview'
       path: '/lovable/email/transactional/preview'
@@ -349,19 +370,21 @@ declare module '@tanstack/react-router' {
 interface AuthenticatedRouteRouteChildren {
   AuthenticatedAthleteRoute: typeof AuthenticatedAthleteRoute
   AuthenticatedDashboardRoute: typeof AuthenticatedDashboardRoute
-  AuthenticatedRecruiterRoute: typeof AuthenticatedRecruiterRoute
   AuthenticatedCoachSlugRoute: typeof AuthenticatedCoachSlugRoute
   AuthenticatedCoachSettingsRoute: typeof AuthenticatedCoachSettingsRoute
+  AuthenticatedRecruiterSettingsRoute: typeof AuthenticatedRecruiterSettingsRoute
   AuthenticatedCoachIndexRoute: typeof AuthenticatedCoachIndexRoute
+  AuthenticatedRecruiterIndexRoute: typeof AuthenticatedRecruiterIndexRoute
 }
 
 const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedAthleteRoute: AuthenticatedAthleteRoute,
   AuthenticatedDashboardRoute: AuthenticatedDashboardRoute,
-  AuthenticatedRecruiterRoute: AuthenticatedRecruiterRoute,
   AuthenticatedCoachSlugRoute: AuthenticatedCoachSlugRoute,
   AuthenticatedCoachSettingsRoute: AuthenticatedCoachSettingsRoute,
+  AuthenticatedRecruiterSettingsRoute: AuthenticatedRecruiterSettingsRoute,
   AuthenticatedCoachIndexRoute: AuthenticatedCoachIndexRoute,
+  AuthenticatedRecruiterIndexRoute: AuthenticatedRecruiterIndexRoute,
 }
 
 const AuthenticatedRouteRouteWithChildren =
