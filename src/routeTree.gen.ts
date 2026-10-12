@@ -24,6 +24,7 @@ import { Route as AuthenticatedCoachIndexRouteImport } from './routes/_authentic
 import { Route as AuthenticatedCoachSlugRouteImport } from './routes/_authenticated/coach.$slug'
 import { Route as AuthenticatedCoachSettingsRouteImport } from './routes/_authenticated/coach.settings'
 import { Route as AuthenticatedRecruiterIndexRouteImport } from './routes/_authenticated/recruiter.index'
+import { Route as AuthenticatedRecruiterSlugRouteImport } from './routes/_authenticated/recruiter.$slug'
 import { Route as AuthenticatedRecruiterSettingsRouteImport } from './routes/_authenticated/recruiter.settings'
 import { Route as LovableEmailTransactionalPreviewRouteImport } from './routes/lovable/email/transactional/preview'
 
@@ -103,6 +104,12 @@ const AuthenticatedRecruiterIndexRoute =
     path: '/recruiter/',
     getParentRoute: () => AuthenticatedRouteRoute,
   } as any)
+const AuthenticatedRecruiterSlugRoute =
+  AuthenticatedRecruiterSlugRouteImport.update({
+    id: '/recruiter/$slug',
+    path: '/recruiter/$slug',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
 const AuthenticatedRecruiterSettingsRoute =
   AuthenticatedRecruiterSettingsRouteImport.update({
     id: '/recruiter/settings',
@@ -129,6 +136,7 @@ export interface FileRoutesByFullPath {
   '/p/$slug': typeof PSlugRoute
   '/coach/$slug': typeof AuthenticatedCoachSlugRoute
   '/coach/settings': typeof AuthenticatedCoachSettingsRoute
+  '/recruiter/$slug': typeof AuthenticatedRecruiterSlugRoute
   '/recruiter/settings': typeof AuthenticatedRecruiterSettingsRoute
   '/coach/': typeof AuthenticatedCoachIndexRoute
   '/recruiter/': typeof AuthenticatedRecruiterIndexRoute
@@ -147,6 +155,7 @@ export interface FileRoutesByTo {
   '/p/$slug': typeof PSlugRoute
   '/coach/$slug': typeof AuthenticatedCoachSlugRoute
   '/coach/settings': typeof AuthenticatedCoachSettingsRoute
+  '/recruiter/$slug': typeof AuthenticatedRecruiterSlugRoute
   '/recruiter/settings': typeof AuthenticatedRecruiterSettingsRoute
   '/coach': typeof AuthenticatedCoachIndexRoute
   '/recruiter': typeof AuthenticatedRecruiterIndexRoute
@@ -167,6 +176,7 @@ export interface FileRoutesById {
   '/p/$slug': typeof PSlugRoute
   '/_authenticated/coach/$slug': typeof AuthenticatedCoachSlugRoute
   '/_authenticated/coach/settings': typeof AuthenticatedCoachSettingsRoute
+  '/_authenticated/recruiter/$slug': typeof AuthenticatedRecruiterSlugRoute
   '/_authenticated/recruiter/settings': typeof AuthenticatedRecruiterSettingsRoute
   '/_authenticated/coach/': typeof AuthenticatedCoachIndexRoute
   '/_authenticated/recruiter/': typeof AuthenticatedRecruiterIndexRoute
@@ -187,6 +197,7 @@ export interface FileRouteTypes {
     | '/p/$slug'
     | '/coach/$slug'
     | '/coach/settings'
+    | '/recruiter/$slug'
     | '/recruiter/settings'
     | '/coach/'
     | '/recruiter/'
@@ -205,6 +216,7 @@ export interface FileRouteTypes {
     | '/p/$slug'
     | '/coach/$slug'
     | '/coach/settings'
+    | '/recruiter/$slug'
     | '/recruiter/settings'
     | '/coach'
     | '/recruiter'
@@ -224,6 +236,7 @@ export interface FileRouteTypes {
     | '/p/$slug'
     | '/_authenticated/coach/$slug'
     | '/_authenticated/coach/settings'
+    | '/_authenticated/recruiter/$slug'
     | '/_authenticated/recruiter/settings'
     | '/_authenticated/coach/'
     | '/_authenticated/recruiter/'
@@ -350,6 +363,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedRecruiterIndexRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/recruiter/$slug': {
+      id: '/_authenticated/recruiter/$slug'
+      path: '/recruiter/$slug'
+      fullPath: '/recruiter/$slug'
+      preLoaderRoute: typeof AuthenticatedRecruiterSlugRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/_authenticated/recruiter/settings': {
       id: '/_authenticated/recruiter/settings'
       path: '/recruiter/settings'
@@ -372,6 +392,7 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedDashboardRoute: typeof AuthenticatedDashboardRoute
   AuthenticatedCoachSlugRoute: typeof AuthenticatedCoachSlugRoute
   AuthenticatedCoachSettingsRoute: typeof AuthenticatedCoachSettingsRoute
+  AuthenticatedRecruiterSlugRoute: typeof AuthenticatedRecruiterSlugRoute
   AuthenticatedRecruiterSettingsRoute: typeof AuthenticatedRecruiterSettingsRoute
   AuthenticatedCoachIndexRoute: typeof AuthenticatedCoachIndexRoute
   AuthenticatedRecruiterIndexRoute: typeof AuthenticatedRecruiterIndexRoute
@@ -382,6 +403,7 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedDashboardRoute: AuthenticatedDashboardRoute,
   AuthenticatedCoachSlugRoute: AuthenticatedCoachSlugRoute,
   AuthenticatedCoachSettingsRoute: AuthenticatedCoachSettingsRoute,
+  AuthenticatedRecruiterSlugRoute: AuthenticatedRecruiterSlugRoute,
   AuthenticatedRecruiterSettingsRoute: AuthenticatedRecruiterSettingsRoute,
   AuthenticatedCoachIndexRoute: AuthenticatedCoachIndexRoute,
   AuthenticatedRecruiterIndexRoute: AuthenticatedRecruiterIndexRoute,
