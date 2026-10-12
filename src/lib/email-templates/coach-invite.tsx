@@ -17,12 +17,14 @@ interface Props {
   athleteName?: string
   teamName?: string
   acceptUrl?: string
+  ctaLabel?: string
 }
 
-const CoachInviteEmail = ({ athleteName, teamName, acceptUrl }: Props) => {
+const CoachInviteEmail = ({ athleteName, teamName, acceptUrl, ctaLabel }: Props) => {
   const name = athleteName?.trim() || 'An athlete'
   const team = teamName?.trim()
   const url = acceptUrl || 'https://footykpi.com/auth?mode=signup'
+  const cta = ctaLabel?.trim() || 'Sign up & accept the invite'
 
   return (
     <Html lang="en" dir="ltr">
@@ -46,12 +48,12 @@ const CoachInviteEmail = ({ athleteName, teamName, acceptUrl }: Props) => {
           </Text>
           <Section style={buttonSection}>
             <Button style={button} href={url}>
-              Sign up &amp; accept the invite
+              {cta}
             </Button>
           </Section>
           <Text style={small}>
-            Sign up as a <strong>Coach</strong> with this exact email address —
-            the invitation will be waiting on your coach dashboard.
+            Use this exact email address as a <strong>Coach</strong> — the
+            invitation will be waiting on your coach dashboard.
           </Text>
           <Hr style={hr} />
           <Text style={footer}>

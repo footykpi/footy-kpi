@@ -107,7 +107,14 @@ export const inviteCoach = createServerFn({ method: "POST" })
         templateData: {
           athleteName: athleteName || "An athlete",
           teamName: names?.team ?? undefined,
-          acceptUrl: "https://footykpi.com/auth?mode=signup",
+          // Coaches who already have an account should land on the log-in form;
+          // the invite is waiting on their dashboard either way.
+          acceptUrl: coachUserId
+            ? "https://footykpi.com/auth?mode=login"
+            : "https://footykpi.com/auth?mode=signup",
+          ctaLabel: coachUserId
+            ? "Log in & accept the invite"
+            : "Sign up & accept the invite",
         },
         idempotencyKey: `coach-invite-${link.id}`,
       });
@@ -142,9 +149,10 @@ export const listCoachAthletes = createServerFn({ method: "GET" })
     const { supabase, userId, claims } = context;
     const email = ((claims as { email?: string }).email ?? "").toLowerCase();
 
+    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+
     // Claim any invite that was addressed to this coach's email before they signed up.
     if (email) {
-      const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
       await supabaseAdmin
         .from("coach_links")
         .update({ coach_user_id: userId })
@@ -160,7 +168,11 @@ export const listCoachAthletes = createServerFn({ method: "GET" })
     const rows = (links ?? []) as CoachLink[];
     if (rows.length === 0) return [];
 
-    const { data: profiles } = await supabase
+    // A pending invite has not been accepted yet, so the athlete's profile is not
+    // yet visible to this coach under the normal access rules. The invite rows above
+    // were read as this coach (only their own invites), so this read is limited to
+    // those same athletes and only the summary fields the dashboard renders.
+    const { data: profiles } = await supabaseAdmin
       .from("profiles")
       .select("id, slug, first_name, last_name, team, position, graduation_year, photo_url")
       .in(
