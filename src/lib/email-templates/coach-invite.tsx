@@ -66,7 +66,7 @@ const CoachInviteEmail = ({ athleteName, teamName, acceptUrl }: Props) => {
 export const template = {
   component: CoachInviteEmail,
   subject: (data: Record<string, any>) =>
-    `${data.athleteName?.trim() || 'An athlete'} invited you to coach on Footy KPI`,
+    `${data['athleteName']?.trim() || 'An athlete'} invited you to coach on Footy KPI`,
   displayName: 'Coach invitation',
   previewData: {
     athleteName: 'Shay Sandifer',

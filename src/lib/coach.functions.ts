@@ -97,11 +97,16 @@ export const inviteCoach = createServerFn({ method: "POST" })
     // not roll back the invite — it still appears on the coach's dashboard.
     try {
       const { sendTemplateEmail } = await import("@/lib/email-templates/send-email");
-      const athleteName = [profile.first_name, profile.last_name].filter(Boolean).join(" ").trim();
+      const { data: names } = await supabase
+        .from("profiles")
+        .select("first_name, last_name, team")
+        .eq("id", profile.id)
+        .single();
+      const athleteName = [names?.first_name, names?.last_name].filter(Boolean).join(" ").trim();
       await sendTemplateEmail("coach-invite", email, {
         templateData: {
           athleteName: athleteName || "An athlete",
-          teamName: profile.team ?? undefined,
+          teamName: names?.team ?? undefined,
           acceptUrl: "https://footykpi.com/auth?mode=signup",
         },
         idempotencyKey: `coach-invite-${link.id}`,
