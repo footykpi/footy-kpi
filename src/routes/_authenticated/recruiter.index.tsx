@@ -10,7 +10,7 @@ import { getMyAccount } from "@/lib/account.functions";
 import { searchAthletes } from "@/lib/recruiter.functions";
 import playerPhoto from "@/assets/player-photo.jpg";
 
-export const Route = createFileRoute("/_authenticated/recruiter")({
+export const Route = createFileRoute("/_authenticated/recruiter/")({
   head: () => ({
     meta: [
       { title: "Recruiter search | Footy KPI" },
@@ -112,7 +112,7 @@ function RecruiterDashboard() {
                     />
                     <div className="min-w-0">
                       <Link
-                        to="/p/$slug"
+                        to="/recruiter/$slug"
                         params={{ slug: athlete.slug }}
                         className="font-semibold text-foreground hover:underline"
                       >
