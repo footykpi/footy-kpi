@@ -1,14 +1,13 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
-import { Check, Loader2, ShieldCheck, X } from "lucide-react";
+import { Check, Loader2, Settings, ShieldCheck, Users, X } from "lucide-react";
 
 import { AppHeader } from "@/components/AppHeader";
-import { DangerZone } from "@/components/DangerZone";
 import { getMyAccount } from "@/lib/account.functions";
 import { listCoachAthletes, respondToInvite } from "@/lib/coach.functions";
 
-export const Route = createFileRoute("/_authenticated/coach")({
+export const Route = createFileRoute("/_authenticated/coach/")({
   head: () => ({
     meta: [
       { title: "Coach dashboard | Footy KPI" },
@@ -47,12 +46,34 @@ function CoachDashboard() {
     <div className="min-h-screen bg-background">
       <AppHeader email={account?.email ?? null} />
       <main className="mx-auto max-w-5xl space-y-8 px-6 py-10">
-        <div>
+        <div className="flex flex-wrap items-start justify-between gap-4">
+          <div>
           <h1 className="font-display text-4xl text-foreground">Coach dashboard</h1>
           <p className="mt-2 text-sm text-muted-foreground">
             Athletes invite you by email. Accept an invite to review their season and approve proof
             of awards, certificates, and medals.
           </p>
+          </div>
+          <Link
+            to="/coach/settings"
+            className="inline-flex items-center gap-2 rounded-full border border-border px-4 py-2 text-sm font-medium text-foreground hover:bg-surface"
+          >
+            <Settings className="h-4 w-4" /> Account settings
+          </Link>
+        </div>
+
+        <div className="grid gap-3 sm:grid-cols-3">
+          {[
+            { label: "Athletes", value: accepted.length, icon: Users },
+            { label: "Invitations", value: pending.length, icon: Check },
+            { label: "Awaiting review", value: accepted.reduce((n, a) => n + a.pendingProofs, 0), icon: ShieldCheck },
+          ].map(({ label, value, icon: Icon }) => (
+            <div key={label} className="rounded-2xl border border-border bg-card p-5">
+              <Icon className="h-5 w-5 text-primary" />
+              <div className="mt-2 font-display text-4xl text-foreground">{value}</div>
+              <div className="text-sm text-muted-foreground">{label}</div>
+            </div>
+          ))}
         </div>
 
         {isLoading && (
@@ -126,6 +147,13 @@ function CoachDashboard() {
                       .filter(Boolean)
                       .join(" · ") || "No details yet"}
                   </p>
+                  <Link
+                    to="/coach/$slug"
+                    params={{ slug: athlete.slug }}
+                    className="mt-3 block text-xs font-semibold text-primary hover:underline"
+                  >
+                    View profile, stats & highlights →
+                  </Link>
                   {athlete.pendingProofs > 0 && (
                     <p className="mt-3 inline-flex items-center gap-1.5 rounded-full bg-primary/10 px-3 py-1 text-xs font-semibold text-primary">
                       <ShieldCheck className="h-3.5 w-3.5" />
@@ -138,7 +166,6 @@ function CoachDashboard() {
           )}
         </section>
 
-        <DangerZone />
       </main>
     </div>
   );
