@@ -8,7 +8,7 @@ import { DangerZone } from "@/components/DangerZone";
 import { getMyAccount } from "@/lib/account.functions";
 import { listCoachAthletes, respondToInvite } from "@/lib/coach.functions";
 
-export const Route = createFileRoute("/_authenticated/coach")({
+export const Route = createFileRoute("/_authenticated/coach/")({
   head: () => ({
     meta: [
       { title: "Coach dashboard | Footy KPI" },
